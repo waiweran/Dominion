@@ -1,6 +1,12 @@
 *.jar
 *.txt
+.classpath
+.project
+.codepro/*
+.settings/*
 Images/*
 Training/*
 Networks/*
 Defaults/*
+bin/*
+lib/*
