@@ -12,7 +12,7 @@ import gameBase.DominionGame;
 import gameBase.GameOptions;
 import gameBase.GameSetup;
 import gameBase.Player;
-import genericGame.LocalConnection;
+import genericGame.network.LocalConnection;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.stage.Stage;

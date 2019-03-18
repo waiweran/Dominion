@@ -1,7 +1,5 @@
 package computerPlayer;
 
-import java.io.File;
-
 import gameBase.DominionGame;
 import gameBase.Player;
 
@@ -37,10 +35,6 @@ public class CPUFactory {
 		}
 		if(cpuType.equals("Random")) {
 			return new RandomPlayer(player, access);
-		}
-		if(cpuType.equals("Neural Net") || cpuType.equals("NeuralNet")) {
-			return new NeurophNetPlayer(player, access, 
-					new File("Networks/play.nnet"), new File("Networks/gain.nnet"));
 		}
 		throw new RuntimeException("Unsupported Computer Player Type " + cpuType);
 	}

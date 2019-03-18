@@ -1,4 +1,4 @@
-package genericGame;
+package genericGame.network;
 
 import javafx.application.Platform;
 import javafx.geometry.Insets;

@@ -3,6 +3,8 @@ package genericGame;
 import java.util.LinkedList;
 import java.util.Queue;
 
+import genericGame.network.Connection;
+
 /**
  * A client for board game servers.
  * Contains the BGP (Board Game Protocol).

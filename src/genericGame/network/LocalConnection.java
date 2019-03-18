@@ -1,4 +1,7 @@
-package genericGame;
+package genericGame.network;
+
+import genericGame.BoardGame;
+import genericGame.GameClient;
 
 /**
  * Locally connects the frontend to the backend.

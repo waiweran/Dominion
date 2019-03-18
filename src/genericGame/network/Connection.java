@@ -1,4 +1,7 @@
-package genericGame;
+package genericGame.network;
+
+import genericGame.BoardGame;
+import genericGame.GameClient;
 
 /**
  * Determines how frontend commands are connected to the backend game state.
