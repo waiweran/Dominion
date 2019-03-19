@@ -15,7 +15,7 @@ public class GameServer {
 
 	private static final int PORT = 8901;
 	
-	ServerSocket listener;
+	private ServerSocket listener;
 	private boolean stop;
 	
 	public GameServer() {
