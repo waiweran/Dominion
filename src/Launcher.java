@@ -108,8 +108,7 @@ public class Launcher extends Application {
 	private void newGameComputer() {
 		try {
 			DominionClient dc = new DominionClient();
-			LocalConnection lc = new LocalConnection(dc, makeGame(false));
-			dc.passConnection(lc);
+			new LocalConnection(dc, makeGame(false));
 		}
 		catch(NullPointerException e) {
 			// Do nothing, selection cancelled
@@ -145,8 +144,7 @@ public class Launcher extends Application {
 			serverAlert.getButtonTypes().clear();
 			serverAlert.getButtonTypes().add(ButtonType.CLOSE);
 			DominionClient dc = new DominionClient();
-			OnlineConnection oc = new OnlineConnection(dc, "localhost", name, makeGame(true));
-			dc.passConnection(oc);
+			new OnlineConnection(dc, "localhost", name, makeGame(true));
 			serverAlert.showAndWait();
 		} catch (IOException e) {
 			Alert alert = new Alert(AlertType.ERROR, "Network Error");
@@ -172,9 +170,7 @@ public class Launcher extends Application {
 			ipaddress.setContentText("IP Address: ");
 			String addr = ipaddress.showAndWait().get();
 			DominionClient dc = new DominionClient();
-			OnlineConnection oc = new OnlineConnection(dc, addr, name);
-			dc.passConnection(oc);
-			new DominionClient();
+			new OnlineConnection(dc, addr, name);
 		} catch (NoSuchElementException e) {
 			// No IP address entered, do nothing
 		} catch (ConnectException e1) {
@@ -192,8 +188,7 @@ public class Launcher extends Application {
 	private void newGameOnline() {	
 		try {
 			DominionClient dc = new DominionClient();
-			OnlineConnection oc = new OnlineConnection(dc, OnlineConnection.SERVER, name, makeGame(true));
-			dc.passConnection(oc);
+			new OnlineConnection(dc, OnlineConnection.SERVER, name, makeGame(true));
 		} catch (ConnectException e) {
 			Alert alert = new Alert(AlertType.ERROR, "Network Error");
 			alert.setHeaderText("Server not Found");
@@ -211,8 +206,7 @@ public class Launcher extends Application {
 	private void openGameOnline() {	
 		try {
 			DominionClient dc = new DominionClient();
-			OnlineConnection oc = new OnlineConnection(dc, OnlineConnection.SERVER, name);
-			dc.passConnection(oc);
+			new OnlineConnection(dc, OnlineConnection.SERVER, name);
 		} catch (ConnectException e) {
 			Alert alert = new Alert(AlertType.ERROR, "Network Error");
 			alert.setHeaderText("Server not Found");

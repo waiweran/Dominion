@@ -42,7 +42,9 @@ public abstract class BoardGame implements Serializable {
 	public void log(String entry) {
 		String text = System.currentTimeMillis() + ": " + entry + "\n";
 		log.append(text);
-		getGUI().updateLog(entry);
+		if(showGraphics) {
+			getGUI().updateLog(entry);
+		}
 	}
 	
 	/**

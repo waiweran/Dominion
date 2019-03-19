@@ -49,7 +49,7 @@ import javafx.stage.Stage;
  */
 public class DominionGUI extends GameGUI {	
 
-	public final int cardHeight, cardWidth;						//Card dimensions
+	public int cardHeight, cardWidth;							//Card dimensions
 
 	private DominionGame game;									//The Game
 	private Player myPlayer;									//Used when game run on multiple machines
@@ -70,24 +70,22 @@ public class DominionGUI extends GameGUI {
 	 * Loads the window.
 	 */
 	public DominionGUI(DominionGame g, Player player) {
-		super(g.showGraphics());
 		game = g;
 		myPlayer = player;
-		cardImgs = new HashMap<Card, Image>();
-		players = new ArrayList<Pane>();
 
-		cardHeight = (int)(Screen.getPrimary().getVisualBounds().getHeight())/5 - 27;
-		cardWidth = (int)(cardHeight*296.0/473.0);
-
-		if(!game.showGraphics()) return;
-		
-		getMainPane().setLeft(getLeftPane());
-		getMainPane().setCenter(getCenterPane());
-		getMainPane().setRight(getRightPane());
-		getMainPane().setBottom(getBottomPane());
+		Platform.runLater(() -> {
+			cardImgs = new HashMap<Card, Image>();
+			players = new ArrayList<Pane>();
+			cardHeight = (int)(Screen.getPrimary().getVisualBounds().getHeight())/5 - 27;
+			cardWidth = (int)(cardHeight*296.0/473.0);
+			getMainPane().setLeft(getLeftPane());
+			getMainPane().setCenter(getCenterPane());
+			getMainPane().setRight(getRightPane());
+			getMainPane().setBottom(getBottomPane());
+			updatePlaySpace();
+		});
 		
 		setupUpdating();
-		updatePlaySpace();
 	}
 
 	////++++ METHODS FOR UPDATING GUI ++++\\\\
@@ -154,30 +152,30 @@ public class DominionGUI extends GameGUI {
 	 */
 	public void setupUpdating() {
 		if(getGame().isOnline()) {
-			getMyPlayer().deck.hand.addObserver((o, arg) -> updateHand());
-			getMyPlayer().deck.discard.addObserver((o, arg) -> updateDiscard());
+			getMyPlayer().deck.hand.addObserver((o, arg) -> Platform.runLater(() -> updateHand()));
+			getMyPlayer().deck.discard.addObserver((o, arg) -> Platform.runLater(() -> updateDiscard()));
 		}
 		else {
 			for(Player p : getGame().players) {
-				p.deck.hand.addObserver((o, arg) -> updateHand());
-				p.deck.discard.addObserver((o, arg) -> updateDiscard());
+				p.deck.hand.addObserver((o, arg) -> Platform.runLater(() -> updateHand()));
+				p.deck.discard.addObserver((o, arg) -> Platform.runLater(() -> updateDiscard()));
 			}
 		}
 		for(Player p : getGame().players) {
-			p.deck.play.addObserver((o, arg) -> updatePlaySpace());
-			p.deck.discard.addObserver((o, arg) -> updateOpponentDiscard(p));
-			p.addObserver((o, arg) -> updateDisplayNumbers());
+			p.deck.play.addObserver((o, arg) -> Platform.runLater(() -> updatePlaySpace()));
+			p.deck.discard.addObserver((o, arg) -> Platform.runLater(() -> updateOpponentDiscard(p)));
+			p.addObserver((o, arg) -> Platform.runLater(() -> updateDisplayNumbers()));
 		}
 		for(Supply s : game.board.defaultCards) {
-			s.addObserver((o, arg) -> updateSupplies());
+			s.addObserver((o, arg) -> Platform.runLater(() -> updateSupplies()));
 		}
 		for(Supply s : game.board.extraCards) {
-			s.addObserver((o, arg) -> updateSupplies());
+			s.addObserver((o, arg) -> Platform.runLater(() -> updateSupplies()));
 		}
 		for(Supply s : game.board.kingdomCards) {
-			s.addObserver((o, arg) -> updateSupplies());
+			s.addObserver((o, arg) -> Platform.runLater(() -> updateSupplies()));
 		}
-		game.board.trash.addObserver((o, arg) -> updateTrash());
+		game.board.trash.addObserver((o, arg) -> Platform.runLater(() -> updateTrash()));
 	}
 
 	/**
@@ -351,7 +349,6 @@ public class DominionGUI extends GameGUI {
 	 * Updates the actions, buys, and treasure display numbers.
 	 */
 	private void updateDisplayNumbers() {
-		if(!game.showGraphics()) return;
 		dispNums.getChildren().clear();
 		Player p = game.getCurrentPlayer();
 		Text actions = new Text("Actions: " + p.getActions());
@@ -910,7 +907,6 @@ public class DominionGUI extends GameGUI {
 	
 	@Override
 	public void updateLog(String entry) {
-		if(!game.showGraphics()) return;
 		Platform.runLater(() -> playDescrip.setText(entry));
 		super.updateLog(entry);
 	}

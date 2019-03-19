@@ -15,7 +15,6 @@ import cards.extra.Necropolis;
 import cards.extra.OvergrownEstate;
 import computerPlayer.ComputerPlayer;
 import genericGame.AbstractPlayer;
-import javafx.application.Platform;
 
 /**
  * Represents a single player in the Dominion game.
@@ -164,7 +163,6 @@ public class Player extends AbstractPlayer {
 			return false;
 		}
 		Card c = s.getTopCard();
-		c.passGame(access);
 		buying = true;
 		bought.add(c);
 		if(buys > 0 && treasure - c.getCost() >= 0 && c.canBeGained()
@@ -297,11 +295,9 @@ public class Player extends AbstractPlayer {
 	 * Notifies all observers.
 	 */
 	private void notifyObservers() {
-		Platform.runLater(() -> {
-			for(Observer o : observers) {
-				o.update(null, null);
-			}
-		});
+		for(Observer o : observers) {
+			o.update(null, null);
+		}
 	}
 
 }

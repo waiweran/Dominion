@@ -17,6 +17,7 @@ public abstract class Connection {
 	 */
 	public Connection(GameClient gameClient) {
 		client = gameClient;
+		client.passConnection(this);
 	}
 	
 	/**

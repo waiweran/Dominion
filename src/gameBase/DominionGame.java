@@ -10,7 +10,6 @@ import cards.seaside.Lighthouse;
 import computerPlayer.CPUFactory;
 import genericGame.AbstractPlayer;
 import genericGame.BoardGame;
-import javafx.application.Platform;
 
 
 /**
@@ -62,6 +61,9 @@ public class DominionGame extends BoardGame {
 			c.passGame(this);
 		}
 		board = new Board(setup.getCards(), random, setup.useProsperity(), getNumPlayers());
+		for(Supply s : board.getAllSupplies()) {
+			s.getCard().passGame(this);
+		}
 		
 		// Setup Players
 		CPUFactory factory = new CPUFactory(this);
@@ -76,16 +78,16 @@ public class DominionGame extends BoardGame {
 		} 
 		
 		// Setup GUI
-		Platform.runLater(() -> {
+		if(showGraphics) {
 			if(isOnline()) {
 				gameGUI = new DominionGUI(this, players.get(getClient().getPlayerNumber() - 1));
 			}
 			else {
 				gameGUI = new DominionGUI(this, null); 
 			}
-			log("Game " + getName() + " successfully set up");
-		});
+		}
 		
+		log("Game " + getName() + " successfully set up");		
 	}
 
 	/**
@@ -121,12 +123,13 @@ public class DominionGame extends BoardGame {
 		//Check if the game is over
 		if(board.isGameOver()) {
 			getClient().stopThreads();
-			Platform.runLater(() -> getGUI().showScores());
+			if(showGraphics) getGUI().showScores();
 			return;
 		}
 
 		//Change Turn 
-		if(!getCurrentPlayer().isComputerPlayer() && players.size() - numNPC > 1) {
+		if(showGraphics && !getCurrentPlayer().isComputerPlayer() 
+				&& players.size() - numNPC > 1) {
 			getGUI().turnNotify();
 		}
 
@@ -138,12 +141,12 @@ public class DominionGame extends BoardGame {
 		
 		
 		//Save changes to server
-		if(getGUI().getMyPlayer().equals(endingPlayer)) {
+		if(showGraphics && getGUI().getMyPlayer().equals(endingPlayer)) {
 			getClient().backupGame(this);
 		}
 
 		//Check the decks are correct between computers
-		if(getGUI().getMyPlayer().equals(endingPlayer)) {
+		if(showGraphics && getGUI().getMyPlayer().equals(endingPlayer)) {
 			for(Player p : players) {
 				getClient().sendString("CHECK " + p.getPlayerNum() + " " + p.deck.toString());
 			}

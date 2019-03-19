@@ -46,6 +46,7 @@ public abstract class ComputerPlayer {
 	 * Chooses a card to gain.
 	 * Used by SupplySelector.
 	 * @param options List of supplies available to gain from.
+	 * @param required Whether choice is required or optional.
 	 * @return The chosen supply.
 	 */
 	public abstract Supply chooseGain(List<Supply> options, boolean required);
@@ -53,7 +54,7 @@ public abstract class ComputerPlayer {
 	/**
 	 * Chooses a supply for a non-gain purpose.
 	 * @param options The list of available supplies.
-	 * @param required Whether choice is required or optional
+	 * @param required Whether choice is required or optional.
 	 * @param choiceName The name of the card causing the selection.
 	 * @return The selected supply.
 	 */
@@ -75,7 +76,7 @@ public abstract class ComputerPlayer {
 	 * Chooses a card from a given list.
 	 * Used with SingleCardSelector
 	 * @param choices The list of cards to choose from.
-	 * @param required Whether the number of cards selected is required or maximum.
+	 * @param required Whether choice is required or optional.
 	 * @param choiceName The name of the card making the choice.
 	 * @return Selected card index.
 	 */

@@ -6,7 +6,6 @@ import java.util.Observer;
 import java.util.Set;
 
 import cards.Card;
-import javafx.application.Platform;
 
 /**
  * Supply pile for the Dominion game.
@@ -156,11 +155,9 @@ public class Supply implements Comparable<Supply>, Serializable {
 	 * Notifies all observers.
 	 */
 	protected void notifyObservers() {
-		Platform.runLater(() -> {
-			for(Observer o : observers) {
-				o.update(null, null);
-			}
-		});
+		for(Observer o : observers) {
+			o.update(null, null);
+		}
 	}
 	
 }

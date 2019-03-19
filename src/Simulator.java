@@ -1,5 +1,3 @@
-
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,41 +11,36 @@ import gameBase.GameOptions;
 import gameBase.GameSetup;
 import gameBase.Player;
 import genericGame.network.LocalConnection;
-import javafx.application.Application;
-import javafx.application.Platform;
-import javafx.stage.Stage;
-import selectors.InputDialog;
 
 /**
  * Simulates Dominion games with the GUI off and automated card selection.
  * @author Nathaniel
  * @version 8-02-2016
  */
-public class Simulator extends Application {
+public class Simulator {
 	
 	private static final String FILENAME = "Saves/Base/First Game.dog";
 	
-	private static String[] arguments;
-	
-	@Override
-	public void start(Stage primaryStage) throws Exception {
-		int numSimulations = Integer.parseInt(arguments[0]);
+	/**
+	 * Main method of the Simulator class.
+	 * @param args Command line arguments.
+	 */
+	public static void main(String[] args) {
+		int numSimulations = Integer.parseInt(args[0]);
 		ArrayList<String> cpuTypes = new ArrayList<>();
-		for(int i = 1; i < arguments.length; i++) {
-			cpuTypes.add(arguments[i]);
+		for(int i = 1; i < args.length; i++) {
+			cpuTypes.add(args[i]);
 		}
-		Thread gameManager = new Thread(() -> runGames(numSimulations, cpuTypes, FILENAME));
-		gameManager.setName("Game Manager");
-		gameManager.start();
+		runGames(numSimulations, cpuTypes, FILENAME);
 	}
 
 	/**
-	 * Runs computer played games of Dominion without graphics.
-	 * @param num the number of games to run.
-	 * @param filename the name of the game file to use.
-	 * If no game file provided, randomly generated games used
+	 * Runs simulations of the specified game.
+	 * @param numRuns The number of simulations to run.
+	 * @param cpuTypes The types of CPU to simulate with.
+	 * @param filename The game setup file to simulate.
 	 */
-	private void runGames(int numRuns, List<String> cpuTypes, String filename) {
+	private static void runGames(int numRuns, List<String> cpuTypes, String filename) {
 		
 		//Run Multiple Test Games
 		System.out.println("Playing " + filename + "\n");
@@ -59,17 +52,22 @@ public class Simulator extends Application {
 			try {
 				//Setup Game
 				GameSetup setup = new GameSetup(new File(filename));
-				DominionGame game = new InputDialog(setup, new GameOptions(false)).autoSelection(cpuTypes);				
+				GameOptions gameOptions = new GameOptions(false);
+				gameOptions.setNumPlayers(cpuTypes.size());
+				gameOptions.setNPC(cpuTypes);
+				gameOptions.hideGraphics();
+				DominionGame game = new DominionGame(setup, gameOptions);
 				DominionClient dc = new DominionClient();
-				LocalConnection lc = new LocalConnection(dc, game);
-				dc.passConnection(lc);
+				new LocalConnection(dc, game);
 
 				//Start Game
-				Platform.runLater(() -> game.getCurrentPlayer().startTurn());
+				game.getCurrentPlayer().startTurn();
+				//Platform.runLater(() -> game.getCurrentPlayer().startTurn());
 				
 				//Wait for game to end
-				while(!game.board.isGameOver()) Thread.sleep(10);
-								
+				while(!game.board.isGameOver()) Thread.sleep(5);
+				Thread.sleep(20); //Hope the backend updater finishes
+				
 				try {
 					// List players in games
 					if(players.isEmpty()) {
@@ -112,7 +110,7 @@ public class Simulator extends Application {
 					}
 					e.printStackTrace();
 				}
-				
+
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
@@ -132,15 +130,5 @@ public class Simulator extends Application {
 		}		
 		System.exit(0);
 	}
-	
-	/**
-	 * Main method of the Simulator class.
-	 * @param args Command line arguments.
-	 */
-	public static void main(String[] args) {
-		arguments = args;
-		launch(args);
-	}
-
 
 }

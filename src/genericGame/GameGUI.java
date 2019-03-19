@@ -33,7 +33,7 @@ import javafx.stage.WindowEvent;
  */
 public abstract class GameGUI {
 	
-	private final double width, height;			//Screen dimensions
+	private double width, height;				//Screen dimensions
 	private Stage stage;						//Main window stage
 	private BorderPane mainPane;				//Main pane to display game board
 	private StackPane root;						//Root pane of the window.
@@ -46,24 +46,23 @@ public abstract class GameGUI {
 	
 	/**
 	 * Constructor for the GUI.
-	 * @param showGraphics whether to display the GUI.
 	 */
-	public GameGUI(boolean showGraphics) {
-		makeGameLog();
-		stage = new Stage();
-		width = Screen.getPrimary().getVisualBounds().getWidth();
-		height = Screen.getPrimary().getVisualBounds().getHeight();
-		root = new StackPane();
-		mainPane = new BorderPane();
+	public GameGUI() {
 		scoreShown = false;
-		if(showGraphics) {
+		Platform.runLater(() -> {
+			width = Screen.getPrimary().getVisualBounds().getWidth();
+			height = Screen.getPrimary().getVisualBounds().getHeight();
+			makeGameLog();
+			stage = new Stage();
+			root = new StackPane();
+			mainPane = new BorderPane();
 			setBackground();        
 			root.getChildren().addAll(mainPane);		
 			Scene scene = new Scene(root);
 			stage.setScene(scene);
 			stage.setOnCloseRequest(e -> onWindowClose(e));
 			stage.show();
-		}
+		});
 	}
 
 	/**
@@ -213,9 +212,7 @@ public abstract class GameGUI {
 	 * Displays score of all players.
 	 */
 	public void showScores() {
-		if(getGame().showGraphics()) {
-			this.addOverlay(loadScorePane(), "Game End");
-		}
+		Platform.runLater(() -> this.addOverlay(loadScorePane(), "Game End"));
 		scoreShown = true;
 	}
 

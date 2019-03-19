@@ -66,7 +66,8 @@ public class InputDialog {
 	public InputDialog(GameOptions startingOptions) {
 		allCards = new CardFactory();
 		gameOptions = startingOptions;
-		initialize();
+		options = new boolean[256];
+
 	}
 
 	/**
@@ -84,6 +85,7 @@ public class InputDialog {
 	 * @return the created game.
 	 */
 	public DominionGame makeSelections() {
+		initialize();
 		BorderPane root = new BorderPane();		
 		root.setTop(getTopPane());
 		root.setCenter(getCenterPane());
@@ -92,25 +94,6 @@ public class InputDialog {
 		stage.setScene(scene);
 		stage.setMaximized(true);
 		stage.showAndWait();
-		return game;
-	}
-	
-	/**
-	 * Automatically selects setup for game.
-	 * @param npcTypes Input NPC types.
-	 * @return The created game.
-	 */
-	public DominionGame autoSelection(List<String> npcTypes) {
-		int i = 0;
-		for(boolean b : options) {
-			if(b) i++;
-		}
-		if(i != 10) randomize();
-		
-		gameOptions.setNumPlayers(npcTypes.size());
-		gameOptions.setNPC(npcTypes);
-		gameOptions.hideGraphics();
-		createGame();
 		return game;
 	}
 
@@ -241,7 +224,6 @@ public class InputDialog {
 	 * Initializes required graphics fields.
 	 */
 	private void initialize() {
-		options = new boolean[256];
 		buttons = new Button[options.length];
 		for(int i = 0; i < buttons.length; i++) {
 			buttons[i] = new Button();

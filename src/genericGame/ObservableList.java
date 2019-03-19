@@ -10,8 +10,6 @@ import java.util.ListIterator;
 import java.util.Observer;
 import java.util.Set;
 
-import javafx.application.Platform;
-
 /**
  * List that implements Observable
  * @author Nathaniel Brooke
@@ -202,11 +200,9 @@ public class ObservableList<T> implements List<T>, Serializable {
 	 * Notifies all observers.
 	 */
 	private void notifyObservers() {
-		Platform.runLater(() -> {
-			for(Observer o : observers) {
-				o.update(null, null);
-			}
-		});
+		for(Observer o : observers) {
+			o.update(null, null);
+		}
 	}
 
 }
