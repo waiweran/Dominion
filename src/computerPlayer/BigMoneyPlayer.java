@@ -17,9 +17,12 @@ import gameBase.Supply;
  * @version 05-12-2016
  */
 public class BigMoneyPlayer extends ComputerPlayer {
+	
+	private ExpertSystem exsys;
 
 	public BigMoneyPlayer(Player pComputer, DominionGame game) {
 		super(pComputer, game);
+		exsys = new ExpertSystem();
 	}
 
 	@Override
@@ -94,6 +97,9 @@ public class BigMoneyPlayer extends ComputerPlayer {
 
 	@Override
 	public ArrayList<Integer> chooseCards(List<Card> choices, int num, boolean required, String choiceName) {
+		if(choiceName.equals("Militia")) {
+			return exsys.chooseCardsMilitia(choices, num);
+		}
 		ArrayList<Integer> out = new ArrayList<>();
 		if(required) {
 			while(out.size() < num) {

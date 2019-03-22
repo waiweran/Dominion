@@ -11,9 +11,12 @@ import gameBase.Player;
 import gameBase.Supply;
 
 public class RandomPlayer extends ComputerPlayer {
+	
+	private ExpertSystem exsys;
 
 	public RandomPlayer(Player pComputer, DominionGame game) {
 		super(pComputer, game);
+		exsys = new ExpertSystem();
 	}
 	
 	@Override
@@ -47,6 +50,12 @@ public class RandomPlayer extends ComputerPlayer {
 	@Override
 	public ArrayList<Integer> chooseCards(List<Card> choices, 
 			int num, boolean required, String choiceName) {
+		if(choiceName.equals("Cellar")) {
+			return exsys.chooseCardsCellar(choices);
+		}
+		if(choiceName.equals("Militia")) {
+			return exsys.chooseCardsMilitia(choices, num);
+		}
 		ArrayList<Integer> out = new ArrayList<Integer>();
 		if(required) {
 			while(out.size() < num) {
@@ -70,6 +79,12 @@ public class RandomPlayer extends ComputerPlayer {
 	
 	@Override
 	public int chooseCard(List<Card> choices, boolean required, String choiceName) {
+		if(choiceName.equals("Mine")) {
+			return exsys.chooseCardMine(choices);
+		}
+		if(choiceName.equals("Remodel")) {
+			return exsys.chooseCardRemodel(choices);
+		}
 		if(required) {
 			return access.random.nextInt(choices.size());
 		}
@@ -91,6 +106,9 @@ public class RandomPlayer extends ComputerPlayer {
 	
 	@Override
 	protected Card chooseAction(List<Card> options) {
+		try {
+			return exsys.chooseAction(options);
+		} catch(Exception e) {} // Do nothing, probably not base game
 		int choice = access.random.nextInt(options.size());
 		// Choose whether to play a card
 		Card selectedCard;
