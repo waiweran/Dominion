@@ -3,6 +3,7 @@ package computerPlayer;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,10 +23,10 @@ public class DataWriter {
 	private Player player;
 	private DominionGame access;
 
-	private StringBuilder playData;
-	private StringBuilder playTarget;
-	private StringBuilder gainData;
-	private StringBuilder gainTarget;
+	private List<int[]> playData;
+	private List<int[]> playTarget;
+	private List<int[]> gainData;
+	private List<int[]> gainTarget;
 	
 	/**
 	 * Initializes a new Data Writer with empty files.
@@ -34,38 +35,38 @@ public class DataWriter {
 	public DataWriter(Player writeFor, DominionGame game) {
 		player = writeFor;
 		access = game;
-		playData = new StringBuilder();
-		playTarget = new StringBuilder();
-		gainData = new StringBuilder();
-		gainTarget = new StringBuilder();
+		playData = new ArrayList<>();
+		playTarget = new ArrayList<>();
+		gainData = new ArrayList<>();
+		gainTarget = new ArrayList<>();
 	}
 	
 	/**
 	 * Writes current deck data to gain data file.
 	 */
-	public void writeGainData(List<Supply> available) {
-		gainData.append(arrayToText(getGainDataShort(available)) + "\n");
+	public synchronized void writeGainData(List<Supply> available) {
+		gainData.add(getGainDataShort(available));
 	}
 	
 	/**
 	 * Writes the gain choice based on the matching gain data to gain target file.
 	 */
-	public void writeGainTarget(Card choice) {
-		gainTarget.append(arrayToText(getTargetShort(choice)) + "\n");
+	public synchronized void writeGainTarget(Card choice) {
+		gainTarget.add(getTargetShort(choice));
 	}
 	
 	/**
 	 * Writes current deck data to play data file.
 	 */
-	public void writePlayData(List<Card> options) {
-		playData.append(arrayToText(getPlayDataShort(options)) + "\n");
+	public synchronized void writePlayData(List<Card> options) {
+		playData.add(getPlayDataShort(options));
 	}
 	
 	/**
 	 * Writes the gain choice based on the matching play data to play target file.
 	 */
-	public void writePlayTarget(Card choice) {
-		playTarget.append(arrayToText(getTargetShort(choice)) + "\n");
+	public synchronized void writePlayTarget(Card choice) {
+		playTarget.add(getTargetShort(choice));
 	}
 	
 	/**
@@ -279,44 +280,52 @@ public class DataWriter {
 	}
 	
 	/**
-	 * Converts an array into properly formatted text for writing to a file.
-	 * @param data the array to write.
-	 * @return the formatted text.
-	 */
-	private String arrayToText(int[] data) {
-		String printable = Arrays.toString(data);
-		printable = printable.replace("[", "");
-		printable = printable.replace("]", "");
-		return printable;
-	}
-	
-	/**
 	 * Saves the data input and target files for this player.
 	 */
 	public void saveData() {
-		if(gainData.length() == 0) return;
+		if(gainData.size() == 0) return;
 		try {
 			long fileTime = System.currentTimeMillis() + player.getPlayerNum();
-			PrintStream playDataOut = new PrintStream(
-					new File("Training/" + fileTime + "_playin.txt"));
-			playDataOut.print(playData);
-			playDataOut.flush();
-			playDataOut.close();
-			PrintStream playTargetOut = new PrintStream(
-					new File("Training/" + fileTime + "_playout.txt"));
-			playTargetOut.print(playTarget);
-			playTargetOut.flush();
-			playTargetOut.close();
-			PrintStream gainDataOut = new PrintStream(
-					new File("Training/" + fileTime + "_gainin.txt"));
-			gainDataOut.print(gainData);
-			gainDataOut.flush();
-			gainDataOut.close();
-			PrintStream gainTargetOut = new PrintStream(
-					new File("Training/" + fileTime + "_gainout.txt"));
-			gainTargetOut.print(gainTarget);
-			gainTargetOut.flush();
-			gainTargetOut.close();
+			PrintStream out = new PrintStream(new File("Training/data-" + fileTime + ".json"));
+			out.println("{");
+			out.println("\"computerPlayer\": \"" + player.getComputerPlayer().getName() + "\",");
+			out.println("\"numPlayers\": " + access.getNumPlayers() + ",");
+			out.print("\"opponents\": [");
+			for(Player p : access.players) if(!p.equals(player)) {
+				if(p.isComputerPlayer()) 
+					out.print("\"" + p.getComputerPlayer().getName() + "\", ");
+				else out.print("\"human\", ");
+			}
+			out.println("],");
+			out.print("\"board\": [");
+			for(Supply s : access.board.kingdomCards) {
+				out.print("  \"" + s.getCard().getName() + "\",");
+			}
+			out.println("],");
+			out.println("\"deck\": \"" + player.deck.toString() + "\",");
+			out.println("\"playData\": [");
+			for(int[] row : playData) {
+				out.println("  " + Arrays.toString(row) + ",");
+			}
+			out.println("],");
+			out.println("\"playTarget\": [");
+			for(int[] row : playTarget) {
+				out.println("  " + Arrays.toString(row) + ",");
+			}
+			out.println("],");
+			out.println("\"gainData\": [");
+			for(int[] row : gainData) {
+				out.println("  " + Arrays.toString(row) + ",");
+			}
+			out.println("],");
+			out.println("\"gainTarget\": [");
+			for(int[] row : gainTarget) {
+				out.println("  " + Arrays.toString(row) + ",");
+			}
+			out.println("]");
+			out.println("}");
+			out.flush();
+			out.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
