@@ -36,6 +36,12 @@ public class CPUFactory {
 		if(cpuType.equals("Random")) {
 			return new RandomPlayer(player, access);
 		}
+		if(cpuType.equals("Stdio")) {
+			return new StdioPlayer(player, access);
+		}
+		if(cpuType.equals("Neural Net") || cpuType.equals("NeuralNet")) {
+			return new NetPlayer(player, access);
+		}
 		throw new RuntimeException("Unsupported Computer Player Type " + cpuType);
 	}
 
