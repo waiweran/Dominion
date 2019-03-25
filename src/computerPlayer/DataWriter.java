@@ -24,9 +24,9 @@ public class DataWriter {
 	private DominionGame access;
 
 	private List<int[]> playData;
-	private List<int[]> playTarget;
+	private List<Integer> playTarget;
 	private List<int[]> gainData;
-	private List<int[]> gainTarget;
+	private List<Integer> gainTarget;
 	
 	/**
 	 * Initializes a new Data Writer with empty files.
@@ -249,17 +249,15 @@ public class DataWriter {
 	 * @param choice the choice to make the target array for.
 	 * @return the target array.
 	 */
-	public int[] getTargetShort(Card choice) {
+	public int getTargetShort(Card choice) {
 		List<Card> supplies = access.board.getAllSupplies()
 				.stream().map(s -> s.getCard()).collect(Collectors.toList());
-		int[] target = new int[supplies.size() + 1];
 		if(choice == null) {
-			target[0] = 1;
+			return 0;
 		}
 		else {
-			target[supplies.indexOf(choice) + 1] = 1;
+			return supplies.indexOf(choice) + 1;
 		}
-		return target;
 	}
 	
 	/**
@@ -268,15 +266,13 @@ public class DataWriter {
 	 * @param choice the choice to make the target array for.
 	 * @return the target array.
 	 */	
-	public int[] getTargetLong(Card choice) {
-		int[] target = new int[access.allCards.getNumCards() + 1];
+	public int getTargetLong(Card choice) {
 		if(choice == null) {
-			target[0] = 1;
+			return 0;
 		}
 		else {
-			target[access.allCards.getCardNum(choice) + 1] = 1;
+			return access.allCards.getCardNum(choice) + 1;
 		}
-		return target;
 	}
 	
 	/**
@@ -291,38 +287,42 @@ public class DataWriter {
 			out.println("\"computerPlayer\": \"" + player.getComputerPlayer().getName() + "\",");
 			out.println("\"numPlayers\": " + access.getNumPlayers() + ",");
 			out.print("\"opponents\": [");
+			boolean start = true;
 			for(Player p : access.players) if(!p.equals(player)) {
+				if(!start) out.print(", ");
 				if(p.isComputerPlayer()) 
-					out.print("\"" + p.getComputerPlayer().getName() + "\", ");
-				else out.print("\"human\", ");
+					out.print("\"" + p.getComputerPlayer().getName() + "\"");
+				else out.print("\"human\"");
+				start = false;
 			}
 			out.println("],");
 			out.print("\"board\": [");
+			start = true;
 			for(Supply s : access.board.kingdomCards) {
-				out.print("  \"" + s.getCard().getName() + "\",");
+				if(!start) out.print(", ");
+				out.print("\"" + s.getCard().getName() + "\"");
+				start = false;
 			}
 			out.println("],");
 			out.println("\"deck\": \"" + player.deck.toString() + "\",");
 			out.println("\"playData\": [");
+			start = true;
 			for(int[] row : playData) {
-				out.println("  " + Arrays.toString(row) + ",");
+				if(!start) out.println(",");
+				out.print("  " + Arrays.toString(row));
+				start = false;
 			}
-			out.println("],");
-			out.println("\"playTarget\": [");
-			for(int[] row : playTarget) {
-				out.println("  " + Arrays.toString(row) + ",");
-			}
-			out.println("],");
+			out.println("\n],");
+			out.println("\"playTarget\": " + playTarget + ",");
 			out.println("\"gainData\": [");
+			start = true;
 			for(int[] row : gainData) {
-				out.println("  " + Arrays.toString(row) + ",");
+				if(!start) out.println(",");
+				out.print("  " + Arrays.toString(row));
+				start = false;
 			}
-			out.println("],");
-			out.println("\"gainTarget\": [");
-			for(int[] row : gainTarget) {
-				out.println("  " + Arrays.toString(row) + ",");
-			}
-			out.println("]");
+			out.println("\n],");
+			out.println("\"gainTarget\": " + gainTarget);
 			out.println("}");
 			out.flush();
 			out.close();
