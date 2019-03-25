@@ -1,6 +1,7 @@
 package computerPlayer;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
@@ -22,7 +23,8 @@ public class StdioPlayer extends ComputerPlayer {
 
 	@Override
 	public Supply chooseGain(List<Supply> options, boolean required) {
-		System.out.println("{\"GainChoice\": " + dataOut.getGainDataShort(options) + "}");
+		System.out.println("{\"GainChoice\": " + 
+				Arrays.toString(dataOut.getGainDataShort(options)) + "}");
 		String jsonArray = in.nextLine();
 		String[] vals = jsonArray.substring(jsonArray.indexOf("[") + 1, 
 				jsonArray.indexOf("]")).split(",");
