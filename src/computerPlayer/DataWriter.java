@@ -73,12 +73,11 @@ public class DataWriter {
 	 * Converts a given index into a card to select.
 	 * Converts from index in short version of data.
 	 * @param index the index of the card.
-	 * @return the card to select.
+	 * @return the Supply to select.
 	 */
-	public Card convertTargetShort(int index) {
+	public Supply convertTargetShort(int index) {
 		if(index == 0) return null;
-		List<Card> supplies = access.board.getAllSupplies()
-				.stream().map(s -> s.getTopCard()).collect(Collectors.toList());
+		List<Supply> supplies = access.board.getAllSupplies();
 		return supplies.get(index - 1);
 	}
 	
@@ -88,9 +87,13 @@ public class DataWriter {
 	 * @param index the index of the card.
 	 * @return the card to select.
 	 */
-	public Card convertTargetLong(int index) {
+	public Supply convertTargetLong(int index) {
 		if(index == 0) return null;
-		return access.allCards.getAllCards().get(index - 1);
+		Card selected = access.allCards.getAllCards().get(index - 1);
+		for(Supply s : access.board.getAllSupplies()) {
+			if(s.getCard().equals(selected)) return s;
+		}
+		throw new RuntimeException("Selected card not in game");
 	}
 	
 	/**
