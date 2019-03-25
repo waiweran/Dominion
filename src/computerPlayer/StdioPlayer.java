@@ -11,86 +11,92 @@ import gameBase.Supply;
 
 public class StdioPlayer extends ComputerPlayer {
 	
-	private DataWriter data;
 	private Scanner in;
-	private RandomPlayer random; //TODO replace with more nets
+	private ExpertSystem exsys;
 	
 	public StdioPlayer(Player pComputer, DominionGame game) {
 		super(pComputer, game);
-		data = new DataWriter(pComputer, game);
 		in = new Scanner(System.in);
-		random = new RandomPlayer(pComputer, access);
+		exsys = new ExpertSystem();
 	}
 
 	@Override
 	public Supply chooseGain(List<Supply> options, boolean required) {
-		data.writeGainData(options);
-		data.saveData();
+		System.out.println("{\"GainChoice\": " + dataOut.getGainDataShort(options) + "}");
+		String jsonArray = in.nextLine();
+		String[] vals = jsonArray.substring(jsonArray.indexOf("[") + 1, 
+				jsonArray.indexOf("]")).split(",");
+		double[] outputs = new double[vals.length];
+		for(int i = 0; i < vals.length; i++) {
+			outputs[i] = Double.parseDouble(vals[i].trim());
+		}
+		
+		Supply choice = null;
 		while(true) {
-			System.out.print("Enter Gain Choice for Neural Net Player: ");
-			int output = Integer.parseInt(in.nextLine());
-			Card selected = data.convertTargetShort(output);
-			if(selected == null) {
-				if(required) {
-					System.out.println("Invalid Choice [required]");
-					continue;
-				}
-				data.writeGainTarget(null);
-				System.out.println("Reward: 0");
-				return null;
-			}
-			for(Supply s : options) {
-				if(s.getCard().equals(selected)) {
-					data.writeGainTarget(s.getTopCard());
-					System.out.println("Reward: " + s.getTopCard().getCost());
-					return s;
+			int maxIndex = 0;
+			double maxVal = outputs[0];
+			for(int i = 1; i < outputs.length; i++) {
+				if(maxVal < outputs[i]) {
+					maxIndex = i;
+					maxVal = outputs[i];
 				}
 			}
-			System.out.println("Invalid Choice [not available]");
+			choice = dataOut.convertTargetShort(maxIndex);
+			if(choice == null && !required || choice != null && player.getBuys() > 0 
+					&& player.getTreasure() - choice.getTopCard().getCost() >= 0 
+					&& choice.getTopCard().canBeGained() 
+					&& (!choice.getTopCard().costsPotion() || player.potion > 0)) {
+				return choice;
+			}
+			outputs[maxIndex] = 0;
+			if(choice != null) {
+				System.out.println("Net selected card that could not be bought");
+			}
 		}
 	}
 
 	@Override
 	public Supply chooseSupply(List<Supply> options, boolean required, String choiceName) {
-		return random.chooseSupply(options, required, choiceName);
+		return null;
 	}
 
 	@Override
 	public ArrayList<Integer> chooseCards(List<Card> choices, int num, boolean required, String choiceName) {
-		return random.chooseCards(choices, num, required, choiceName);
+		if(choiceName.equals("Cellar")) {
+			return exsys.chooseCardsCellar(choices);
+		}
+		if(choiceName.equals("Militia")) {
+			return exsys.chooseCardsMilitia(choices, num);
+		}
+		return null;
 	}
 
 	@Override
 	public int chooseCard(List<Card> choices, boolean required, String choiceName) {
-		return random.chooseCard(choices, required, choiceName);
+		if(choiceName.equals("Mine")) {
+			return exsys.chooseCardMine(choices);
+		}
+		if(choiceName.equals("Remodel")) {
+			return exsys.chooseCardRemodel(choices);
+		}
+		return 0;
 	}
 
 	@Override
 	public int choose(List<String> options, String choiceName) {
-		return random.choose(options, choiceName);
+		return 0;
 	}
 
 	@Override
 	public Card enterCard(Card messenger) {
-		return random.enterCard(messenger);
+		return null;
 	}
-	
+
 	@Override
 	protected Card chooseAction(List<Card> options) {
-		data.writePlayData(options);
-		data.saveData();
-		while(true) {
-			System.out.print("Enter Play Choice for Neural Net Player: ");
-			int output = Integer.parseInt(in.nextLine());		
-			Card selected = data.convertTargetShort(output);
-			if(selected == null || options.contains(selected)) {
-				data.writePlayTarget(selected);
-				return selected;
-			}
-			System.out.println("Invalid Choice");
-		}
+		return exsys.chooseAction(options);
 	}
-	
+
 	@Override
 	protected Card chooseTreasure(List<Card> options) {
 		// Play all treasures in order
@@ -104,7 +110,7 @@ public class StdioPlayer extends ComputerPlayer {
 	
 	@Override
 	public String getName() {
-		return "Neural Net";
+		return "Gain Neural Net";
 	}
 
 }
