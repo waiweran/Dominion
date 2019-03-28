@@ -39,6 +39,12 @@ public class CPUFactory {
 		if(cpuType.equals("Stdio")) {
 			return new StdioPlayer(player, access);
 		}
+		if(cpuType.equals("Socket")) {
+			return new SocketPlayer(player, access);
+		}
+		if(cpuType.equals("Web")) {
+			return new WebPlayer(player, access);
+		}
 		if(cpuType.equals("Neural Net") || cpuType.equals("NeuralNet")) {
 			return new NetPlayer(player, access);
 		}

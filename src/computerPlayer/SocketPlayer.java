@@ -1,5 +1,9 @@
 package computerPlayer;
 
+import java.io.IOException;
+import java.io.PrintStream;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -10,22 +14,44 @@ import gameBase.DominionGame;
 import gameBase.Player;
 import gameBase.Supply;
 
-public class StdioPlayer extends ComputerPlayer {
+public class SocketPlayer extends ComputerPlayer {
 	
-	private Scanner in;
+	private Socket socket;
+	private Scanner input;
+	private PrintStream output;
 	private ExpertSystem exsys;
+	private int total;
 	
-	public StdioPlayer(Player pComputer, DominionGame game) {
+	public SocketPlayer(Player pComputer, DominionGame game) {
 		super(pComputer, game);
-		in = new Scanner(System.in);
 		exsys = new ExpertSystem();
+		total = 0;
 	}
 
 	@Override
-	public Supply chooseGain(List<Supply> options, boolean required) {
-		System.out.println("{\"GainChoice\": " + 
+	public synchronized Supply chooseGain(List<Supply> options, boolean required) {
+		try {
+			socket = new Socket();
+			socket.setSoTimeout(1000);
+			socket.connect(new InetSocketAddress("152.3.64.49", 12345));
+			output = new PrintStream(socket.getOutputStream());
+			input = new Scanner(socket.getInputStream());
+		} catch (IOException e) {
+			try {
+				socket = new Socket();
+				socket.setSoTimeout(1000);
+				socket.connect(new InetSocketAddress("152.3.64.49", 12345));
+				output = new PrintStream(socket.getOutputStream());
+				input = new Scanner(socket.getInputStream());
+			} catch (IOException e2) {
+				throw new RuntimeException(e);
+			}
+		}
+		output.println("{\"GainChoice\": " + 
 				Arrays.toString(dataOut.getGainDataShort(options)) + "}");
-		String jsonArray = in.nextLine();
+		output.flush();
+		System.out.print(total++ + " ");
+		String jsonArray = input.nextLine();
 		String[] vals = jsonArray.substring(jsonArray.indexOf("[") + 1, 
 				jsonArray.indexOf("]")).split(",");
 		double[] outputs = new double[vals.length];
@@ -53,7 +79,6 @@ public class StdioPlayer extends ComputerPlayer {
 			}
 			outputs[maxIndex] = -1;
 			if(choice != null) {
-				System.out.println("Net selected card that could not be bought");
 			}
 		}
 	}

@@ -37,7 +37,7 @@ public class Simulator {
 			cpuTypes.add(args[i]);
 		}
 		Simulator sim = new Simulator();
-		int cores = Runtime.getRuntime().availableProcessors();
+		int cores = 1;//Runtime.getRuntime().availableProcessors();
 		synchronized(sim) {
 			sim.runners = cores;
 		}
