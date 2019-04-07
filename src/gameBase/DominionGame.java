@@ -124,6 +124,11 @@ public class DominionGame extends BoardGame {
 		if(board.isGameOver()) {
 			getClient().stopThreads();
 			if(showGraphics) getGUI().showScores();
+			for(Player p : players) {
+				if(p.isComputerPlayer()) {
+					p.getComputerPlayer().close();
+				}
+			}
 			return;
 		}
 

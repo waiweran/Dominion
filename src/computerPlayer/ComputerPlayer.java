@@ -106,6 +106,13 @@ public abstract class ComputerPlayer {
 	public void saveData() {
 		dataOut.saveData();
 	}
+	
+	/**
+	 * Closes the computer player at the end of a game.
+	 */
+	public void close() {
+		// Do nothing here
+	}
 		
 	/**
 	 * Plays action cards for the player by making a series of choosePlay() calls.

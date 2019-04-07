@@ -180,6 +180,11 @@ public class ObservableList<T> implements List<T>, Serializable {
 		return list.toArray(a);
 	}
 	
+	@Override
+	public String toString() {
+		return list.toString();
+	}
+	
 	/**
 	 * Adds an Observer to the observable list.
 	 * @param o the Observer to add.

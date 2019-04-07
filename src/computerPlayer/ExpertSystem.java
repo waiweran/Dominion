@@ -18,6 +18,7 @@ import cards.base.Village;
 import cards.base.Woodcutter;
 import cards.base.Workshop;
 import cards.defaults.Copper;
+import cards.defaults.Curse;
 import cards.defaults.Duchy;
 import cards.defaults.Estate;
 import cards.defaults.Gold;
@@ -79,6 +80,7 @@ public class ExpertSystem {
 		militiaMap.put(new Estate(), 0);
 		militiaMap.put(new Duchy(), 0);
 		militiaMap.put(new Province(), 0);
+		militiaMap.put(new Curse(), 0);
 	}
 	
 	/**
@@ -92,6 +94,7 @@ public class ExpertSystem {
 		remodelMap.put(new Woodcutter(), 18);
 		remodelMap.put(new Cellar(), 16);
 		remodelMap.put(new Remodel(), 14);
+		remodelMap.put(new Curse(), 13);
 		remodelMap.put(new Gold(), 12);
 		remodelMap.put(new Silver(), 10);
 		remodelMap.put(new Village(), 10);
@@ -138,7 +141,8 @@ public class ExpertSystem {
 	public int chooseCardRemodel(List<Card> choices) {
 		for(int j = 30; j >= 0; j--){
 			for(int i = 0; i < choices.size(); i++) {
-				if(militiaMap.get(choices.get(i)) == j) return i;
+				System.out.println("Shit: " + remodelMap + ", " + choices + ", " + i + ", " + j);
+				if(remodelMap.get(choices.get(i)) == j) return i;
 			}
 		}
 		throw new RuntimeException("Unable to choose remodel card from " + choices);

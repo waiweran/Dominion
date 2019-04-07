@@ -67,7 +67,7 @@ public class InputDialog {
 		allCards = new CardFactory();
 		gameOptions = startingOptions;
 		options = new boolean[256];
-
+		initialize();
 	}
 
 	/**
@@ -85,7 +85,6 @@ public class InputDialog {
 	 * @return the created game.
 	 */
 	public DominionGame makeSelections() {
-		initialize();
 		BorderPane root = new BorderPane();		
 		root.setTop(getTopPane());
 		root.setCenter(getCenterPane());
@@ -144,7 +143,7 @@ public class InputDialog {
 	private List<String> selectNPC(int num) {
 		List<String> output = new ArrayList<>();
 		for(int i = gameOptions.getNumNPC(); i < num; i++) {
-			String[] options = {"Big Money", "Ratio", "Random", "Neural Net"};
+			String[] options = {"Big Money", "Ratio", "Random", "Web"};
 			HashMap<ButtonType, Integer> choices = new HashMap<>();
 			Alert alert = new Alert(AlertType.NONE);
 			alert.setHeaderText("Pick Computer Player Type");

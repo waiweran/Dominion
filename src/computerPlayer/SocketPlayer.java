@@ -19,67 +19,74 @@ public class SocketPlayer extends ComputerPlayer {
 	private Socket socket;
 	private Scanner input;
 	private PrintStream output;
-	private ExpertSystem exsys;
-	private int total;
+	
+	private ExpertSystem exsys;	
+	private int lastGain;
 	
 	public SocketPlayer(Player pComputer, DominionGame game) {
 		super(pComputer, game);
-		exsys = new ExpertSystem();
-		total = 0;
+		exsys = new ExpertSystem();	
+		lastGain = 0;
+		try {
+			socket = new Socket();
+			socket.setSoTimeout(1000);
+			socket.connect(new InetSocketAddress("localhost", 12345));
+			output = new PrintStream(socket.getOutputStream());
+			input = new Scanner(socket.getInputStream());
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	@Override
 	public synchronized Supply chooseGain(List<Supply> options, boolean required) {
+
 		try {
-			socket = new Socket();
-			socket.setSoTimeout(1000);
-			socket.connect(new InetSocketAddress("152.3.64.49", 12345));
-			output = new PrintStream(socket.getOutputStream());
-			input = new Scanner(socket.getInputStream());
-		} catch (IOException e) {
-			try {
-				socket = new Socket();
-				socket.setSoTimeout(1000);
-				socket.connect(new InetSocketAddress("152.3.64.49", 12345));
-				output = new PrintStream(socket.getOutputStream());
-				input = new Scanner(socket.getInputStream());
-			} catch (IOException e2) {
-				throw new RuntimeException(e);
+			output.println("{\"GainChoice\": " + 
+					Arrays.toString(dataOut.getGainDataShort(options)) + 
+					", \"Done\": false, \"Action\": " + lastGain + "}");
+			output.flush();
+			System.out.println("Sent " + Arrays.toString(dataOut.getGainDataShort(options)));
+			while(!input.hasNextLine());
+			String jsonArray = input.nextLine();
+			System.out.println("Received");
+			String[] vals = jsonArray.substring(jsonArray.indexOf("[") + 1, 
+					jsonArray.indexOf("]")).split(",");
+			double[] outputs = new double[vals.length];
+			for(int i = 0; i < vals.length; i++) {
+				outputs[i] = Double.parseDouble(vals[i].trim());
 			}
-		}
-		output.println("{\"GainChoice\": " + 
-				Arrays.toString(dataOut.getGainDataShort(options)) + "}");
-		output.flush();
-		System.out.print(total++ + " ");
-		String jsonArray = input.nextLine();
-		String[] vals = jsonArray.substring(jsonArray.indexOf("[") + 1, 
-				jsonArray.indexOf("]")).split(",");
-		double[] outputs = new double[vals.length];
-		for(int i = 0; i < vals.length; i++) {
-			outputs[i] = Double.parseDouble(vals[i].trim());
-		}
-		
-		Supply choice = null;
-		while(true) {
-			int maxIndex = 0;
-			double maxVal = outputs[0];
-			for(int i = 1; i < outputs.length; i++) {
-				if(maxVal < outputs[i]) {
-					maxIndex = i;
-					maxVal = outputs[i];
+
+			Supply choice = null;
+			while(true) {
+				int maxIndex = 0;
+				double maxVal = outputs[0];
+				for(int i = 1; i < outputs.length; i++) {
+					if(maxVal < outputs[i]) {
+						maxIndex = i;
+						maxVal = outputs[i];
+					}
+				}
+				choice = dataOut.convertTargetShort(maxIndex);
+				if(choice == null && !required || choice != null && player.getBuys() > 0 
+						&& player.getTreasure() - choice.getTopCard().getCost() >= 0 
+						&& choice.getTopCard().canBeGained() 
+						&& (!choice.getTopCard().costsPotion() || player.potion > 0)
+						&& options.contains(choice)) {
+					lastGain = maxIndex;
+					return choice;
+				}
+				outputs[maxIndex] = -1;
+				if(choice != null) {
 				}
 			}
-			choice = dataOut.convertTargetShort(maxIndex);
-			if(choice == null && !required || choice != null && player.getBuys() > 0 
-					&& player.getTreasure() - choice.getTopCard().getCost() >= 0 
-					&& choice.getTopCard().canBeGained() 
-					&& (!choice.getTopCard().costsPotion() || player.potion > 0)
-					&& options.contains(choice)) {
-				return choice;
-			}
-			outputs[maxIndex] = -1;
-			if(choice != null) {
-			}
+		} catch(Exception e) {
+			output.close();
+			input.close();
+			try {
+				socket.close();
+			} catch (IOException e1) {}
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -118,6 +125,18 @@ public class SocketPlayer extends ComputerPlayer {
 	@Override
 	public Card enterCard(Card messenger) {
 		return null;
+	}
+	
+	@Override
+	public void close() {
+		super.close();
+		output.println("{\"GainChoice\": [], \"Done\": true, \"Action\": " + lastGain + "}");
+		output.flush();
+		output.close();
+		input.close();
+		try {
+			socket.close();
+		} catch (IOException e) {}
 	}
 
 	@Override

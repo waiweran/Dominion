@@ -53,8 +53,6 @@ public class WebPlayer extends ComputerPlayer {
 //				}
 			}
 		} catch(Exception e) {
-			e.printStackTrace();
-			System.exit(1);
 			throw new RuntimeException(e);
 		}
 	}
@@ -66,8 +64,8 @@ public class WebPlayer extends ComputerPlayer {
 		urlText = urlText.replace(" ", "%20").replace("\"", "%22");
 		URL url = new URL(urlText);
 		HttpURLConnection con = (HttpURLConnection) url.openConnection();
-		con.setConnectTimeout(1000);
-		con.setReadTimeout(1000);
+		con.setConnectTimeout(2000);
+		con.setReadTimeout(2000);
 		con.setRequestMethod("GET");
 		
 		// Read HTTP Response
