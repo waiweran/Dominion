@@ -21,12 +21,13 @@ public class SocketPlayer extends ComputerPlayer {
 	private PrintStream output;
 	
 	private ExpertSystem exsys;	
-	private int lastGain;
+	private int lastGain, gainReward;
 	
 	public SocketPlayer(Player pComputer, DominionGame game) {
 		super(pComputer, game);
 		exsys = new ExpertSystem();	
 		lastGain = 0;
+		gainReward = 0;
 		try {
 			socket = new Socket();
 			socket.setSoTimeout(1000);
@@ -44,12 +45,12 @@ public class SocketPlayer extends ComputerPlayer {
 		try {
 			output.println("{\"GainChoice\": " + 
 					Arrays.toString(dataOut.getGainDataShort(options)) + 
-					", \"Done\": false, \"Action\": " + lastGain + "}");
+					", \"Reward\": " + gainReward +
+					", \"Done\": false, \"Action\": " + lastGain + ", \"Score\": \"NA\"}");
 			output.flush();
-			System.out.println("Sent " + Arrays.toString(dataOut.getGainDataShort(options)));
 			while(!input.hasNextLine());
 			String jsonArray = input.nextLine();
-			System.out.println("Received");
+
 			String[] vals = jsonArray.substring(jsonArray.indexOf("[") + 1, 
 					jsonArray.indexOf("]")).split(",");
 			double[] outputs = new double[vals.length];
@@ -74,6 +75,12 @@ public class SocketPlayer extends ComputerPlayer {
 						&& (!choice.getTopCard().costsPotion() || player.potion > 0)
 						&& options.contains(choice)) {
 					lastGain = maxIndex;
+					if(choice != null && choice.getCard().getName().equals("Province")) {
+						gainReward = 1;
+					}
+					else {
+						gainReward = 0;
+					}
 					return choice;
 				}
 				outputs[maxIndex] = -1;
@@ -129,8 +136,20 @@ public class SocketPlayer extends ComputerPlayer {
 	
 	@Override
 	public void close() {
+		StringBuilder scores = new StringBuilder();
+		int score = player.getScore();
+		int maxScore = 0;
+		for(Player p : access.players) {
+			int psc = p.getScore();
+			scores.append(psc + " ");
+			if(psc > maxScore) maxScore = psc;
+		}
+		int reward = 0;
+		if(score > maxScore) reward = score - maxScore;
+		output.println("{\"GainChoice\": [], \"Reward\": " + reward +
+				", \"Done\": true, \"Action\": " + lastGain + 
+				", \"Score\": \"" + scores.substring(0, scores.length() - 1) + "\"}");
 		super.close();
-		output.println("{\"GainChoice\": [], \"Done\": true, \"Action\": " + lastGain + "}");
 		output.flush();
 		output.close();
 		input.close();

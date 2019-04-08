@@ -141,7 +141,6 @@ public class ExpertSystem {
 	public int chooseCardRemodel(List<Card> choices) {
 		for(int j = 30; j >= 0; j--){
 			for(int i = 0; i < choices.size(); i++) {
-				System.out.println("Shit: " + remodelMap + ", " + choices + ", " + i + ", " + j);
 				if(remodelMap.get(choices.get(i)) == j) return i;
 			}
 		}
