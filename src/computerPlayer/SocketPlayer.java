@@ -21,10 +21,12 @@ public class SocketPlayer extends ComputerPlayer {
 	private PrintStream output;
 	
 	private ExpertSystem exsys;	
+	private RandomPlayer2 rand2;
 	private int lastGain, gainReward;
 	
 	public SocketPlayer(Player pComputer, DominionGame game) {
 		super(pComputer, game);
+		rand2 = new RandomPlayer2(pComputer, game);
 		exsys = new ExpertSystem();	
 		lastGain = 0;
 		gainReward = 0;
@@ -50,7 +52,9 @@ public class SocketPlayer extends ComputerPlayer {
 			output.flush();
 			while(!input.hasNextLine());
 			String jsonArray = input.nextLine();
-
+			if(jsonArray.contains("random")) {
+				return rand2.chooseGain(options, required);
+			}
 			String[] vals = jsonArray.substring(jsonArray.indexOf("[") + 1, 
 					jsonArray.indexOf("]")).split(",");
 			double[] outputs = new double[vals.length];
