@@ -26,7 +26,7 @@ import cards.defaults.Province;
 import cards.defaults.Silver;
 
 /**
- * Expert system designed to play the base recommended game.
+ * Expert system designed to play the First Game setup.
  * @author Nathaniel
  * @version 03-22-2019
  */
@@ -34,6 +34,9 @@ public class ExpertSystem {
 	
 	private Map<Card, Integer> actionMap, militiaMap, remodelMap;
 	
+	/**
+	 * Initializes selection tables for the ExpertSystem.
+	 */
 	public ExpertSystem() {
 		initializeActionMap();
 		initializeMilitiaMap();
@@ -108,6 +111,11 @@ public class ExpertSystem {
 		remodelMap.put(new Province(), 0);
 	}
 	
+	/**
+	 * Chooses victory cards for the Cellar to discard.
+	 * @param choices The list of cards the Cellar can discard.
+	 * @return List of card indices to discard.
+	 */
 	public ArrayList<Integer> chooseCardsCellar(List<Card> choices) {
 		ArrayList<Integer> out = new ArrayList<Integer>();
 		for(int i = 0; i < choices.size(); i++) {
@@ -116,6 +124,12 @@ public class ExpertSystem {
 		return out;
 	}
 		
+	/**
+	 * Chooses cards for the Militia to discard.
+	 * @param choices The list of cards the Militia can discard.
+	 * @param num The number of cards that must be discarded.
+	 * @return List of card indices to discard.
+	 */
 	public ArrayList<Integer> chooseCardsMilitia(List<Card> choices, int num) {	
 		ArrayList<Integer> out = new ArrayList<Integer>();
 		for(int j = 0; j < 50 && num > out.size(); j++){
@@ -128,6 +142,12 @@ public class ExpertSystem {
 		throw new RuntimeException("Could not select enough cards: " + num + ", " + choices);
 	}
 	
+	/**
+	 * Chooses a card for the Mine to trash.
+	 * Chooses Copper or Silver if available.
+	 * @param choices The list of cards that the Mine can trash.
+	 * @return The index of the card to trash.
+	 */
 	public int chooseCardMine(List<Card> choices) {
 		for(int i = 0; i < choices.size(); i++) {
 			if(choices.get(i).getName().equals("Copper") 
@@ -138,6 +158,11 @@ public class ExpertSystem {
 		return 0;
 	}
 
+	/**
+	 * Chooses a card for Remodel to trash.
+	 * @param choices The list of cards that Remodel can trash.
+	 * @return The index of the card to trash.
+	 */
 	public int chooseCardRemodel(List<Card> choices) {
 		for(int j = 30; j >= 0; j--){
 			for(int i = 0; i < choices.size(); i++) {
@@ -148,6 +173,12 @@ public class ExpertSystem {
 	}
 
 
+	/**
+	 * Selects an action to play from a list of available actions.
+	 * Only works for actions in the First Game setup.
+	 * @param options The list of action cards that can be played.
+	 * @return The action card to play.
+	 */
 	public Card chooseAction(List<Card> options) {		
 		Collections.sort(options, (a, b) -> actionMap.get(a) - actionMap.get(b));		
 		return options.get(0);

@@ -31,9 +31,16 @@ public class Simulator {
 	 * @param args Command line arguments.
 	 */
 	public static void main(String[] args) {
-		int numSimulations = Integer.parseInt(args[0]);
+		int start = 0;
+		boolean saveData = false;
+		if(args[0].equals("-s") || args[0].equals("--save")) {
+			start = 1;
+			saveData = true;
+		}
+		boolean save = saveData;
+		int numSimulations = Integer.parseInt(args[start]);
 		ArrayList<String> cpuTypes = new ArrayList<>();
-		for(int i = 1; i < args.length; i++) {
+		for(int i = start + 1; i < args.length; i++) {
 			cpuTypes.add(args[i]);
 		}
 		Simulator sim = new Simulator();
@@ -54,12 +61,15 @@ public class Simulator {
 		// Run Threads
 		for(int i = 0; i < cores; i++) {
 			Thread gameRunner = new Thread(() ->
-			sim.runGames(numSimulations, cpuTypes, FILENAME));
+			sim.runGames(numSimulations, cpuTypes, FILENAME, save));
 			gameRunner.setName("Game Runner " + i);
 			gameRunner.start();
 		}
 	}
 	
+	/**
+	 * Initializes the simulator.
+	 */
 	public Simulator() {
 		index = 0;
 		runners = 0;
@@ -72,7 +82,7 @@ public class Simulator {
 	 * @param cpuTypes The types of CPU to simulate with.
 	 * @param filename The game setup file to simulate.
 	 */
-	private void runGames(int numRuns, List<String> cpuTypes, String filename) {
+	private void runGames(int numRuns, List<String> cpuTypes, String filename, boolean save) {
 		
 		//Run Multiple Test Games
 		ArrayList<String> players = new ArrayList<>();
@@ -120,7 +130,7 @@ public class Simulator {
 
 						//Save Winner's Files
 						ComputerPlayer winner = scoreFiles.lastEntry().getValue().getComputerPlayer();
-						if(!winner.getName().equals("Big Money"))
+						if(save && !winner.getName().equals("Big Money"))
 							winner.saveData();
 
 						//Determine who wins game

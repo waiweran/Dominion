@@ -15,7 +15,14 @@ import gameBase.DominionGame;
 import gameBase.Player;
 import gameBase.Supply;
 
+/**
+ * Player that queries a website to determine what to play.
+ * @author Nathaniel
+ * @version 04-10-2019
+ */
 public class WebPlayer extends ComputerPlayer {
+	
+	private static final String WEBSITE = "http://152.3.64.49:5000/predict/";
 	
 	private ExpertSystem exsys;
 	
@@ -59,7 +66,7 @@ public class WebPlayer extends ComputerPlayer {
 
 	private double[] readSite(List<Supply> options) throws MalformedURLException, IOException, ProtocolException {
 		// Initialize HTTP Connection
-		String urlText = "http://152.3.64.49:5000/predict/?datain={\"GainChoice\": " + 
+		String urlText = WEBSITE + "?datain={\"GainChoice\": " + 
 				Arrays.toString(dataOut.getGainDataShort(options)) + "}&";
 		urlText = urlText.replace(" ", "%20").replace("\"", "%22");
 		URL url = new URL(urlText);

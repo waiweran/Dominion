@@ -9,6 +9,11 @@ import gameBase.DominionGame;
 import gameBase.Player;
 import gameBase.Supply;
 
+/**
+ * Random player that purchases cards at random, weighted by card cost.
+ * @author Nathaniel
+ * @version 04-20-2019
+ */
 public class RandomPlayer2 extends ComputerPlayer {
 	
 	private ExpertSystem exsys;

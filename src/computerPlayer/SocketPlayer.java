@@ -14,7 +14,15 @@ import gameBase.DominionGame;
 import gameBase.Player;
 import gameBase.Supply;
 
+/**
+ * Player that uses a socket connection to a server to determine gains.
+ * @author Nathaniel
+ * @version 04-18-2019
+ */
 public class SocketPlayer extends ComputerPlayer {
+	
+	private static final String ADDRESS = "localhost";
+	private static final int PORT = 12345;
 	
 	private Socket socket;
 	private Scanner input;
@@ -33,7 +41,7 @@ public class SocketPlayer extends ComputerPlayer {
 		try {
 			socket = new Socket();
 			socket.setSoTimeout(1000);
-			socket.connect(new InetSocketAddress("localhost", 12345));
+			socket.connect(new InetSocketAddress(ADDRESS, PORT));
 			output = new PrintStream(socket.getOutputStream());
 			input = new Scanner(socket.getInputStream());
 		} catch (IOException e) {
@@ -80,7 +88,7 @@ public class SocketPlayer extends ComputerPlayer {
 						&& options.contains(choice)) {
 					lastGain = maxIndex;
 					if(choice != null && choice.getCard().getName().equals("Province")) {
-						gainReward = 1;
+						gainReward = 10;
 					}
 					else {
 						gainReward = 0;
@@ -149,7 +157,8 @@ public class SocketPlayer extends ComputerPlayer {
 			if(psc > maxScore) maxScore = psc;
 		}
 		int reward = 0;
-		if(score > maxScore) reward = score - maxScore;
+		if(score > 0) reward = score/3;
+		if(score == maxScore) reward = score;
 		output.println("{\"GainChoice\": [], \"Reward\": " + reward +
 				", \"Done\": true, \"Action\": " + lastGain + 
 				", \"Score\": \"" + scores.substring(0, scores.length() - 1) + "\"}");

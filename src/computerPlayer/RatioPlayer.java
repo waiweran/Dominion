@@ -8,6 +8,11 @@ import gameBase.DominionGame;
 import gameBase.Player;
 import gameBase.Supply;
 
+/**
+ * Random player that purchases actions, victory, and treasures in a predefined ratio.
+ * @author Nathaniel
+ * @version 05-04-2017
+ */
 public class RatioPlayer extends ComputerPlayer {
 	
 	private static final int[] WEIGHTS = {48, 37, 15}; //Treasure, action, victory, must total 100

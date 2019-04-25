@@ -8,6 +8,11 @@ import gameBase.DominionGame;
 import gameBase.Player;
 import gameBase.Supply;
 
+/**
+ * Player that queries a Keras neural net to determine purchases.
+ * @author Nathaniel
+ * @version 03-28-2019
+ */
 public class NetPlayer extends ComputerPlayer {
 	
 	private ExpertSystem exsys;

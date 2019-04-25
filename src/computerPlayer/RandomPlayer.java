@@ -10,6 +10,11 @@ import gameBase.DominionGame;
 import gameBase.Player;
 import gameBase.Supply;
 
+/**
+ * Player that randomly selects a card to play from the most expensive options.
+ * @author Nathaniel
+ * @version 05-04-2017
+ */
 public class RandomPlayer extends ComputerPlayer {
 	
 	private ExpertSystem exsys;

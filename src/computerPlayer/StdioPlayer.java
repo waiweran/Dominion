@@ -10,6 +10,11 @@ import gameBase.DominionGame;
 import gameBase.Player;
 import gameBase.Supply;
 
+/**
+ * Player that uses input from STDIO to determine purchases.
+ * @author Nathaniel
+ * @version 03-22-2019
+ */
 public class StdioPlayer extends ComputerPlayer {
 	
 	private Scanner in;
