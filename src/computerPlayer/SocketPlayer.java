@@ -19,8 +19,9 @@ public class SocketPlayer extends ComputerPlayer {
 	
 	private ExpertSystem exsys;	
 	private RandomPlayer2 rand2;
-	
-	private int lastGain, gainReward;
+
+	private int lastGain;
+	private double gainReward;
 	
 	private NetSocket ns;
 	
@@ -51,7 +52,7 @@ public class SocketPlayer extends ComputerPlayer {
 
 		try {
 			String jsonArray = ns.respond("{\"Player\": " + player.getPlayerNum() + 
-					"\"GainChoice\": " + Arrays.toString(dataOut.getGainDataShort(options)) + 
+					", \"GainChoice\": " + Arrays.toString(dataOut.getGainDataShort(options)) + 
 					", \"Reward\": " + gainReward + ", \"Done\": false, \"Action\": " + 
 					lastGain + ", \"Score\": \"NA\"}");
 			if(jsonArray.contains("random")) {
@@ -82,7 +83,7 @@ public class SocketPlayer extends ComputerPlayer {
 						&& options.contains(choice)) {
 					lastGain = maxIndex;
 					if(choice != null && choice.getCard().getName().equals("Province")) {
-						gainReward = 10;
+						gainReward = 0.5;
 					}
 					else {
 						gainReward = 0;
@@ -147,10 +148,9 @@ public class SocketPlayer extends ComputerPlayer {
 			if(psc > maxScore) maxScore = psc;
 		}
 		int reward = 0;
-		if(score > 0) reward = score/3;
-		if(score == maxScore) reward = score;
+		if(score == maxScore) reward = 1;
 		ns.send("{\"Player\": " + player.getPlayerNum() + 
-				"\"GainChoice\": [], \"Reward\": " + reward +
+				", \"GainChoice\": [], \"Reward\": " + reward +
 				", \"Done\": true, \"Action\": " + lastGain + 
 				", \"Score\": \"" + scores.substring(0, scores.length() - 1) + "\"}");
 		super.close();

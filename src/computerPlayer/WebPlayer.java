@@ -22,7 +22,7 @@ import gameBase.Supply;
  */
 public class WebPlayer extends ComputerPlayer {
 	
-	private static final String WEBSITE = "http://152.3.64.49:5000/predict/pretrain/";
+	private static final String WEBSITE = "http://152.3.64.49:5000/predict/dqn/";
 	
 	private ExpertSystem exsys;
 	
