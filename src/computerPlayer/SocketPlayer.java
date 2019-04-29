@@ -1,13 +1,9 @@
 package computerPlayer;
 
 import java.io.IOException;
-import java.io.PrintStream;
-import java.net.InetSocketAddress;
-import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Scanner;
 
 import cards.Card;
 import gameBase.DominionGame;
@@ -21,16 +17,12 @@ import gameBase.Supply;
  */
 public class SocketPlayer extends ComputerPlayer {
 	
-	private static final String ADDRESS = "localhost";
-	private static final int PORT = 12345;
-	
-	private Socket socket;
-	private Scanner input;
-	private PrintStream output;
-	
 	private ExpertSystem exsys;	
 	private RandomPlayer2 rand2;
+	
 	private int lastGain, gainReward;
+	
+	private NetSocket ns;
 	
 	public SocketPlayer(Player pComputer, DominionGame game) {
 		super(pComputer, game);
@@ -39,27 +31,29 @@ public class SocketPlayer extends ComputerPlayer {
 		lastGain = 0;
 		gainReward = 0;
 		try {
-			socket = new Socket();
-			socket.setSoTimeout(1000);
-			socket.connect(new InetSocketAddress(ADDRESS, PORT));
-			output = new PrintStream(socket.getOutputStream());
-			input = new Scanner(socket.getInputStream());
+			ns = new NetSocket();
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
 	}
+	
+	public SocketPlayer(Player pComputer, DominionGame game, NetSocket netSocket) {
+		super(pComputer, game);
+		rand2 = new RandomPlayer2(pComputer, game);
+		exsys = new ExpertSystem();	
+		lastGain = 0;
+		gainReward = 0;
+		ns = netSocket;
+	}
 
 	@Override
-	public synchronized Supply chooseGain(List<Supply> options, boolean required) {
+	public Supply chooseGain(List<Supply> options, boolean required) {
 
 		try {
-			output.println("{\"GainChoice\": " + 
-					Arrays.toString(dataOut.getGainDataShort(options)) + 
-					", \"Reward\": " + gainReward +
-					", \"Done\": false, \"Action\": " + lastGain + ", \"Score\": \"NA\"}");
-			output.flush();
-			while(!input.hasNextLine());
-			String jsonArray = input.nextLine();
+			String jsonArray = ns.respond("{\"Player\": " + player.getPlayerNum() + 
+					"\"GainChoice\": " + Arrays.toString(dataOut.getGainDataShort(options)) + 
+					", \"Reward\": " + gainReward + ", \"Done\": false, \"Action\": " + 
+					lastGain + ", \"Score\": \"NA\"}");
 			if(jsonArray.contains("random")) {
 				return rand2.chooseGain(options, required);
 			}
@@ -100,11 +94,7 @@ public class SocketPlayer extends ComputerPlayer {
 				}
 			}
 		} catch(Exception e) {
-			output.close();
-			input.close();
-			try {
-				socket.close();
-			} catch (IOException e1) {}
+			ns.close();
 			throw new RuntimeException(e);
 		}
 	}
@@ -159,16 +149,12 @@ public class SocketPlayer extends ComputerPlayer {
 		int reward = 0;
 		if(score > 0) reward = score/3;
 		if(score == maxScore) reward = score;
-		output.println("{\"GainChoice\": [], \"Reward\": " + reward +
+		ns.send("{\"Player\": " + player.getPlayerNum() + 
+				"\"GainChoice\": [], \"Reward\": " + reward +
 				", \"Done\": true, \"Action\": " + lastGain + 
 				", \"Score\": \"" + scores.substring(0, scores.length() - 1) + "\"}");
 		super.close();
-		output.flush();
-		output.close();
-		input.close();
-		try {
-			socket.close();
-		} catch (IOException e) {}
+		ns.close();
 	}
 
 	@Override
