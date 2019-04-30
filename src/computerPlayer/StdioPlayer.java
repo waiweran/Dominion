@@ -17,27 +17,40 @@ import gameBase.Supply;
  */
 public class StdioPlayer extends ComputerPlayer {
 	
+	private ExpertSystem exsys;	
+	private RandomPlayer2 rand2;
+
+	private int lastGain;
+	private double gainReward;
+	
 	private Scanner in;
-	private ExpertSystem exsys;
 	
 	public StdioPlayer(Player pComputer, DominionGame game) {
 		super(pComputer, game);
+		rand2 = new RandomPlayer2(pComputer, game);
+		exsys = new ExpertSystem();	
+		lastGain = 0;
+		gainReward = 0;
 		in = new Scanner(System.in);
-		exsys = new ExpertSystem();
 	}
 
 	@Override
 	public Supply chooseGain(List<Supply> options, boolean required) {
-		System.out.println("{\"GainChoice\": " + 
-				Arrays.toString(dataOut.getGainDataShort(options)) + "}");
+		System.out.println("{\"Player\": " + player.getPlayerNum() + 
+				", \"GainChoice\": " + Arrays.toString(dataOut.getGainDataShort(options)) + 
+				", \"Reward\": " + gainReward + ", \"Done\": false, \"Action\": " + 
+				lastGain + ", \"Score\": \"NA\"}");
 		String jsonArray = in.nextLine();
+		if(jsonArray.contains("random")) {
+			return rand2.chooseGain(options, required);
+		}
 		String[] vals = jsonArray.substring(jsonArray.indexOf("[") + 1, 
 				jsonArray.indexOf("]")).split(",");
 		double[] outputs = new double[vals.length];
 		for(int i = 0; i < vals.length; i++) {
 			outputs[i] = Double.parseDouble(vals[i].trim());
 		}
-		
+
 		Supply choice = null;
 		while(true) {
 			int maxIndex = 0;
@@ -54,11 +67,17 @@ public class StdioPlayer extends ComputerPlayer {
 					&& choice.getTopCard().canBeGained() 
 					&& (!choice.getTopCard().costsPotion() || player.potion > 0)
 					&& options.contains(choice)) {
+				lastGain = maxIndex;
+				if(choice != null && choice.getCard().getName().equals("Province")) {
+					gainReward = 0.5;
+				}
+				else {
+					gainReward = 0;
+				}
 				return choice;
 			}
 			outputs[maxIndex] = -1;
 			if(choice != null) {
-				System.out.println("Net selected card that could not be bought");
 			}
 		}
 	}
@@ -99,6 +118,26 @@ public class StdioPlayer extends ComputerPlayer {
 	public Card enterCard(Card messenger) {
 		return null;
 	}
+	
+	@Override
+	public void close() {
+		StringBuilder scores = new StringBuilder();
+		int score = player.getScore();
+		int maxScore = 0;
+		for(Player p : access.players) {
+			int psc = p.getScore();
+			scores.append(psc + " ");
+			if(psc > maxScore) maxScore = psc;
+		}
+		int reward = 0;
+		if(score == maxScore) reward = 1;
+		System.out.println("{\"Player\": " + player.getPlayerNum() + 
+				", \"GainChoice\": [], \"Reward\": " + reward +
+				", \"Done\": true, \"Action\": " + lastGain + 
+				", \"Score\": \"" + scores.substring(0, scores.length() - 1) + "\"}");
+		super.close();
+	}
+
 
 	@Override
 	protected Card chooseAction(List<Card> options) {

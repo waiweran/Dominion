@@ -2,6 +2,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeMap;
 
 import computerPlayer.ComputerPlayer;
@@ -23,7 +24,7 @@ public class Simulator {
 	
 	private volatile int index;
 	private volatile int runners;
-	private volatile HashMap<String, Integer> games;	
+	private volatile Map<String, Integer> games;	
 
 	
 	/**
@@ -33,11 +34,17 @@ public class Simulator {
 	public static void main(String[] args) {
 		int start = 0;
 		boolean saveData = false;
-		if(args[0].equals("-s") || args[0].equals("--save")) {
-			start = 1;
+		boolean beQuiet = false;
+		if(args[start].equals("-s") || args[start].equals("--save")) {
+			start++;
 			saveData = true;
 		}
+		if(args[start].equals("-q") || args[start].equals("--quiet")) {
+			start++;
+			beQuiet = true;
+		}
 		boolean save = saveData;
+		boolean quiet = beQuiet;
 		int numSimulations = Integer.parseInt(args[start]);
 		ArrayList<String> cpuTypes = new ArrayList<>();
 		for(int i = start + 1; i < args.length; i++) {
@@ -50,18 +57,20 @@ public class Simulator {
 		}
 		
 		// Print Header
-		System.out.println(cores + " Cores Detected");
-		System.out.println("Playing " + FILENAME);
-		System.out.print("Players: ");
-		for(String s : cpuTypes) {
-			System.out.print(s + ", ");
+		if(!quiet) {
+			System.out.println(cores + " Cores Detected");
+			System.out.println("Playing " + FILENAME);
+			System.out.print("Players: ");
+			for(String s : cpuTypes) {
+				System.out.print(s + ", ");
+			}
+			System.out.println("\n");
 		}
-		System.out.println("\n");
 		
 		// Run Threads
 		for(int i = 0; i < cores; i++) {
 			Thread gameRunner = new Thread(() ->
-			sim.runGames(numSimulations, cpuTypes, FILENAME, save));
+			sim.runGames(numSimulations, cpuTypes, FILENAME, save, quiet));
 			gameRunner.setName("Game Runner " + i);
 			gameRunner.start();
 		}
@@ -81,8 +90,10 @@ public class Simulator {
 	 * @param numRuns The number of simulations to run.
 	 * @param cpuTypes The types of CPU to simulate with.
 	 * @param filename The game setup file to simulate.
+	 * @param save True to save winning player moves to file.
+	 * @param quiet True to suppress printing to standard out.
 	 */
-	private void runGames(int numRuns, List<String> cpuTypes, String filename, boolean save) {
+	private void runGames(int numRuns, List<String> cpuTypes, String filename, boolean save, boolean quiet) {
 		
 		//Run Multiple Test Games
 		ArrayList<String> players = new ArrayList<>();
@@ -114,30 +125,32 @@ public class Simulator {
 					// List players in games
 					if(players.isEmpty()) {
 						for(Player p : game.players) {
-							players.add(p.getComputerPlayer().getName());
+							players.add(p.getComputerPlayer().getName() + " " + p.getPlayerNum());
 						}
 					}
 					
 					//Determine and Print Scores
 					TreeMap<Integer, Player> scoreFiles = new TreeMap<Integer, Player>();
 					synchronized(this) {
-						System.out.print("Scores for game " + (gameNum + 1) + ": ");
+						if(!quiet) System.out.print("Scores for game " + (gameNum + 1) + ": ");
 						for(Player p : game.players) {
 							scoreFiles.put(p.getScore(), p);
-							System.out.print(p.getScore() + " ");
+							if(!quiet) System.out.print(p.getScore() + " ");
 						}
-						System.out.println();
+						if(!quiet) System.out.println();
 
 						//Save Winner's Files
-						ComputerPlayer winner = scoreFiles.lastEntry().getValue().getComputerPlayer();
+						Player winnerP = scoreFiles.lastEntry().getValue();
+						ComputerPlayer winner = winnerP.getComputerPlayer();
 						if(save && !winner.getName().equals("Big Money"))
 							winner.saveData();
 
 						//Determine who wins game
-						if(!games.containsKey(winner.getName())) {
-							games.put(winner.getName(), new Integer(0));
+						String entryName = winner.getName() + " " + winnerP.getPlayerNum();
+						if(!games.containsKey(entryName)) {
+							games.put(entryName, new Integer(0));
 						}
-						games.put(winner.getName(), games.get(winner.getName()) + 1);
+						games.put(entryName, games.get(entryName) + 1);
 					}
 				} 
 				catch(Exception e) {
@@ -160,21 +173,26 @@ public class Simulator {
 				throw new RuntimeException(e);
 			}
 		}
-		
 		synchronized(this) {
 			runners--;
 			if(runners == 0) {
 
 				// List players in games
-				System.out.print("\nPlayers: ");
-				for(String s : players) {
-					System.out.print(s + ", ");
+				if(!quiet) {
+					System.out.print("\nPlayers: ");
+					for(String s : players) {
+						System.out.print(s + ", ");
+					}
+					System.out.println();
 				}
-				System.out.println();
 
 				//Print Success Rate
-				for(String winName : games.keySet()) {
-					System.out.println(winName + " win rate: " + games.get(winName) + "/" + numRuns);
+				for(String name : players) {
+					int wins = 0;
+					if(games.containsKey(name)) {
+						wins = games.get(name);
+					}
+					System.out.println(name + " win rate: " + wins + "/" + numRuns);
 				}	
 
 			}

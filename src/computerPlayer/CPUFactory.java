@@ -48,9 +48,6 @@ public class CPUFactory {
 		if(cpuType.equals("Web")) {
 			return new WebPlayer(player, access);
 		}
-		if(cpuType.equals("Neural Net") || cpuType.equals("NeuralNet")) {
-			return new NetPlayer(player, access);
-		}
 		throw new RuntimeException("Unsupported Computer Player Type " + cpuType);
 	}
 
