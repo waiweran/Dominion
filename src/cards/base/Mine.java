@@ -32,7 +32,7 @@ public class Mine extends Card {
 					0, c.getCost() + 3);
 			getm.setPotion(c.costsPotion());
 			getm.setCardSelector(card -> card.isTreasure());
-			getPlayer().deck.gainHand(getm.getGainedCard());
+			getPlayer().deck.gain(getm.getGainedCard(), 2);
 		}
 	}
 

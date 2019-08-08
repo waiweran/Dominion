@@ -18,6 +18,7 @@ import cards.adventures.Gear;
 import cards.adventures.Guide;
 import cards.adventures.Hireling;
 import cards.adventures.LostCity;
+import cards.adventures.Magpie;
 import cards.adventures.Page;
 import cards.adventures.Port;
 import cards.adventures.Ratcatcher;
@@ -551,7 +552,7 @@ public class CardFactory implements Serializable {
 		allCards.add(new Trash());		//allCards.add(new HauntedWoods());		213*
 		allCards.add(new Hireling());
 		allCards.add(new LostCity());
-		allCards.add(new Trash());		//allCards.add(new Magpie());			216
+		allCards.add(new Magpie());
 		allCards.add(new Trash());		//allCards.add(new Messenger());		217
 		allCards.add(new Trash());		//allCards.add(new Miser());			218*
 		allCards.add(new Page());

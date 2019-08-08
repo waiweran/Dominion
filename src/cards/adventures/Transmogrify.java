@@ -29,7 +29,7 @@ public class Transmogrify extends Card {
 			SupplySelector gain = new SupplySelector(getGame(), getName(), "Gain a Card", 0, 
 					c.getCost() + 1);
 			gain.setPotion(c.costsPotion());
-			getPlayer().deck.gainHand(gain.getGainedCard());
+			getPlayer().deck.gain(gain.getGainedCard(), 2);
 			getGame().board.trashCard(c);
 		}
 		else {

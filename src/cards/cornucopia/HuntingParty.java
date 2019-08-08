@@ -14,7 +14,7 @@ public class HuntingParty extends Card {
 	public void performAction() {
 		getPlayer().deck.deal();
 		getPlayer().addAction(1);
-		for(int i = 0; i < getPlayer().deck.drawSize(); i++) {
+		for(int i = 0; i < getPlayer().deck.size(); i++) {
 			Card c = getPlayer().deck.getDrawCard();
 			if(!getPlayer().deck.hand.contains(c)) {
 				getPlayer().deck.hand.add(c);

@@ -27,8 +27,8 @@ public class Deck implements Serializable {
 	public ObservableList<Card> discard;				//the discard pile
 	public ObservableList<Card> hand;					//the hand
 	public ObservableList<Card> play;					//the play space
-	public List<Card> duration;							//duration actions during their duration
-	public List<Card> tavern;							//the tavern mat
+	public ObservableList<Card> duration;				//duration actions during their duration
+	public ObservableList<Card> tavern;					//the tavern mat
 	public HashMap<Card, List<Card>> reserve;			//cards held by other cards
 	public ObservableList<Card> gained;					//all cards the player gained this turn
 
@@ -63,15 +63,15 @@ public class Deck implements Serializable {
 	 * Deals a single card off the top(end) of the deck.
 	 */
 	public void deal() {
+		if(minusOneCard) {
+			minusOneCard = false;
+			return;
+		}
 		if (draw.size() < 1) {
 			shuffle();
 			if (draw.size() < 1) {
 				return;
 			}
-		}
-		if(minusOneCard) {
-			minusOneCard = false;
-			return;
 		}
 		hand.add(draw.remove(draw.size() - 1));
 	}
@@ -104,7 +104,6 @@ public class Deck implements Serializable {
 	 */
 	public void discardCard(int index) {
 		discardCard(hand.remove(index));
-		
 	}
 	
 	/**
@@ -123,12 +122,18 @@ public class Deck implements Serializable {
 	 */
 	public void discardCards(List<Card> cards) {
 		if(!cards.isEmpty()) {
-			game.log(player.getPlayerName() + " discarded " + cards.get(cards.size() - 1).getName());
+			game.log(player.getPlayerName() + " discarded "
+					+ cards.get(cards.size() - 1).getName());
 			for(Card c : cards) {
 				discard.add(c);
 				c.discardAction();
 			}
 		}
+	}
+	
+	public void discardAllDraw() {
+		discard.addAll(draw);
+		draw.clear();
 	}
 
 	/**
@@ -153,7 +158,7 @@ public class Deck implements Serializable {
 			}
 		}
 		return draw.remove(draw.size() - 1);
-	}
+	}	
 	
 	/**
 	 * Removes a specified number of cards from the draw pile and returns them.
@@ -167,6 +172,20 @@ public class Deck implements Serializable {
 			}
 		return cards;
 	}
+	
+	/**
+	 * Reveals the top card from the draw pile without removing it.
+	 * @return the top cared of the draw pile.
+	 */
+	public Card revealDrawTop() {
+		if (draw.size() < 1) {
+			shuffle();
+			if (draw.size() < 1) {
+				return null;
+			}
+		}
+		return draw.get(draw.size() - 1);
+	}	
 
 	/**
 	 * puts a card from the hand back on the draw pile.
@@ -182,11 +201,22 @@ public class Deck implements Serializable {
 	 * @param c the card to be gained.
 	 */
 	public void gain(Card c) {
+		gain(c, 0);
+	}
+	
+	/**
+	 * gains a card.
+	 * @param c the card to be gained.
+	 * @param loc 1 = top of deck, 2 = hand, else discard.
+	 */
+	public void gain(Card c, int loc) {
 		if(c == null) return;
 		c = c.clone();
 		c.passGame(game);
 		c.passPlayer(player);
-		discard.add(c);
+		if(loc == 1) draw.add(c);
+		else if(loc == 2) hand.add(c);
+		else discard.add(c);
 		gained.add(c);
 		c.gainAction();
 		game.log(player.getPlayerName() + " gained " + c.getName());
@@ -198,54 +228,8 @@ public class Deck implements Serializable {
 				play.get(i).respondGain(c);
 			}
 		}
-
 	}
 
-	/**
-	 * gains a card, putting it on top of the player's deck.
-	 * @param c the card to be gained.
-	 */
-	public void gainTopDeck(Card c) {
-		if(c == null) return;
-		c = c.clone();
-		c.passGame(game);
-		c.passPlayer(player);
-		draw.add(c);
-		gained.add(c);
-		c.gainAction();
-		game.log(player.getPlayerName() + " gained " + c.getName() + ", to top of deck");
-		for(int i = hand.size() - 1; i >= 0; i--) {
-			hand.get(i).reactGain(c);
-		}
-		if(player.equals(game.getCurrentPlayer())) {
-			for(int i = play.size() - 1; i >= 0; i--) {
-				play.get(i).respondGain(c);
-			}
-		}
-	}
-	/**
-	 * gains a card, putting it on top of the player's deck.
-	 * @param c the card to be gained.
-	 */
-	public void gainHand(Card c) {
-		if(c == null) return;
-		c = c.clone();
-		c.passGame(game);
-		c.passPlayer(player);
-		hand.add(c);
-		gained.add(c);
-		c.gainAction();
-		game.log(player.getPlayerName() + " gained " + c.getName() + ", to their hand");
-		for(int i = hand.size() - 1; i >= 0; i--) {
-			hand.get(i).reactGain(c);
-		}
-		if(player.equals(game.getCurrentPlayer())) {
-			for(int i = play.size() - 1; i >= 0; i--) {
-				play.get(i).respondGain(c);
-			}
-		}
-	}
-	
 	/**
 	 * Sends a card to the tavern mat.
 	 * Removes the card from play.
@@ -316,35 +300,9 @@ public class Deck implements Serializable {
 	 */
 	public int getScore() {
 		int output = 0;
-		for(Card c : draw) {
+		for(Card c : getDeck()) {
 			output += c.getVictory();
 			output += c.gameEndAction();
-		}
-		for(Card c : hand) {
-			output += c.getVictory();
-			output += c.gameEndAction();
-		}
-		for(Card c : play) {
-			output += c.getVictory();
-			output += c.gameEndAction();
-		}
-		for(Card c : discard) {
-			output += c.getVictory();
-			output += c.gameEndAction();
-		}
-		for(Card c : duration) {
-			output += c.getVictory();
-			output += c.gameEndAction();
-		}
-		for(Card c : tavern) {
-			output += c.getVictory();
-			output += c.gameEndAction();
-		}
-		for(List<Card> a : reserve.values()) {
-			for(Card c : a) {
-				output += c.getVictory();
-				output += c.gameEndAction();
-			}
 		}
 		return output;
 	}
@@ -371,7 +329,7 @@ public class Deck implements Serializable {
 	 * Determines the number of cards available to draw.
 	 * @return the number of cards in the draw and discard piles.
 	 */
-	public int drawSize() {
+	public int size() {
 		int size = 0;
 		size += draw.size();
 		size += discard.size();
@@ -389,16 +347,6 @@ public class Deck implements Serializable {
 
 	@Override
 	public String toString() {
-		//String out = "";
-		//if(draw.size() > 0) out += "Draw: " + printCardList(draw);
-		//if(discard.size() > 0) out += " Discard: " + printCardList(discard);
-		//if(hand.size() > 0) out += " Hand: " + printCardList(hand);
-		//if(play.size() > 0) out += " Play: " + printCardList(play);
-		//if(duration.size() > 0) out += " Duration: " + printCardList(duration);
-		//if(tavern.size() > 0) out += " Tavern: " + printCardList(tavern);
-		//if(reserve.size() > 0) out += " Reserve: " + printCardList(reserve);
-		//return out;
-
 		return printCardList(getDeck());
 	}
 

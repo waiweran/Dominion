@@ -118,7 +118,7 @@ public class MultiCardSelector {
 	/**
 	 * Determines which cards were selected.
 	 * Waits until Ok has been clicked and a proper number of cards had been selected.
-	 * @return an array of indices of the cards selected.
+	 * @return a list of indices of the cards selected.
 	 */
 	public List<Integer> getSelectedIndex() {
 		if(selectFrom.isEmpty()) return new ArrayList<Integer>();

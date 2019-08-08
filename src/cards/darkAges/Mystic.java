@@ -18,7 +18,7 @@ public class Mystic extends Card {
 		
 		TextInput td = new TextInput(getGame());
 		Card cardIn = td.getEnteredCard(this, "Name a card:");
-		if(cardIn.equals(getPlayer().deck.draw.get(getPlayer().deck.draw.size() - 1))) {
+		if(cardIn.equals(getPlayer().deck.revealDrawTop())) {
 			getPlayer().deck.deal();
 		}
 	}

@@ -20,7 +20,7 @@ public class TradingPost extends Card {
 			getGame().board.trashCard(getPlayer().deck.hand.remove(i - backIndex));
 			backIndex++;
 		}
-		getPlayer().deck.gainTopDeck(getGame().board.getSilver().takeCard());
+		getPlayer().deck.gain(getGame().board.getSilver().takeCard(), 1);
 		getPlayer().deck.deal();
 	}
 	

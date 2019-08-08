@@ -13,11 +13,8 @@ public class FarmingVillage extends Card {
 	@Override
 	public void performAction() {
 		getPlayer().addAction(2);
-		int j = getPlayer().deck.draw.size()
-				+ getPlayer().deck.discard.size();
 		Card c;
-		while(j > 0) {
-			j--;
+		for(int j = getPlayer().deck.size(); j > 0; j--) {
 			c = getPlayer().deck.getDrawCard();
 			if(c.isTreasure() || c.isAction()) {
 				getPlayer().deck.hand.add(c);

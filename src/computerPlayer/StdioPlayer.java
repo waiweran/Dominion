@@ -40,6 +40,7 @@ public class StdioPlayer extends ComputerPlayer {
 				", \"GainChoice\": " + Arrays.toString(dataOut.getGainDataShort(options)) + 
 				", \"Reward\": " + gainReward + ", \"Done\": false, \"Action\": " + 
 				lastGain + ", \"Score\": \"NA\"}");
+		System.out.flush();
 		String jsonArray = in.nextLine();
 		if(jsonArray.contains("random")) {
 			return rand2.chooseGain(options, required);
@@ -135,6 +136,7 @@ public class StdioPlayer extends ComputerPlayer {
 				", \"GainChoice\": [], \"Reward\": " + reward +
 				", \"Done\": true, \"Action\": " + lastGain + 
 				", \"Score\": \"" + scores.substring(0, scores.length() - 1) + "\"}");
+		System.out.flush();
 		super.close();
 	}
 

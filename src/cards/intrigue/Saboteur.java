@@ -17,7 +17,7 @@ public class Saboteur extends Card {
 		for(Player p : getGame().getAttackedPlayers()) {
 			Card c = p.deck.getDrawCard();
 			for(int i = 0; c != null && c.getCost() < 3
-					&& i < getPlayer().deck.drawSize()*2; i++) {
+					&& i < getPlayer().deck.size()*2; i++) {
 				p.deck.discardCard(c);
 				c = p.deck.getDrawCard();
 			}

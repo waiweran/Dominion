@@ -13,7 +13,7 @@ public class BagOfGold extends Card {
 	@Override
 	public void performAction() {
 		getPlayer().addAction(1);
-		getPlayer().deck.gainTopDeck(getGame().board.getGold().takeCard());	
+		getPlayer().deck.gain(getGame().board.getGold().takeCard(), 1);	
 	}
 
 }

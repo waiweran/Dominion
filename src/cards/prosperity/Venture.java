@@ -14,7 +14,7 @@ public class Venture extends Card {
 	public void performAction() {
 		int i = 0;
 		Card c;
-		for(int j = 0; i < 1 && j < getPlayer().deck.drawSize()*2; j++) {
+		for(int j = 0; i < 1 && j < getPlayer().deck.size()*2; j++) {
 			c = getPlayer().deck.getDrawCard();
 			if(c == null) return;
 			if(c.isTreasure()) {

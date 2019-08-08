@@ -15,7 +15,7 @@ public class SeaHag extends Card {
 	public void performAction() {
 		for(Player p : getGame().getAttackedPlayers()) {
 			getGame().board.trashCard(p.deck.getDrawCard());
-			p.deck.gainTopDeck(getGame().board.getCurse().takeCard());
+			p.deck.gain(getGame().board.getCurse().takeCard(), 1);
 		}
 	}
 	

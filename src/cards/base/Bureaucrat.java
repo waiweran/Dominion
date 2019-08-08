@@ -18,7 +18,7 @@ public class Bureaucrat extends Card {
 
 	@Override
 	public void performAction() {
-		getPlayer().deck.gainTopDeck(getGame().board.getSilver().takeCard());
+		getPlayer().deck.gain(getGame().board.getSilver().takeCard(), 1);
 		for(Player p : getGame().getAttackedPlayers()) {
 			ArrayList<Card> victory = new ArrayList<Card>();
 			ArrayList<Integer> location = new ArrayList<Integer>();

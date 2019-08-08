@@ -18,14 +18,11 @@ public class WishingWell extends Card {
 		getPlayer().deck.deal();
 		TextInput td = new TextInput(getGame());
 		Card cardIn = td.getEnteredCard(this, "Name a card:");
-		Card c = getPlayer().deck.getDrawCard();
+		Card c = getPlayer().deck.revealDrawTop();
 		if(c == null) return;
 		new Selector(getGame()).showCardDialog(this, "Revealed", c, "Ok");
 		if (c.equals(cardIn))	{
-			getPlayer().deck.hand.add(c);
-		}
-		else {
-			getPlayer().deck.topOfDeck(c);
+			getPlayer().deck.deal();
 		}
 	}
 

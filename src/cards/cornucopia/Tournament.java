@@ -41,7 +41,7 @@ public class Tournament extends Card {
 			if(getGame().board.findSupply(new Duchy()).isEmpty() == 1) {
 				SingleCardSelector sc = new SingleCardSelector(getGame(), getGame().board.prizes,
 						"Select a Prize to put on top of your Deck", this, true);
-				getPlayer().deck.gainTopDeck(getGame().board.prizes.remove(sc.getSelectedIndex()));
+				getPlayer().deck.gain(getGame().board.prizes.remove(sc.getSelectedIndex()), 1);
 
 			}
 			else {
@@ -52,10 +52,10 @@ public class Tournament extends Card {
 						"Select a Prize to put on top of your Deck", this, true);
 				int selected = sc.getSelectedIndex();
 				if(selected == 0) {
-					getPlayer().deck.gainTopDeck(getGame().board.findSupply(new Duchy()).takeCard());
+					getPlayer().deck.gain(getGame().board.findSupply(new Duchy()).takeCard(), 1);
 				}
 				else {
-					getPlayer().deck.gainTopDeck(getGame().board.prizes.remove(selected - 1));
+					getPlayer().deck.gain(getGame().board.prizes.remove(selected - 1), 1);
 				}
 			}
 		}

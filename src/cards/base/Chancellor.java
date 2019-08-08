@@ -16,8 +16,7 @@ public class Chancellor extends Card {
 		getPlayer().addTreasure(2);
 		if(1 == new Selector(getGame()).showQuestionDialog(this, "Put your deck into your discard?", 
 				"Don't Discard Deck", "Discard Deck")) {
-			getPlayer().deck.discard.addAll(getPlayer().deck.draw);
-			getPlayer().deck.draw.clear();
+			getPlayer().deck.discardAllDraw();
 		}
 	}
 

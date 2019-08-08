@@ -157,7 +157,7 @@ public class Simulator {
 					synchronized(this) {
 						index--;
 					}
-					if(game.getCurrentPlayer().deck.drawSize() == 0) {
+					if(game.getCurrentPlayer().deck.size() == 0) {
 						System.err.println("Empty deck caused error:");
 					}
 					else {

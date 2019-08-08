@@ -15,7 +15,7 @@ public class Armory extends Card {
 	public void performAction() {
 		SupplySelector sd = new SupplySelector(getGame(), getName(), 
 				"Gain a card costing up to 4, putting it on top of your deck", 0, 4);
-		getPlayer().deck.gainTopDeck(sd.getGainedCard());
+		getPlayer().deck.gain(sd.getGainedCard(), 1);
 	}
 
 }

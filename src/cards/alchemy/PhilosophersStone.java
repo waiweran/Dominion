@@ -25,7 +25,7 @@ public class PhilosophersStone extends Card {
 
 	@Override
 	public void performAction() {
-		getPlayer().addTreasure(getPlayer().deck.drawSize() / 5);
+		getPlayer().addTreasure(getPlayer().deck.size() / 5);
 	}
 	
 }

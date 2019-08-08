@@ -16,7 +16,7 @@ public class IllGottenGains extends Card {
 	public void performAction() {
 		if(0 == new Selector(getGame()).showQuestionDialog(this, 
 				"Do you want to gain a copper into your hand?", "Yes", "No")) {
-			getPlayer().deck.gainTopDeck(getGame().board.getCopper().takeCard());
+			getPlayer().deck.gain(getGame().board.getCopper().takeCard(), 1);
 			getPlayer().deck.deal();
 		}
 	}

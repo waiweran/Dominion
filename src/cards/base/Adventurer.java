@@ -12,7 +12,7 @@ public class Adventurer extends Card {
 	@Override
 	public void performAction() {
 		int i = 0;
-		for(int j = 0; i < 2 && j < getPlayer().deck.drawSize()*2; j++) {
+		for(int j = 0; i < 2 && j < getPlayer().deck.size()*2; j++) {
 			Card c = getPlayer().deck.getDrawCard();
 			if(c.isTreasure()) {
 				getPlayer().deck.hand.add(c);

@@ -31,8 +31,7 @@ public class TrustySteed extends Card {
 				getPlayer().deck.gain(getGame().board.getSilver().takeCard());
 				getPlayer().deck.gain(getGame().board.getSilver().takeCard());
 				getPlayer().deck.gain(getGame().board.getSilver().takeCard());
-				getPlayer().deck.discard.addAll(getPlayer().deck.draw);
-				getPlayer().deck.draw.clear();
+				getPlayer().deck.discardAllDraw();
 			}
 		}
 		else if (bob == 1)	{
@@ -51,8 +50,7 @@ public class TrustySteed extends Card {
 				getPlayer().deck.gain(getGame().board.getSilver().takeCard());
 				getPlayer().deck.gain(getGame().board.getSilver().takeCard());
 				getPlayer().deck.gain(getGame().board.getSilver().takeCard());
-				getPlayer().deck.discard.addAll(getPlayer().deck.draw);
-				getPlayer().deck.draw.clear();
+				getPlayer().deck.discardAllDraw();
 			}
 		}
 		else if (bob == 2)	{
@@ -72,8 +70,7 @@ public class TrustySteed extends Card {
 				getPlayer().deck.gain(getGame().board.getSilver().takeCard());
 				getPlayer().deck.gain(getGame().board.getSilver().takeCard());
 				getPlayer().deck.gain(getGame().board.getSilver().takeCard());
-				getPlayer().deck.discard.addAll(getPlayer().deck.draw);
-				getPlayer().deck.draw.clear();
+				getPlayer().deck.discardAllDraw();
 			}
 		}
 		else {
@@ -81,8 +78,7 @@ public class TrustySteed extends Card {
 			getPlayer().deck.gain(getGame().board.getSilver().takeCard());
 			getPlayer().deck.gain(getGame().board.getSilver().takeCard());
 			getPlayer().deck.gain(getGame().board.getSilver().takeCard());
-			getPlayer().deck.discard.addAll(getPlayer().deck.draw);
-			getPlayer().deck.draw.clear();
+			getPlayer().deck.discardAllDraw();
 			int bob3 = new Selector(getGame()).showQuestionDialog(this, "What do you want?", 
 					"+2 Cards", "+2 Actions", "+$2");
 			if (bob3 == 0)	{
