@@ -26,7 +26,7 @@ public class SocketPlayer extends ComputerPlayer {
 	private NetSocket ns;
 	
 	public SocketPlayer(Player pComputer, DominionGame game) {
-		super(pComputer, game);
+		super("Gain Neural Net", pComputer, game);
 		rand2 = new RandomPlayer2(pComputer, game);
 		exsys = new ExpertSystem();	
 		lastGain = 0;
@@ -39,7 +39,7 @@ public class SocketPlayer extends ComputerPlayer {
 	}
 	
 	public SocketPlayer(Player pComputer, DominionGame game, NetSocket netSocket) {
-		super(pComputer, game);
+		super("Gain Neural Net", pComputer, game);
 		rand2 = new RandomPlayer2(pComputer, game);
 		exsys = new ExpertSystem();	
 		lastGain = 0;
@@ -171,11 +171,6 @@ public class SocketPlayer extends ComputerPlayer {
 	@Override
 	protected Supply chooseBuy(List<Supply> options) {
 		return chooseGain(options, false);
-	}
-	
-	@Override
-	public String getName() {
-		return "Gain Neural Net";
 	}
 
 }

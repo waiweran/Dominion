@@ -10,6 +10,7 @@ import cards.seaside.Lighthouse;
 import computerPlayer.CPUFactory;
 import genericGame.AbstractPlayer;
 import genericGame.BoardGame;
+import machineLearning.ModelFactory;
 
 
 /**
@@ -31,6 +32,7 @@ public class DominionGame extends BoardGame {
 	public GameSetup setup;			        //holds game setup information
 	private boolean extraTurn;				//records whether player gets a repeat turn
 	private List<String> cpuTypes;			//holds the types of CPU in the game
+	public ModelFactory models;				//holds machine learning models for CPUs
 	
 	/**
 	 * Initializes the game.
@@ -50,6 +52,7 @@ public class DominionGame extends BoardGame {
 		setGameName(setup.getGameName());
 		numNPC = options.getNumNPC();		
 		cpuTypes = options.getNPCTypes();
+		models = new ModelFactory(this);
 	}
 
 	@Override

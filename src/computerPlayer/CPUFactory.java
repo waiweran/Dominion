@@ -39,6 +39,9 @@ public class CPUFactory {
 		if(cpuType.equals("Random2")) {
 			return new RandomPlayer2(player, access);
 		}
+		if(cpuType.equals("ML")) {
+			return new MLPlayer(player, access);
+		}
 		if(cpuType.equals("Stdio")) {
 			return new StdioPlayer(player, access);
 		}

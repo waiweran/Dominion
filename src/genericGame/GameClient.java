@@ -103,7 +103,9 @@ public abstract class GameClient {
 	private void gameUpdate() {
 		while(!stop) {
 			while(updates.isEmpty()) {
-				if(stop) return;
+				if(stop) {
+					return;
+				}
 				try {
 					Thread.sleep(50);
 				} catch (InterruptedException e) {

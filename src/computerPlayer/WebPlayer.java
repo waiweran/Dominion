@@ -27,7 +27,7 @@ public class WebPlayer extends ComputerPlayer {
 	private ExpertSystem exsys;
 	
 	public WebPlayer(Player pComputer, DominionGame game) {
-		super(pComputer, game);
+		super("Gain Neural Net", pComputer, game);
 		exsys = new ExpertSystem();
 	}
 
@@ -145,11 +145,6 @@ public class WebPlayer extends ComputerPlayer {
 	@Override
 	protected Supply chooseBuy(List<Supply> options) {
 		return chooseGain(options, false);
-	}
-	
-	@Override
-	public String getName() {
-		return "Gain Neural Net";
 	}
 
 }

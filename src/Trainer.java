@@ -13,12 +13,7 @@ import gameBase.GameSetup;
 import gameBase.Player;
 import genericGame.network.LocalConnection;
 
-/**
- * Simulates Dominion games with the GUI off and automated card selection.
- * @author Nathaniel
- * @version 8-02-2016
- */
-public class Simulator {
+public class Trainer {
 	
 	private static final String FILENAME = "Saves/Base/First Game.dog";
 	
@@ -26,80 +21,13 @@ public class Simulator {
 	private volatile int runners;
 	private volatile Map<String, Integer> games;	
 
-	
-	/**
-	 * Main method of the Simulator class.
-	 * @param args Command line arguments.
-	 */
-	public static void main(String[] args) {
-		int start = 0;
-		boolean saveData = false;
-		boolean beQuiet = false;
-		boolean experimental = false;
-		if(args[start].equals("-s") || args[start].equals("--save")) {
-			start++;
-			saveData = true;
-		}
-		if(args[start].equals("-q") || args[start].equals("--quiet")) {
-			start++;
-			beQuiet = true;
-		}
-		if(args[start].equals("-e") || args[start].equals("--experimental")) {
-			start++;
-			experimental = true;
-		}
-		boolean save = saveData;
-		boolean quiet = beQuiet;
-		int numSimulations = Integer.parseInt(args[start]);
-		ArrayList<String> cpuTypes = new ArrayList<>();
-		for(int i = start + 1; i < args.length; i++) {
-			cpuTypes.add(args[i]);
-		}
-		Simulator sim = new Simulator();
-		int cores = Runtime.getRuntime().availableProcessors();
-		if(experimental) cores = 1;
-		synchronized(sim) {
-			sim.runners = cores;
-		}
-		
-		// Print Header
-		if(!quiet) {
-			System.out.println(cores + " Cores Detected");
-			System.out.println("Playing " + FILENAME);
-			System.out.print("Players: ");
-			for(String s : cpuTypes) {
-				System.out.print(s + ", ");
-			}
-			System.out.println("\n");
-		}
-		
-		// Run Threads
-		for(int i = 0; i < cores; i++) {
-			Thread gameRunner = new Thread(() ->
-			sim.runGames(numSimulations, cpuTypes, FILENAME, save, quiet));
-			gameRunner.setName("Game Runner " + i);
-			gameRunner.start();
-		}
-	}
-	
-	/**
-	 * Initializes the simulator.
-	 */
-	public Simulator() {
+	public Trainer() {
 		index = 0;
 		runners = 0;
 		games  = new HashMap<>();
 	}
-
-	/**
-	 * Runs simulations of the specified game.
-	 * @param numRuns The number of simulations to run.
-	 * @param cpuTypes The types of CPU to simulate with.
-	 * @param filename The game setup file to simulate.
-	 * @param save True to save winning player moves to file.
-	 * @param quiet True to suppress printing to standard out.
-	 */
-	private void runGames(int numRuns, List<String> cpuTypes, String filename, boolean save, boolean quiet) {
+	
+	public void runGames(int numRuns, List<String> cpuTypes, String filename, boolean save, boolean quiet) {
 		
 		//Run Multiple Test Games
 		ArrayList<String> players = new ArrayList<>();
@@ -204,5 +132,6 @@ public class Simulator {
 			}
 		}
 	}
+
 
 }

@@ -21,7 +21,7 @@ public class BigMoneyPlayer extends ComputerPlayer {
 	private ExpertSystem exsys;
 
 	public BigMoneyPlayer(Player pComputer, DominionGame game) {
-		super(pComputer, game);
+		super("Big Money", pComputer, game);
 		exsys = new ExpertSystem();
 	}
 
@@ -201,11 +201,6 @@ public class BigMoneyPlayer extends ComputerPlayer {
 		
 		// Buy it
 		return s;
-	}
-	
-	@Override
-	public String getName() {
-		return "Big Money";
 	}
 
 }

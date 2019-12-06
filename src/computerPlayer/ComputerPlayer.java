@@ -19,13 +19,16 @@ public abstract class ComputerPlayer {
 	protected Player player;
 	protected DataWriter dataOut;
 	protected DominionGame access;
+	private String name;
 
 	/**
 	 * Initializes the computer player.
+	 * @param cpuName the name of this computer player type.
 	 * @param pComputer The Player this plays for.
 	 * @param game the main DominionGame.
 	 */
-	public ComputerPlayer(Player pComputer, DominionGame game) {
+	public ComputerPlayer(String cpuName, Player pComputer, DominionGame game) {
+		name = cpuName;
 		player = pComputer;
 		access = game;
 		dataOut = new DataWriter(pComputer, game);
@@ -224,7 +227,9 @@ public abstract class ComputerPlayer {
 	/**
 	 * @return the name of the computer player type.
 	 */
-	public abstract String getName();
+	public String getName() {
+		return name;
+	}
 	
 	/**
 	 * Comparator class that sorts from high cost to low cost.

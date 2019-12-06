@@ -26,7 +26,7 @@ public class StdioPlayer extends ComputerPlayer {
 	private Scanner in;
 	
 	public StdioPlayer(Player pComputer, DominionGame game) {
-		super(pComputer, game);
+		super("Gain Neural Net", pComputer, game);
 		rand2 = new RandomPlayer2(pComputer, game);
 		exsys = new ExpertSystem();	
 		lastGain = 0;
@@ -155,11 +155,6 @@ public class StdioPlayer extends ComputerPlayer {
 	@Override
 	protected Supply chooseBuy(List<Supply> options) {
 		return chooseGain(options, false);
-	}
-	
-	@Override
-	public String getName() {
-		return "Gain Neural Net";
 	}
 
 }

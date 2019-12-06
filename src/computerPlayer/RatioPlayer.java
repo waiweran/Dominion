@@ -21,7 +21,7 @@ public class RatioPlayer extends ComputerPlayer {
 	private RandomPlayer random;
 
 	public RatioPlayer(Player pComputer, DominionGame game) {
-		super(pComputer, game);
+		super("Ratio Player", pComputer, game);
 		money = new BigMoneyPlayer(pComputer, access);
 		random = new RandomPlayer(pComputer, access);
 	}
@@ -108,11 +108,6 @@ public class RatioPlayer extends ComputerPlayer {
 		// Buy randomly if no ratio options available.
 		return random.chooseBuy(options);
 	}	
-
-	@Override
-	public String getName() {
-		return "Ratio Player";
-	}
 	
 	/**
 	 * Generates a list of cards in the category the player most needs.

@@ -1,0 +1,285 @@
+package machineLearning;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.TreeMap;
+
+import gameBase.DominionClient;
+import gameBase.DominionGame;
+import gameBase.GameOptions;
+import gameBase.GameSetup;
+import gameBase.Player;
+import genericGame.network.LocalConnection;
+
+public class Trainer {
+
+	private static final String FILENAME = "Saves/Base/First Game.dog";
+	private static final boolean QUIET = false;
+
+	private static final int EPOCHS = 30;
+	private static final double ANNEAL_RATE = 0.99;
+	private static final double START_PRETURB_PROB = 0.5;
+	private static final double START_PRETURB_MAG = 1;
+	private static final double MIN_PRETURB_PROB = 0.01;
+	private static final double MIN_PRETURB_MAG = 0.01;
+	
+
+	private volatile int index;
+	private volatile int runners;
+	private volatile int[] games;	
+
+	public Trainer() {
+		index = 0;
+		runners = 0;
+		games = new int[6];
+	}
+
+	public void train(String filename, int epochs, boolean quiet) throws Exception {
+
+		// Create game to get initial model
+		ArrayList<String> cpuTypes = new ArrayList<>();
+		cpuTypes.add("ML");
+		GameSetup setup;
+		setup = new GameSetup(new File(filename));
+		GameOptions gameOptions = new GameOptions(false);
+		gameOptions.setNumPlayers(cpuTypes.size());
+		gameOptions.setNPC(cpuTypes);
+		gameOptions.hideGraphics();
+		DominionGame game = new DominionGame(setup, gameOptions);
+		DominionClient dc = new DominionClient();
+		new LocalConnection(dc, game);
+		GainModel model = game.models.getGainModels().get(0);
+
+		// Starting preturbation parameters
+		double preturbProbability = START_PRETURB_PROB;
+		float preturbMagnitude = (float)START_PRETURB_MAG;
+		
+		for(int epoch = 0; epoch < epochs; epoch++) {
+			System.out.println("Epoch " + (epoch+1) + ": p = " + 
+					preturbProbability + ", mag = " + preturbMagnitude);
+
+			// Copy model to make starting pair
+			ArrayList<GainModel> models = new ArrayList<>();
+			models.add(model);
+			models.add(new GainModel(model));
+			model.preturb(preturbProbability, preturbMagnitude);
+
+			// Run the training
+			cpuTypes = new ArrayList<>();
+			cpuTypes.add("ML");
+			cpuTypes.add("ML");
+			runTraining(10, cpuTypes, models, filename, quiet);
+			if(games[0] > 1 && games[1] > 1) { // If both won more than 1 game (p > 0.05)
+				runTraining(100, cpuTypes, models, filename, quiet);
+				if(games[0] > 37 && games[1] > 37) { // If both won more than 37 games (p > 0.05)
+					runTraining(1000, cpuTypes, models, filename, quiet);
+					if(games[0] > 461 && games[1] > 461) { // If both won more than 461 games (p > 0.05)
+						runTraining(10000, cpuTypes, models, filename, quiet);
+					}		
+				}		
+			}
+
+			// Keep whoever won more
+			if(games[0] < games[1]) {
+				model = models.get(1);
+			}
+			
+			// Update perturbation parameters
+			if(preturbProbability > MIN_PRETURB_PROB) {
+				preturbProbability *= ANNEAL_RATE;
+			}
+			if(preturbMagnitude > MIN_PRETURB_MAG) {
+				preturbMagnitude *= ANNEAL_RATE;
+			}
+			
+			
+			// Reset the running parameters
+			index = 0;
+			runners = 0;
+			games = new int[6];
+
+		}
+		
+		// Benchmark against Big Money
+		ArrayList<GainModel> models = new ArrayList<>();
+		models.add(model);
+		cpuTypes = new ArrayList<>();
+		cpuTypes.add("BigMoney");
+		cpuTypes.add("ML");
+		runTraining(10, cpuTypes, models, filename, quiet);
+		if(games[0] > 1 && games[1] > 1) { // If both won more than 1 game (p > 0.05)
+			runTraining(100, cpuTypes, models, filename, quiet);
+			if(games[0] > 37 && games[1] > 37) { // If both won more than 37 games (p > 0.05)
+				runTraining(1000, cpuTypes, models, filename, quiet);
+				if(games[0] > 461 && games[1] > 461) { // If both won more than 461 games (p > 0.05)
+					runTraining(10000, cpuTypes, models, filename, quiet);
+				}		
+			}		
+		}
+		if(games[0] < games[1]) {
+			System.out.println("Machine Learning is better!");
+		}
+		else {
+			System.out.println("Big Money retains its throne");
+		}
+		
+		// Save
+		model.save(new File("Training/GainModel.txt"));
+
+
+	}
+
+	private void runTraining(int numSimulations, List<String> cpuTypes, List<GainModel> models, String filename, boolean quiet) {
+
+		try {
+
+			// Setup games
+			GameSetup setup = new GameSetup(new File(filename));
+			GameOptions gameOptions = new GameOptions(false);
+			gameOptions.setNumPlayers(cpuTypes.size());
+			gameOptions.setNPC(cpuTypes);
+			gameOptions.hideGraphics();
+
+			// Collect system information
+			int cores = Runtime.getRuntime().availableProcessors();
+			synchronized(this) {
+				runners = cores;
+			}
+
+			// Print Header
+			if(!quiet) {
+				System.out.println(cores + " Cores Detected");
+				System.out.println("Playing " + FILENAME);
+				System.out.print("Players: ");
+				for(String s : cpuTypes) {
+					System.out.print(s + ", ");
+				}
+				System.out.println("\n");
+			}
+
+			// Run Threads
+			for(int i = 0; i < cores; i++) {
+				Thread gameRunner = new Thread(() ->
+				runGames(setup, gameOptions, models, numSimulations, quiet));
+				gameRunner.setName("Game Runner " + i);
+				gameRunner.start();
+			}
+
+			// Wait for games to complete
+			synchronized(this) {
+				wait();
+			}
+
+		}
+		catch(Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	private void runGames(GameSetup setup, GameOptions gameOptions, List<GainModel> models, int numRuns, boolean quiet) {
+
+		//Run Multiple Test Games
+		ArrayList<String> players = new ArrayList<>();
+		HashMap<String, Integer> names = new HashMap<>();
+		int gameNum = 0;
+
+		while(true) {
+
+			synchronized(this) {
+				if(index >= numRuns) break;
+				gameNum = index++;				
+			}
+			
+			DominionGame game = new DominionGame(setup, gameOptions);
+			try {
+				
+				//Setup Game
+				game.models.setGainModels(models);
+				DominionClient dc = new DominionClient();
+				new LocalConnection(dc, game);
+
+
+				//Run game simulation
+				game.getCurrentPlayer().startTurn();
+
+				// List players in games
+				if(players.isEmpty()) {
+					for(Player p : game.players) {
+						players.add(p.getComputerPlayer().getName() + " " + p.getPlayerNum());
+						names.put(p.getComputerPlayer().getName() + " " + p.getPlayerNum(), p.getPlayerNum());
+					}
+				}
+
+				//Determine and Print Scores
+				TreeMap<Integer, Player> scoreFiles = new TreeMap<Integer, Player>();
+				synchronized(this) {
+					if(!quiet) System.out.print("Scores for game " + (gameNum + 1) + ": ");
+					for(Player p : game.players) {
+						scoreFiles.put(p.getScore(), p);
+						if(!quiet) System.out.print(p.getScore() + " ");
+					}
+					if(!quiet) System.out.println();
+
+
+					//Determine who wins game
+					Player winnerP = scoreFiles.lastEntry().getValue();
+					int entryNum = winnerP.getPlayerNum() - 1;
+					games[entryNum] += 1;
+				}
+			} 
+			catch(Exception e) {
+				synchronized(this) {
+					index--;
+				}
+				try {
+					if(game.getCurrentPlayer().deck.size() == 0) {
+						System.err.println("Empty deck caused error:");
+					}
+					else {
+						System.err.println("Draw cards available, error:");
+					}
+					System.err.println("Thread " + Thread.currentThread().getName());
+					e.printStackTrace();
+				}
+				catch(Exception e2) {
+					e.printStackTrace();
+				}
+			}
+		}
+		synchronized(this) {
+			runners--;
+			if(runners == 0) {
+
+				// List players in games
+				if(!quiet) {
+					System.out.print("\nPlayers: ");
+					for(String s : players) {
+						System.out.print(s + ", ");
+					}
+					System.out.println();
+
+					//Print Success Rate
+					for(String name : players) {
+						int playerNum = names.get(name);
+						int wins = games[playerNum - 1];
+						System.out.println(name + " win rate: " + wins + "/" + numRuns);
+					}	
+				}
+
+				// Let the main thread resume
+				this.notify();
+
+			}
+		}
+	}
+
+	public static void main(String[] args) {
+		try {
+			new Trainer().train(FILENAME, EPOCHS, QUIET);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+}

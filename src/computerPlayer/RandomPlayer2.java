@@ -19,7 +19,7 @@ public class RandomPlayer2 extends ComputerPlayer {
 	private ExpertSystem exsys;
 
 	public RandomPlayer2(Player pComputer, DominionGame game) {
-		super(pComputer, game);
+		super("Random Player 2", pComputer, game);
 		exsys = new ExpertSystem();
 	}
 	
@@ -139,11 +139,6 @@ public class RandomPlayer2 extends ComputerPlayer {
 	@Override
 	protected Supply chooseBuy(List<Supply> options) {
 		return chooseGain(options, false);
-	}
-
-	@Override
-	public String getName() {
-		return "Random Player 2";
 	}
 
 }

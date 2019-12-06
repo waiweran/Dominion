@@ -20,7 +20,7 @@ public class RandomPlayer extends ComputerPlayer {
 	private ExpertSystem exsys;
 
 	public RandomPlayer(Player pComputer, DominionGame game) {
-		super(pComputer, game);
+		super("Random Player", pComputer, game);
 		exsys = new ExpertSystem();
 	}
 	
@@ -157,11 +157,6 @@ public class RandomPlayer extends ComputerPlayer {
 		}
 		
 		return options.get(choice);
-	}
-
-	@Override
-	public String getName() {
-		return "Random Player";
 	}
 
 }

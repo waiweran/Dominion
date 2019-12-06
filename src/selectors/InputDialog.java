@@ -143,7 +143,7 @@ public class InputDialog {
 	private List<String> selectNPC(int num) {
 		List<String> output = new ArrayList<>();
 		for(int i = gameOptions.getNumNPC(); i < num; i++) {
-			String[] options = {"Big Money", "Ratio", "Random", "Web"};
+			String[] options = {"Big Money", "Ratio", "Random", "Web", "ML"};
 			HashMap<ButtonType, Integer> choices = new HashMap<>();
 			Alert alert = new Alert(AlertType.NONE);
 			alert.setHeaderText("Pick Computer Player Type");
