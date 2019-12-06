@@ -133,8 +133,10 @@ public abstract class Card implements Comparable<Card>, Cloneable, Serializable 
 	 * @return the cost of the card.
 	 */
 	public int getCost() {
+		Player plr = null;
 		try {
-			int calcCost = cost - getGame().getCurrentPlayer().bridge;
+			plr = getGame().getCurrentPlayer();
+			int calcCost = cost - plr.bridge;
 			if(isAction) {
 				calcCost -= getGame().getCurrentPlayer().quarry * 2;
 			}
@@ -145,7 +147,17 @@ public abstract class Card implements Comparable<Card>, Cloneable, Serializable 
 				return 0;
 			}
 		} catch(IndexOutOfBoundsException e) {
+			// If the player list is not initialized
 			return cost;
+		} catch(NullPointerException e) {
+			// Not sure what causes this error, but waiting makes it go away
+			// Must be caused by some satanic concurrency issue
+			try {
+				Thread.sleep(50);
+				return getCost();
+			} catch (InterruptedException e1) {
+				return cost;
+			}
 		}
 	}
 	

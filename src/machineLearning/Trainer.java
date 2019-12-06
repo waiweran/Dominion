@@ -15,7 +15,7 @@ import genericGame.network.LocalConnection;
 public class Trainer {
 
 	private static final String FILENAME = "Saves/Base/First Game.dog";
-	private static final boolean QUIET = false;
+	private static final boolean QUIET = true;
 
 	private static final int EPOCHS = 30;
 	private static final double ANNEAL_RATE = 0.99;
@@ -81,6 +81,7 @@ public class Trainer {
 			}
 
 			// Keep whoever won more
+			System.out.println("Result: " + games[0] + " to " + games[1]);
 			if(games[0] < games[1]) {
 				model = models.get(1);
 			}

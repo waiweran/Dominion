@@ -70,6 +70,7 @@ public class DominionClient extends GameClient {
 			String localDeck = getGame().players.get(
 					Integer.parseInt(response.substring(6, 7)) - 1).deck.toString();
 			if(!localDeck.equals(response.substring(8))) {
+				System.err.println("Deck Mismatch");
 				sendString("RESET");
 			}
 		}
