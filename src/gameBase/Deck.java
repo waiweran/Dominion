@@ -168,7 +168,9 @@ public class Deck implements Serializable {
 	public List<Card> getDrawCards(int num) {
 		ArrayList<Card> cards = new ArrayList<>();
 			for(int i = 0; i < num; i++) {
-				cards.add(getDrawCard());
+				Card c = getDrawCard();
+				if(c == null) break;
+				cards.add(c);
 			}
 		return cards;
 	}

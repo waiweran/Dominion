@@ -98,6 +98,10 @@ public class RandomPlayer extends ComputerPlayer {
 		}
 	}
 
+	@Override
+	public int chooseForCards(List<Card> cards, List<String> options, String choiceName) {
+		return access.random.nextInt(options.size());
+	}
 
 	@Override
 	public int choose(List<String> options, String choiceName) {

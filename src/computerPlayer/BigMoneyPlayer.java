@@ -119,6 +119,11 @@ public class BigMoneyPlayer extends ComputerPlayer {
 		if(!required) return -1;
 		else return access.random.nextInt(choices.size());
 	}
+	
+	@Override
+	public int chooseForCards(List<Card> cards, List<String> options, String choiceName) {
+		return access.random.nextInt(options.size());
+	}
 
 	@Override
 	public int choose(List<String> options, String choiceName) {

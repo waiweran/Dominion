@@ -55,8 +55,8 @@ public class RatioPlayer extends ComputerPlayer {
 	}
 
 	@Override
-	public int chooseCard(List<Card> choices, boolean required, String choiceName) {
-		return random.chooseCard(choices, required, choiceName);
+	public int chooseForCards(List<Card> cards, List<String> options, String choiceName) {
+		return random.chooseForCards(cards, options, choiceName);
 	}
 
 	@Override

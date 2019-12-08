@@ -126,6 +126,11 @@ public class SocketPlayer extends ComputerPlayer {
 		}
 		return 0;
 	}
+	
+	@Override
+	public int chooseForCards(List<Card> cards, List<String> options, String choiceName) {
+		return 0;
+	}
 
 	@Override
 	public int choose(List<String> options, String choiceName) {

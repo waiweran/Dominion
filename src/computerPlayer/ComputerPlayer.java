@@ -83,8 +83,33 @@ public abstract class ComputerPlayer {
 	 * @param choiceName The name of the card making the choice.
 	 * @return Selected card index.
 	 */
-	public abstract int chooseCard(List<Card> choices, boolean required, String choiceName);
+	public int chooseCard(List<Card> choices, boolean required, String choiceName) {
+		return chooseCards(choices, 1, required, choiceName).get(0);
+	}
 
+	/**
+	 * Choose what to do with a list of cards from an array of options.
+	 * Used by Selector
+	 * @param cards the cards something will be done to
+	 * @param options the choices.
+	 * @param choiceName string describing the choice.
+	 * @return the index of the option chosen.
+	 */
+	public abstract int chooseForCards(List<Card> cards, List<String> options, String choiceName);
+
+	/**
+	 * Choose what to do with a card from an array of text options.
+	 * Used by Selector
+	 * @param card the card something will be done to
+	 * @param options the choices.
+	 * @param choiceName string describing the choice.
+	 * @return the index of the option chosen.
+	 */
+	public int chooseForCard(Card card, List<String> options, String choiceName) {
+		ArrayList<Card> cards = new ArrayList<>();
+		cards.add(card);
+		return chooseForCards(cards, options, choiceName);
+	}
 
 	/**
 	 * Choose one from an array of options.

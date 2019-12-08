@@ -38,7 +38,7 @@ public class GameSetup implements Serializable {
 		}
 	}
 	
-	public GameSetup(File setupFile) throws Exception {
+	public GameSetup(File setupFile) throws IOException {
 		myCards = new ArrayList<Card>();
 		load(setupFile);
 		if(myCards.size() != 10) {
@@ -104,11 +104,11 @@ public class GameSetup implements Serializable {
 			ps.print("Bane: " + bane.getName());
 			ps.close();
 		} catch (IOException e) {
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
 	}
 
-	private void load(File file) throws Exception {
+	private void load(File file) throws IOException {
 		Scanner setup = new Scanner(file);
 		CardFactory cardMaker = new CardFactory();
 		while(myCards.size() < 10) {
@@ -116,7 +116,7 @@ public class GameSetup implements Serializable {
 			Card c = cardMaker.findCard(cardName);
 			if(c == null) {
 				setup.close();
-				throw new Exception("Card " + cardName + " in file not found");
+				throw new IOException("Card " + cardName + " in file not found");
 			}
 			myCards.add(c);
 		}

@@ -1,5 +1,6 @@
 package machineLearning;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -35,13 +36,11 @@ public class Trainer {
 		games = new int[6];
 	}
 
-	public void train(String filename, int epochs, boolean quiet) throws Exception {
+	public void train(GameSetup setup, int epochs, boolean quiet) throws IOException {
 
 		// Create game to get initial model
 		ArrayList<String> cpuTypes = new ArrayList<>();
 		cpuTypes.add("ML");
-		GameSetup setup;
-		setup = new GameSetup(new File(filename));
 		GameOptions gameOptions = new GameOptions(false);
 		gameOptions.setNumPlayers(cpuTypes.size());
 		gameOptions.setNPC(cpuTypes);
@@ -69,13 +68,13 @@ public class Trainer {
 			cpuTypes = new ArrayList<>();
 			cpuTypes.add("ML");
 			cpuTypes.add("ML");
-			runTraining(10, cpuTypes, models, filename, quiet);
+			runTraining(10, cpuTypes, models, setup, quiet);
 			if(games[0] > 1 && games[1] > 1) { // If both won more than 1 game (p > 0.05)
-				runTraining(100, cpuTypes, models, filename, quiet);
+				runTraining(100, cpuTypes, models, setup, quiet);
 				if(games[0] > 37 && games[1] > 37) { // If both won more than 37 games (p > 0.05)
-					runTraining(1000, cpuTypes, models, filename, quiet);
+					runTraining(1000, cpuTypes, models, setup, quiet);
 					if(games[0] > 461 && games[1] > 461) { // If both won more than 461 games (p > 0.05)
-						runTraining(10000, cpuTypes, models, filename, quiet);
+						runTraining(10000, cpuTypes, models, setup, quiet);
 					}		
 				}		
 			}
@@ -108,13 +107,13 @@ public class Trainer {
 		cpuTypes = new ArrayList<>();
 		cpuTypes.add("BigMoney");
 		cpuTypes.add("ML");
-		runTraining(10, cpuTypes, models, filename, quiet);
+		runTraining(10, cpuTypes, models, setup, quiet);
 		if(games[0] > 1 && games[1] > 1) { // If both won more than 1 game (p > 0.05)
-			runTraining(100, cpuTypes, models, filename, quiet);
+			runTraining(100, cpuTypes, models, setup, quiet);
 			if(games[0] > 37 && games[1] > 37) { // If both won more than 37 games (p > 0.05)
-				runTraining(1000, cpuTypes, models, filename, quiet);
+				runTraining(1000, cpuTypes, models, setup, quiet);
 				if(games[0] > 461 && games[1] > 461) { // If both won more than 461 games (p > 0.05)
-					runTraining(10000, cpuTypes, models, filename, quiet);
+					runTraining(10000, cpuTypes, models, setup, quiet);
 				}		
 			}		
 		}
@@ -128,15 +127,13 @@ public class Trainer {
 		// Save
 		model.save(new File("Training/GainModel.txt"));
 
-
 	}
 
-	private void runTraining(int numSimulations, List<String> cpuTypes, List<GainModel> models, String filename, boolean quiet) {
+	private void runTraining(int numSimulations, List<String> cpuTypes, List<GainModel> models, GameSetup setup, boolean quiet) {
 
 		try {
 
 			// Setup games
-			GameSetup setup = new GameSetup(new File(filename));
 			GameOptions gameOptions = new GameOptions(false);
 			gameOptions.setNumPlayers(cpuTypes.size());
 			gameOptions.setNPC(cpuTypes);
@@ -229,6 +226,21 @@ public class Trainer {
 					games[entryNum] += 1;
 				}
 			} 
+			catch(StackOverflowError e) {
+				synchronized(this) {
+					index--;
+				}
+				try {
+					System.err.println("Stack Overflow:");
+					for(Player p : game.players) {
+						System.err.println("\t" + p.getPlayerName() + ": " + p.deck);
+					}
+				}
+				catch(Exception e2) {
+					e.printStackTrace();
+				}
+				
+			}
 			catch(Exception e) {
 				synchronized(this) {
 					index--;
@@ -277,10 +289,11 @@ public class Trainer {
 
 	public static void main(String[] args) {
 		try {
-			new Trainer().train(FILENAME, EPOCHS, QUIET);
-		} catch (Exception e) {
+			new Trainer().train(new GameSetup(new File(FILENAME)), EPOCHS, QUIET);
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		System.exit(0);
 	}
 
 }

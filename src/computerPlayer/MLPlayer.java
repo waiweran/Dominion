@@ -62,6 +62,11 @@ public class MLPlayer extends ComputerPlayer {
 	public int chooseCard(List<Card> choices, boolean required, String choiceName) {
 		return rand.chooseCard(choices, required, choiceName);
 	}
+	
+	@Override
+	public int chooseForCards(List<Card> cards, List<String> options, String choiceName) {
+		return rand.chooseForCards(cards, options, choiceName);
+	}
 
 	@Override
 	public int choose(List<String> options, String choiceName) {
