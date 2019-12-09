@@ -18,8 +18,8 @@ public class Trainer {
 	private static final String FILENAME = "Saves/Base/First Game.dog";
 	private static final boolean QUIET = true;
 
-	private static final int EPOCHS = 30;
-	private static final double ANNEAL_RATE = 0.99;
+	private static final int EPOCHS = 10000;
+	private static final double ANNEAL_RATE = 0.999;
 	private static final double START_PRETURB_PROB = 0.5;
 	private static final double START_PRETURB_MAG = 1;
 	private static final double MIN_PRETURB_PROB = 0.01;
@@ -75,6 +75,9 @@ public class Trainer {
 					runTraining(1000, cpuTypes, models, setup, quiet);
 					if(games[0] > 461 && games[1] > 461) { // If both won more than 461 games (p > 0.05)
 						runTraining(10000, cpuTypes, models, setup, quiet);
+						if(games[0] > 4877 && games[1] > 4877) { // If both won more than 4877 games (p > 0.05)
+							runTraining(100000, cpuTypes, models, setup, quiet);
+						}		
 					}		
 				}		
 			}
