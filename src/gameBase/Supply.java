@@ -152,6 +152,13 @@ public class Supply implements Comparable<Supply>, Serializable {
 	}
 	
 	/**
+	 * Passes the main game to all cards in the supply.
+	 */
+	public void passGameToCards(DominionGame g) {
+		card.passGame(g);
+	}
+	
+	/**
 	 * Notifies all observers.
 	 */
 	protected void notifyObservers() {

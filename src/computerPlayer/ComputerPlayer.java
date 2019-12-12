@@ -158,7 +158,7 @@ public abstract class ComputerPlayer {
 				}
 			}
 			if(actions.isEmpty() || player.getActions() == 0) break;
-			dataOut.writePlayData(actions);
+			//dataOut.writePlayData(actions); TODO
 			Card play = chooseAction(actions);
 			dataOut.writePlayTarget(play);
 			if (play == null) break;
@@ -205,7 +205,7 @@ public abstract class ComputerPlayer {
 					choices.add(supp);
 				}
 			}
-			dataOut.writeGainData(choices);
+			//dataOut.writeGainData(choices); TODO
 			
 			// Pick one
 			Supply s = chooseBuy(choices);

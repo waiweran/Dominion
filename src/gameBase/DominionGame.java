@@ -65,7 +65,7 @@ public class DominionGame extends BoardGame {
 		}
 		board = new Board(setup.getCards(), random, setup.useProsperity(), getNumPlayers());
 		for(Supply s : board.getAllSupplies()) {
-			s.getCard().passGame(this);
+			s.passGameToCards(this);
 		}
 		
 		// Setup Players

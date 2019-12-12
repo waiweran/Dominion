@@ -133,10 +133,9 @@ public abstract class Card implements Comparable<Card>, Cloneable, Serializable 
 	 * @return the cost of the card.
 	 */
 	public int getCost() {
-		Player plr = null;
+		DominionGame gm = getGame();
 		try {
-			plr = getGame().getCurrentPlayer();
-			int calcCost = cost - plr.bridge;
+			int calcCost = cost - gm.getCurrentPlayer().bridge;
 			if(isAction) {
 				calcCost -= getGame().getCurrentPlayer().quarry * 2;
 			}
@@ -152,12 +151,15 @@ public abstract class Card implements Comparable<Card>, Cloneable, Serializable 
 		} catch(NullPointerException e) {
 			// Not sure what causes this error, but waiting makes it go away
 			// Must be caused by some satanic concurrency issue
-			try {
-				Thread.sleep(50);
-				return getCost();
-			} catch (InterruptedException e1) {
-				return cost;
+			if(gm != null) {
+				try {
+					Thread.sleep(50);
+					return getCost();
+				} catch (InterruptedException e1) {
+					e.printStackTrace();
+				}
 			}
+			throw new RuntimeException(e);
 		}
 	}
 	

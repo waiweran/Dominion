@@ -59,6 +59,14 @@ public class ShuffledSupply extends Supply {
 			return getCard();
 		}
 	}
+	
+	@Override
+	public void passGameToCards(DominionGame g) {
+		super.passGameToCards(g);
+		for(Card c : pileCards) {
+			c.passGame(g);
+		}
+	}
 
 
 }

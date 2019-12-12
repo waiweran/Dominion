@@ -141,7 +141,7 @@ public class SupplySelector {
 				choices.add(s);
 			}
 		}
-		if(!choices.isEmpty()) return null;
+		if(choices.isEmpty()) return null;
 		
 		if(player.isComputerPlayer()) {
 			return player.getComputerPlayer().chooseSupply(choices, required, title);

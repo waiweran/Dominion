@@ -103,29 +103,28 @@ public class DataWriter {
 	 * @return the data as an array.
 	 */
 	public int[] getPlayDataShort(List<Card> available) {
-		List<Card> supplies = access.board.getAllSupplies()
-				.stream().map(s -> s.getCard()).collect(Collectors.toList());
+		List<Supply> supplies = access.board.getAllSupplies();
 		int cardset = supplies.size();
 		int[] data = new int[cardset*5 + 3];
 		//Hand
 		for(Card c : player.deck.hand) {
-			data[supplies.indexOf(c)]++;
+			data[supplies.indexOf(access.board.findSupply(c))]++;
 		}
 		//Playspace
 		for(Card c : player.deck.play) {
-			data[cardset + supplies.indexOf(c)]++;
+			data[cardset + supplies.indexOf(access.board.findSupply(c))]++;
 		}
 		//Supplies
-		for(Supply s : access.board.getAllSupplies()) {
-			data[cardset * 2 + supplies.indexOf(s.getCard())] += s.getQuantity();
+		for(Supply s : supplies) {
+			data[cardset * 2 + supplies.indexOf(s)] += s.getQuantity();
 		}
 		//Available
 		for(Card c : available) {
-			data[cardset * 3 + supplies.indexOf(c)]++;
+			data[cardset * 3 + supplies.indexOf(access.board.findSupply(c))]++;
 		}
 		//Deck
 		for(Card c : player.deck.getDeck()) {
-			data[cardset * 4 + supplies.indexOf(c)]++;
+			data[cardset * 4 + supplies.indexOf(access.board.findSupply(c))]++;
 		}
 		//Actions, Treasure, and Buys
 		data[cardset * 5] = player.getActions();
@@ -142,29 +141,29 @@ public class DataWriter {
 	 * @return the data as an array.
 	 */
 	public int[] getGainDataShort(List<Supply> available) {
-		List<Card> supplies = access.board.getAllSupplies()
-				.stream().map(s -> s.getCard()).collect(Collectors.toList());
+		List<Supply> supplies = access.board.getAllSupplies();
 		int cardset = supplies.size();
 		int[] data = new int[cardset*5 + 2];
 		//Play Space
 		for(Card c : player.deck.play) {
-			data[supplies.indexOf(c)]++;
+			System.err.println(c);
+			data[supplies.indexOf(access.board.findSupply(c))]++;
 		}
 		//Supplies
-		for(Supply s : access.board.getAllSupplies()) {
-			data[cardset + supplies.indexOf(s.getCard())] += s.getQuantity();
+		for(Supply s : supplies) {
+			data[cardset + supplies.indexOf(s)] += s.getQuantity();
 		}
 		//Deck
 		for(Card c : player.deck.getDeck()) {
-			data[cardset * 2 + supplies.indexOf(c)]++;
+			data[cardset * 2 + supplies.indexOf(access.board.findSupply(c))]++;
 		}
 		//Available
 		for(Supply s : available) {
-			data[cardset * 3 + supplies.indexOf(s.getCard())]++;
+			data[cardset * 3 + supplies.indexOf(s)]++;
 		}
 		//Prices
 		for(int i = 0; i < supplies.size(); i++) {
-			data[cardset * 4 + i] = supplies.get(i).getCost();
+			data[cardset * 4 + i] = supplies.get(i).getTopCard().getCost();
 		}
 		//Treasure and Buys
 		data[cardset * 5] = player.getTreasure();

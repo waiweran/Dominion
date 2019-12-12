@@ -15,15 +15,15 @@ import genericGame.network.LocalConnection;
 
 public class Trainer {
 
-	private static final String FILENAME = "Saves/Base/First Game.dog";
+	private static final String FILENAME = "Saves/Dark Ages/Dark Carnival.dog";
 	private static final boolean QUIET = true;
 
-	private static final int EPOCHS = 10000;
-	private static final double ANNEAL_RATE = 0.999;
-	private static final double START_PRETURB_PROB = 0.5;
-	private static final double START_PRETURB_MAG = 1;
-	private static final double MIN_PRETURB_PROB = 0.01;
-	private static final double MIN_PRETURB_MAG = 0.01;
+	private static final int EPOCHS = 100;
+	private static final double ANNEAL_RATE = 0.99;
+	private static final double START_PERTURB_PROB = 0.5;
+	private static final double START_PERTURB_MAG = 1;
+	private static final double MIN_PERTURB_PROB = 0.01;
+	private static final double MIN_PERTURB_MAG = 0.01;
 	
 
 	private volatile int index;
@@ -50,19 +50,19 @@ public class Trainer {
 		new LocalConnection(dc, game);
 		GainModel model = game.models.getGainModels().get(0);
 
-		// Starting preturbation parameters
-		double preturbProbability = START_PRETURB_PROB;
-		float preturbMagnitude = (float)START_PRETURB_MAG;
+		// Starting perturbation parameters
+		double perturbProbability = START_PERTURB_PROB;
+		float perturbMagnitude = (float)START_PERTURB_MAG;
 		
 		for(int epoch = 0; epoch < epochs; epoch++) {
 			System.out.println("Epoch " + (epoch+1) + ": p = " + 
-					preturbProbability + ", mag = " + preturbMagnitude);
+					perturbProbability + ", mag = " + perturbMagnitude);
 
 			// Copy model to make starting pair
 			ArrayList<GainModel> models = new ArrayList<>();
 			models.add(model);
 			models.add(new GainModel(model));
-			model.preturb(preturbProbability, preturbMagnitude);
+			model.perturb(perturbProbability, perturbMagnitude);
 
 			// Run the training
 			cpuTypes = new ArrayList<>();
@@ -75,9 +75,9 @@ public class Trainer {
 					runTraining(1000, cpuTypes, models, setup, quiet);
 					if(games[0] > 461 && games[1] > 461) { // If both won more than 461 games (p > 0.05)
 						runTraining(10000, cpuTypes, models, setup, quiet);
-						if(games[0] > 4877 && games[1] > 4877) { // If both won more than 4877 games (p > 0.05)
-							runTraining(100000, cpuTypes, models, setup, quiet);
-						}		
+//						if(games[0] > 4877 && games[1] > 4877) { // If both won more than 4877 games (p > 0.05)
+//							runTraining(100000, cpuTypes, models, setup, quiet);
+//						}		
 					}		
 				}		
 			}
@@ -89,11 +89,17 @@ public class Trainer {
 			}
 			
 			// Update perturbation parameters
-			if(preturbProbability > MIN_PRETURB_PROB) {
-				preturbProbability *= ANNEAL_RATE;
+			if(perturbProbability > MIN_PERTURB_PROB) {
+				perturbProbability *= ANNEAL_RATE;
 			}
-			if(preturbMagnitude > MIN_PRETURB_MAG) {
-				preturbMagnitude *= ANNEAL_RATE;
+			else {
+				perturbProbability = MIN_PERTURB_PROB;
+			}
+			if(perturbMagnitude > MIN_PERTURB_MAG) {
+				perturbMagnitude *= ANNEAL_RATE;
+			}
+			else {
+				perturbMagnitude = (float)MIN_PERTURB_MAG;
 			}
 			
 			
@@ -117,6 +123,9 @@ public class Trainer {
 				runTraining(1000, cpuTypes, models, setup, quiet);
 				if(games[0] > 461 && games[1] > 461) { // If both won more than 461 games (p > 0.05)
 					runTraining(10000, cpuTypes, models, setup, quiet);
+					if(games[0] > 4877 && games[1] > 4877) { // If both won more than 4877 games (p > 0.05)
+						runTraining(100000, cpuTypes, models, setup, quiet);
+					}		
 				}		
 			}		
 		}
@@ -126,6 +135,7 @@ public class Trainer {
 		else {
 			System.out.println("Big Money retains its throne");
 		}
+		System.out.println("Big Money: " + games[0] + ", Machine Learning: " + games[1]);
 		
 		// Save
 		model.save(new File("Training/GainModel.txt"));

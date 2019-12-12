@@ -15,7 +15,6 @@ public class BandOfMisfits extends Card {
 
 	@Override
 	public void performAction() {
-		whatIAm = null;
 		SupplySelector sd = new SupplySelector(getGame(), getName(), 
 				"Select a Card for Band of Misfits to act as", 0, getCost() - 1);
 		sd.setCardSelector(c -> c.isAction());
@@ -43,13 +42,13 @@ public class BandOfMisfits extends Card {
 
 	@Override
 	public void durationAction() {
-		whatIAm.durationAction();
+		if(whatIAm != null) whatIAm.durationAction();
 		whatIAm = null;
 	}
 
 	@Override
 	public void cleanupAction() {
-		whatIAm.cleanupAction();
+		if(whatIAm != null) whatIAm.cleanupAction();
 		if(!whatIAm.isDuration()) whatIAm = null;
 	}
 

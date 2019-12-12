@@ -119,7 +119,7 @@ public class GainModel {
 	/**
 	 * Preturbs the weights in the model for training
 	 */
-	public void preturb(double probability, float magnitude) {
+	public void perturb(double probability, float magnitude) {
 		Random rand = new Random();
 		for(int i = 0; i < individualWeights.length; i++) {
 			if(rand.nextDouble() < probability)
