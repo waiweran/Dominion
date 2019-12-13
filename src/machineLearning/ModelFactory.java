@@ -1,13 +1,16 @@
 package machineLearning;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import gameBase.DominionGame;
 
-public class ModelFactory {
+public class ModelFactory implements Serializable {
+	
+	private static final long serialVersionUID = 4629690058531622695L;
 	
 	private List<GainModel> gainModels;
 	private int index;
