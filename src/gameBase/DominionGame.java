@@ -100,6 +100,14 @@ public class DominionGame extends BoardGame {
 	public void endTurn() {
 		Player endingPlayer = getCurrentPlayer();
 		
+		// Show plays and buys during turn change screen
+		ArrayList<Card> plays = new ArrayList<>();
+		ArrayList<Card> gains = new ArrayList<>();
+		plays.addAll(endingPlayer.deck.duration);
+		plays.addAll(endingPlayer.deck.play);
+		gains.addAll(endingPlayer.deck.gained);
+		getGUI().showPlayerBuys(plays, gains);
+		
 		//Check the card ownership in decks is correct
 		for(Player p : players) {
 			for(Card c : p.deck.getDeck()) {

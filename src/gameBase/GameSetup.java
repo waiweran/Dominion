@@ -135,6 +135,21 @@ public class GameSetup implements Serializable {
 		setup.close();
 		name = file.getName().replace(".dog", "");
 	}
+	
+	@Override
+	public boolean equals(Object other) {
+		if(other instanceof GameSetup) {
+			GameSetup o = (GameSetup)other;
+			return myCards.equals(o.myCards) && bane.equals(o.bane) 
+					&& prosp == o.prosp && bal == o.bal && shel == o.shel;
+		}
+		return false;
+	}
+	
+	@Override
+	public int hashCode() {
+		return myCards.hashCode()*31 + (bane==null?0:bane.hashCode()*17) + (prosp? 13:0) + (bal?7:0) + (shel?5:0);
+	}
 
 
 }

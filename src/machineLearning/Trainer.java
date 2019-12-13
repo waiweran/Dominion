@@ -18,7 +18,7 @@ public class Trainer {
 	private static final String FILENAME = "Saves/Dark Ages/Dark Carnival.dog";
 	private static final boolean QUIET = true;
 
-	private static final int EPOCHS = 100;
+	private static final int EPOCHS = 300;
 	private static final double ANNEAL_RATE = 0.99;
 	private static final double START_PERTURB_PROB = 0.5;
 	private static final double START_PERTURB_MAG = 1;
@@ -54,8 +54,8 @@ public class Trainer {
 		double perturbProbability = START_PERTURB_PROB;
 		float perturbMagnitude = (float)START_PERTURB_MAG;
 		
-		for(int epoch = 0; epoch < epochs; epoch++) {
-			System.out.println("Epoch " + (epoch+1) + ": p = " + 
+		for(int epoch = 1; epoch <= epochs; epoch++) {
+			System.out.println("Epoch " + epoch + ": p = " + 
 					perturbProbability + ", mag = " + perturbMagnitude);
 
 			// Copy model to make starting pair
@@ -75,9 +75,9 @@ public class Trainer {
 					runTraining(1000, cpuTypes, models, setup, quiet);
 					if(games[0] > 461 && games[1] > 461) { // If both won more than 461 games (p > 0.05)
 						runTraining(10000, cpuTypes, models, setup, quiet);
-//						if(games[0] > 4877 && games[1] > 4877) { // If both won more than 4877 games (p > 0.05)
-//							runTraining(100000, cpuTypes, models, setup, quiet);
-//						}		
+						if(games[0] > 4877 && games[1] > 4877) { // If both won more than 4877 games (p > 0.05)
+							runTraining(100000, cpuTypes, models, setup, quiet);
+						}		
 					}		
 				}		
 			}
@@ -89,17 +89,23 @@ public class Trainer {
 			}
 			
 			// Update perturbation parameters
-			if(perturbProbability > MIN_PERTURB_PROB) {
-				perturbProbability *= ANNEAL_RATE;
-			}
-			else {
+			perturbProbability *= ANNEAL_RATE;
+			perturbMagnitude *= ANNEAL_RATE;
+			if(perturbProbability < MIN_PERTURB_PROB) {
 				perturbProbability = MIN_PERTURB_PROB;
 			}
-			if(perturbMagnitude > MIN_PERTURB_MAG) {
-				perturbMagnitude *= ANNEAL_RATE;
-			}
-			else {
+			if(perturbMagnitude < MIN_PERTURB_MAG) {
 				perturbMagnitude = (float)MIN_PERTURB_MAG;
+			}
+			
+			// Save a backup copy
+			if(epoch % 10 == 0) {
+				String filepath = "Training/Game_" + setup.hashCode() + "/backups";
+				File folder = new File(filepath);
+				if(!folder.exists()) {
+					folder.mkdirs();
+				}
+				model.save(new File(filepath + "/GainModel_Backup" + (epoch/10) + ".txt"));
 			}
 			
 			
@@ -138,7 +144,12 @@ public class Trainer {
 		System.out.println("Big Money: " + games[0] + ", Machine Learning: " + games[1]);
 		
 		// Save
-		model.save(new File("Training/GainModel.txt"));
+		String filepath = "Training/Game_" + setup.hashCode();
+		File folder = new File(filepath);
+		if(!folder.exists()) {
+			folder.mkdir();
+		}
+		model.save(new File(filepath + "/GainModel.txt"));
 
 	}
 

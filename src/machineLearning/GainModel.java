@@ -127,17 +127,23 @@ public class GainModel {
 		}
 		for(int i = 0; i < crossWeights.length; i++) {
 			for(int j = 0; j < crossWeights[i].length; j++) {
-				if(rand.nextDouble()*100 < probability)
+				if(rand.nextDouble() < probability)
 					crossWeights[i][j][0] += (float)rand.nextGaussian()*magnitude;
-				if(rand.nextDouble()*100 < probability)
+				if(rand.nextDouble() < probability)
 					crossWeights[i][j][1] += (float)rand.nextGaussian()*magnitude;
-				if(rand.nextDouble()*100 < probability)
-					crossWeights[i][j][2] *= (float)rand.nextGaussian()*magnitude;
-				if(rand.nextDouble()*100 < probability)
+				if(rand.nextDouble() < probability) {
+					float multiplier = (float)rand.nextGaussian()*magnitude;
+					if(multiplier != 0)
+						crossWeights[i][j][2] *= multiplier;
+				}
+				if(rand.nextDouble() < probability)
 					crossWeights[i][j][3] += (float)rand.nextGaussian()*magnitude;
-				if(rand.nextDouble()*100 < probability)
-					crossWeights[i][j][4] *= (float)rand.nextGaussian()*magnitude;
-				if(rand.nextDouble()*100 < probability)
+				if(rand.nextDouble() < probability) {
+					float multiplier = (float)rand.nextGaussian()*magnitude;
+					if(multiplier != 0)
+						crossWeights[i][j][4] *= multiplier;
+				}
+				if(rand.nextDouble() < probability)
 					crossWeights[i][j][5] += (float)rand.nextGaussian()*magnitude;
 			}
 		}

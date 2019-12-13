@@ -3,6 +3,7 @@ package gameBase;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Optional;
 import java.util.TreeMap;
 import java.util.function.Consumer;
@@ -58,12 +59,13 @@ public class DominionGUI extends GameGUI {
 	private HBox playSpace;										//Contains played cards
 	private VBox messageBox;									//Area for messages over playspace
 	private VBox drawPile, discardPile, trashPile;				//Draw, discard, and trash pile tops
-	private VBox dispNums;										//Displays actions, buys, and treasure for player.
+	private VBox dispNums;										//Displays actions, buys, and treasure for player
 	private Pane popupPane;										//Contains extra buttons not on board
-	private Text playDescrip;									//Describes what the player just did.
+	private Text playDescrip;									//Describes what the player just did
 	private ArrayList<Pane> players;							//Contains the playing icons for all players
-	private HashMap<Card, Image> cardImgs;						//Map of pictures of cards in the game.
+	private HashMap<Card, Image> cardImgs;						//Map of pictures of cards in the game
 	private HBox hand;											//Contains the hand
+	private boolean disablePlayspace;							//Disables playspace updates to show buys
 
 	/**
 	 * Constructor for class DominionGUI - establish the JFrame
@@ -121,6 +123,7 @@ public class DominionGUI extends GameGUI {
 				txt.setFont(Font.font(20));
 				txt.setFill(Color.WHITE);
 				Button btn = new Button("Ok");
+				btn.setDefaultButton(true);
 				box.getChildren().addAll(txt, btn);
 				addOverlay(box, "Dominion");
 				btn.setOnAction(e -> {
@@ -128,6 +131,7 @@ public class DominionGUI extends GameGUI {
 					hand.setVisible(true);
 					updateHand();
 					updateDiscard();
+					updatePlaySpace();
 				});
 			}
 			else if(getMyPlayer() == game.getCurrentPlayer()) {
@@ -142,7 +146,11 @@ public class DominionGUI extends GameGUI {
 				addOverlay(box, "Dominion");
 				btn.setOnAction(e -> {
 					removeOverlay();
+					updatePlaySpace();
 				});
+			}
+			synchronized(this) {
+				disablePlayspace = false;
 			}
 		});
 	}
@@ -177,6 +185,33 @@ public class DominionGUI extends GameGUI {
 		}
 		game.board.trash.addObserver((o, arg) -> Platform.runLater(() -> updateTrash()));
 	}
+	
+	/**
+	 * Updates the playspace to show the current player's plays and purchases.
+	 */
+	public void showPlayerBuys(List<Card> play, List<Card> gained) {
+		synchronized(this) {
+			disablePlayspace = true;
+		}
+		Platform.runLater(() -> {
+			playSpace.getChildren().clear();
+			for(Card c : play) {
+				playSpace.getChildren().add(makeCardButton(c));
+			}
+			if(!gained.isEmpty()) {
+				StackPane spacer = makeSpacer();
+				Text gains = new Text("Gains: ");
+				gains.setStroke(Color.WHITE);
+				gains.setFill(Color.WHITE);
+				spacer.getChildren().add(gains);
+				spacer.setAlignment(Pos.CENTER_RIGHT);
+				playSpace.getChildren().add(spacer);
+				for(Card c : gained) {
+					playSpace.getChildren().add(makeCardButton(c));
+				}
+			}
+		});
+	}
 
 	/**
 	 * Updates the rendering of the player's hand.
@@ -202,22 +237,33 @@ public class DominionGUI extends GameGUI {
 	 * Updates the rendering of a player's play space.
 	 */
 	private void updatePlaySpace() {
+		
+		synchronized(this) {
+			if(disablePlayspace) return;
+		}
+		
 		playSpace.getChildren().clear();
 		
 		// Show opponent's play space and gained cards
 		Player p = game.getCurrentPlayer();
 		if(getMyPlayer() != p) {
-			HBox plays = new HBox(10);
-			HBox gains = new HBox(10);
-			playSpace.getChildren().addAll(plays, gains);
 			for(Card c : p.deck.duration) {
-				plays.getChildren().add(makeCardButton(c));
+				playSpace.getChildren().add(makeCardButton(c));
 			}
 			for(Card c : p.deck.play) {
-				plays.getChildren().add(makeCardButton(c));
+				playSpace.getChildren().add(makeCardButton(c));
 			}
-			for(Card c : p.deck.gained) {
-				plays.getChildren().add(makeCardButton(c));
+			if(!p.deck.gained.isEmpty()) {
+				StackPane spacer = makeSpacer();
+				Text gains = new Text("Gains: ");
+				gains.setStroke(Color.WHITE);
+				gains.setFill(Color.WHITE);
+				spacer.getChildren().add(gains);
+				spacer.setAlignment(Pos.CENTER_RIGHT);
+				playSpace.getChildren().add(spacer);
+				for(Card c : p.deck.gained) {
+					playSpace.getChildren().add(makeCardButton(c));
+				}
 			}
 		}
 		
@@ -570,6 +616,9 @@ public class DominionGUI extends GameGUI {
 		// Play Space
 		playSpace = new HBox(10);
 		playSpace.setAlignment(Pos.CENTER);
+		playSpace.setMaxWidth(cardWidth*5);
+		playSpace.setMinWidth(cardWidth*5);
+		playSpace.setPrefWidth(cardWidth*5);
 		playArea.setCenter(playSpace);
 		StackPane msgOverlay = new StackPane();
 		messageBox = new VBox();
@@ -618,6 +667,9 @@ public class DominionGUI extends GameGUI {
 		// Hand
 		hand = new HBox(4);
 		hand.setAlignment(Pos.CENTER);
+		hand.setMaxWidth(cardWidth*5);
+		hand.setMinWidth(cardWidth*5);
+		hand.setPrefWidth(cardWidth*5);
 		updateHand();
 		bottomPane.setCenter(hand);
 		

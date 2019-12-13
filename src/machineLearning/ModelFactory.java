@@ -22,8 +22,8 @@ public class ModelFactory {
 	public GainModel getGainModel() {
 		if(index >= gainModels.size()) {
 			try {
-				File modelFile = new File("Training/GainModel.txt");
-				gainModels.add(new GainModel(access.board, modelFile));
+				String filename = "Training/Game_" + access.setup.hashCode() + "/GainModel.txt";
+				gainModels.add(new GainModel(access.board, new File(filename)));
 			}
 			catch(Exception e) {
 				e.printStackTrace();
