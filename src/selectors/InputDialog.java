@@ -337,7 +337,7 @@ public class InputDialog {
 			true, true, true, true, true, true, true, true, false,true, true, true, true, true, true, true, true, false,true, true, true, true, true, true, true, true, // Hinterlands
 			true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, false,true, true, true, true, true, true, true, true, true, true, true, true, true, true, // Dark Ages
 			true, false,false,false,false,false,true, false,false,false,true, false,true, // Guilds
-			true, true, true, true, true, true, true, true, true, false,true, false,true, true, false,false,false,true, false,true, false,true, false,true, true, false,false,true, true, true, // Adventures
+			true, true, true, true, true, true, true, true, true, false,true, false,true, true, true, true, false,true, false,true, false,true, true, true, true, true, false,true, true, true, // Adventures
 			false,true, false,false,false,true, // Promo
 			false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,// Adventures Events
 		};

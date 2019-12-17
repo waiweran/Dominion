@@ -32,33 +32,16 @@ import cards.defaults.Silver;
  */
 public class ExpertSystem {
 	
-	private Map<Card, Integer> actionMap, militiaMap, remodelMap;
+	private Map<Card, Integer> militiaMap, remodelMap;
+	private CardProperties props;
 	
 	/**
 	 * Initializes selection tables for the ExpertSystem.
 	 */
 	public ExpertSystem() {
-		initializeActionMap();
+		props = new CardProperties();
 		initializeMilitiaMap();
 		initializeRemodelMap();
-	}
-	
-	/**
-	 * Initializes the expert map for action order.
-	 * Actions with higher numbers are played first.
-	 */
-	private void initializeActionMap() {
-		actionMap = new HashMap<>();
-		actionMap.put(new Village(), 10);
-		actionMap.put(new Market(), 10);
-		actionMap.put(new Cellar(), 9);
-		actionMap.put(new Mine(), 8);
-		actionMap.put(new Smithy(), 7);
-		actionMap.put(new Remodel(), 7);
-		actionMap.put(new Militia(), 7);
-		actionMap.put(new Workshop(), 2);
-		actionMap.put(new Woodcutter(), 1);
-		actionMap.put(new Moat(), 0);
 	}
 	
 	/**
@@ -174,14 +157,23 @@ public class ExpertSystem {
 
 
 	/**
-	 * Selects an action to play from a list of available actions.
-	 * Only works for actions in the First Game setup.
+	 * Selects an action to play from a list of available actions
+	 * based on cost, and whether the action gives additional actions.
 	 * @param options The list of action cards that can be played.
 	 * @return The action card to play.
 	 */
-	public Card chooseAction(List<Card> options) {		
-		Collections.sort(options, (a, b) -> actionMap.get(a) - actionMap.get(b));		
-		return options.get(0);
+	public Card chooseAction(List<Card> options) {
+		return Collections.max(options, (a, b) -> {
+			if(props.givesAction(a) == props.givesAction(b)) {
+				return a.getCost() - b.getCost();
+			}
+			else if(props.givesAction(a)) {
+				return 1;
+			}
+			else {
+				return -1;
+			}
+		});
 	}
 	
 }
