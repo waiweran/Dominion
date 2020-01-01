@@ -25,7 +25,7 @@ public class ModelFactory implements Serializable {
 	public GainModel getGainModel() {
 		if(index >= gainModels.size()) {
 			try {
-				String filename = "Training/Game_" + access.setup.hashCode() + "/GainModel_R.txt";
+				String filename = "Training/Game_" + access.setup.hashCode() + "/GainModel.txt";
 				gainModels.add(new GainModel(access.board, new File(filename)));
 			}
 			catch(Exception e) {
