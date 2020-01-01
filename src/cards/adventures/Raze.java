@@ -16,6 +16,7 @@ public class Raze extends Card {
 
 	@Override
 	public void performAction() {
+		getPlayer().addAction(1);
 		ArrayList<Card> options = new ArrayList<>();
 		options.addAll(getPlayer().deck.hand);
 		options.add(this);

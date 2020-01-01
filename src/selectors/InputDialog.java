@@ -334,7 +334,7 @@ public class InputDialog {
 			false,false,false,false,false,false,true, false,false,false,false,true, // Alchemy
 			true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, // Prosperity
 			true, true, true, true, true, true, true, true, true, true, true, true, true, // Cornucopia
-			true, true, true, true, true, true, true, true, false,true, true, true, true, true, true, true, true, false,true, true, true, true, true, true, true, true, // Hinterlands
+			true, true, true, true, true, true, true, true, false,true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, // Hinterlands
 			true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, false,true, true, true, true, true, true, true, true, true, true, true, true, true, true, // Dark Ages
 			true, false,false,false,false,false,true, false,false,false,true, false,true, // Guilds
 			true, true, true, true, true, true, true, true, true, false,true, false,true, true, true, true, false,true, false,true, false,true, true, true, true, true, false,true, true, true, // Adventures

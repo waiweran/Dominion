@@ -8,6 +8,7 @@ import java.util.Random;
 import java.util.TreeMap;
 
 import cards.Card;
+import cards.hinterlands.NomadCamp;
 import genericGame.ObservableList;
 
 /**
@@ -203,7 +204,12 @@ public class Deck implements Serializable {
 	 * @param c the card to be gained.
 	 */
 	public void gain(Card c) {
-		gain(c, 0);
+		if(c instanceof NomadCamp) {
+			gain(c, 1); // Implementation of Nomad Camp gain action
+		}
+		else {
+			gain(c, 0);
+		}
 	}
 	
 	/**

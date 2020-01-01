@@ -106,7 +106,7 @@ public class DominionGame extends BoardGame {
 		plays.addAll(endingPlayer.deck.duration);
 		plays.addAll(endingPlayer.deck.play);
 		gains.addAll(endingPlayer.deck.gained);
-		getGUI().showPlayerBuys(plays, gains);
+		if(showGraphics) getGUI().showPlayerBuys(plays, gains);
 		
 		//Check the card ownership in decks is correct
 		for(Player p : players) {
@@ -145,7 +145,7 @@ public class DominionGame extends BoardGame {
 
 		//Change Turn 
 		if(showGraphics && !getCurrentPlayer().isComputerPlayer() 
-				&& players.size() - numNPC > 1) {
+				/*&& players.size() - numNPC > 1*/) {
 			getGUI().turnNotify();
 		}
 

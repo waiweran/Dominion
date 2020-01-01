@@ -16,10 +16,11 @@ public class JunkDealer extends Card {
 		getPlayer().deck.deal();
 		getPlayer().addAction(1);
 		getPlayer().addTreasure(1);
-		
-		SingleCardSelector sc = new SingleCardSelector(getGame(), getPlayer().deck.hand,
-				"Trash a card", this, true);
-		getGame().board.trashCard(getPlayer().deck.hand.remove(sc.getSelectedIndex()));
+		if(!getPlayer().deck.hand.isEmpty()) {
+			SingleCardSelector sc = new SingleCardSelector(getGame(), getPlayer().deck.hand,
+					"Trash a card", this, true);
+			getGame().board.trashCard(getPlayer().deck.hand.remove(sc.getSelectedIndex()));
+		}
 	}
 
 }

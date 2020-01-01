@@ -28,8 +28,9 @@ public class Storyteller extends Card {
 		}
 		MultiCardSelector sd = new MultiCardSelector(getGame(), treasures, 
 				"Choose up to 3 treasures to play", this, 3, false);
+		int backIndex = 0;
 		for(int i : sd.getSelectedIndex()) {
-			getPlayer().playCard(indices.get(i));
+			getPlayer().playCard(indices.get(i - backIndex++));
 		}
 		int treasure = getPlayer().getTreasure();
 		for(int i = 0; i < treasure; i++) {

@@ -40,6 +40,8 @@ public class MultiCardSelector {
 	private Card title;
 	
 	private boolean displaying;
+	private boolean canSend;
+	private String output;
 	
 	private DominionGame game;
 	private Player player;
@@ -77,6 +79,8 @@ public class MultiCardSelector {
 		isRequired = isMust;
 		selectionIndecies = new ArrayList<Integer>();
 		displaying = false;
+		canSend = false;
+		output = null;
 
 		if(isMust && selectFrom.size() - numNeeded < 0) {
 			throw new RuntimeException(selectFrom.size()
@@ -111,7 +115,34 @@ public class MultiCardSelector {
 				selection += i;
 				selection += " ";
 			}
-			game.getClient().sendString("SELECT " + selection);
+			if(canSend) {
+				game.getClient().sendString("SELECT " + selection);
+			}
+			else {
+				output = "SELECT " + selection;
+			}
+			game.getGUI().removeOverlay();
+		}
+	}
+	
+	/**
+	 * Shows the pop-up without explicitly requesting data from it.
+	 * Only shows pop-ups for online games and non-computer players.
+	 * Used to allow multiple player to make selections simultaneously when playing online.
+	 */
+	public void show() {
+		if(game.isOnline() && !player.isComputerPlayer()) {
+			Platform.runLater(() -> {
+				if(player.equals(game.getGUI().getMyPlayer()) && !displaying) {
+					VBox center = new VBox(10);
+					center.getChildren().addAll(getTopPane(), getCenterPane());
+					center.setPadding(new Insets(10, 10, 10, 10));
+					HBox root = new HBox(10);
+					root.getChildren().addAll(getLeftPane(), center);	
+					game.getGUI().addOverlay(root, title.getName());
+					displaying = true;
+				}
+			});
 		}
 	}
 
@@ -125,6 +156,7 @@ public class MultiCardSelector {
 		if(player.isComputerPlayer()) {
 			return player.getComputerPlayer().chooseCards(selectFrom, numNeeded, isRequired, title.getName());
 		}
+		
 		Platform.runLater(() -> {
 			if(!game.isOnline() && !player.equals(game.getCurrentPlayer())) {
 				Alert alert = new Alert(AlertType.INFORMATION);
@@ -133,13 +165,24 @@ public class MultiCardSelector {
 				alert.showAndWait();
 			}
 			if(!game.isOnline() || player.equals(game.getGUI().getMyPlayer())) {
-				VBox center = new VBox(10);
-				center.getChildren().addAll(getTopPane(), getCenterPane());
-				center.setPadding(new Insets(10, 10, 10, 10));
-				HBox root = new HBox(10);
-				root.getChildren().addAll(getLeftPane(), center);	
-				game.getGUI().addOverlay(root, title.getName());
-				displaying = true;
+				if(!displaying) {
+					VBox center = new VBox(10);
+					center.getChildren().addAll(getTopPane(), getCenterPane());
+					center.setPadding(new Insets(10, 10, 10, 10));
+					HBox root = new HBox(10);
+					root.getChildren().addAll(getLeftPane(), center);	
+					game.getGUI().addOverlay(root, title.getName());
+					displaying = true;
+					canSend = true;
+				}
+				else {
+					if(output != null) {
+						game.getClient().sendString(output);
+					}
+					else {
+						canSend = true;
+					}
+				}
 			}	
 		});
 		return getFromServer();
@@ -152,9 +195,6 @@ public class MultiCardSelector {
 	private List<Integer> getFromServer() {
 		ArrayList<Integer> output = new ArrayList<Integer>();
 		String input = game.getClient().getSelection();
-		Platform.runLater(() -> {
-			if(displaying) game.getGUI().removeOverlay();
-		});
 		for(String s : input.substring(7).split(" ")) {
 			try {
 				output.add(Integer.parseInt(s));

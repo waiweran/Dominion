@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Scanner;
 
 import cards.Card;
@@ -148,7 +149,9 @@ public class GameSetup implements Serializable {
 	
 	@Override
 	public int hashCode() {
-		return myCards.hashCode()*31 + (bane==null?0:bane.hashCode()*17) + (prosp? 13:0) + (bal?7:0) + (shel?5:0);
+		HashSet<Card> set = new HashSet<>();
+		set.addAll(myCards);
+		return set.hashCode()*31 + (bane==null?0:bane.hashCode()*17) + (prosp? 13:0) + (bal?7:0) + (shel?5:0);
 	}
 
 

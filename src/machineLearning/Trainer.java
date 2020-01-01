@@ -15,7 +15,7 @@ import genericGame.network.LocalConnection;
 
 public class Trainer {
 
-	private static final String FILENAME = "Saves/Dark Ages/Dark Carnival.dog";
+	private static final String FILENAME = "Saves/Base/First Game.dog";
 	private static final boolean QUIET = true;
 
 	private static final int EPOCHS = 300;
