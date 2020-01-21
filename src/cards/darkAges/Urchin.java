@@ -28,9 +28,17 @@ public class Urchin extends Card {
 	public void performAction() {
 		getPlayer().deck.deal();
 		getPlayer().addAction(1);
+		
+		ArrayList<MultiCardSelector> selectors = new ArrayList<>();
 		for(Player p : getGame().getAttackedPlayers()) {
 			MultiCardSelector sd = new MultiCardSelector(getGame(), p, p.deck.hand, 
 					"Discard down to 4", this, p.deck.hand.size() - 4, true);
+			sd.show();
+			selectors.add(sd);
+		}
+		for(int selnum = 0; selnum < selectors.size(); selnum++) {
+			Player p = getGame().getAttackedPlayers().get(selnum);
+			MultiCardSelector sd = selectors.get(selnum);
 			int backIndex = 0;
 			for(int i : sd.getSelectedIndex()) {
 				p.deck.discardCard(i - backIndex++);

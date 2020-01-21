@@ -47,7 +47,7 @@ public class GainModel {
 	}
 	
 	/**
-	 * Initializes a new game model by copying an existing one
+	 * Initializes a new game model by copying an existing one.
 	 * @param other
 	 */
 	public GainModel(GainModel other) {
@@ -62,6 +62,46 @@ public class GainModel {
 				for(int k = 0; k < crossWeights[i][j].length; k++) {
 					crossWeights[i][j][k] = other.crossWeights[i][j][k];
 				}	
+			}
+		}
+
+	}
+	
+	/**
+	 * Initializes a new game model by intermixing two existing models.
+	 * Randomly chooses between parents when copying weights.
+	 * Keeps all parameters for cross weight normals together (center, spread, magnitude).
+	 * @param parent1
+	 * @param parent2
+	 */
+	public GainModel(GainModel parent1, GainModel parent2) {
+		Random rand = new Random();
+		numSupplies = parent1.numSupplies;
+		if(numSupplies != parent2.numSupplies) {
+			throw new RuntimeException("Incompatible parents - different number of supplies");
+		}
+		individualWeights = new float[parent1.individualWeights.length];
+		crossWeights = new float[parent1.crossWeights.length][parent1.crossWeights[0].length][parent1.crossWeights[0][0].length];
+		for(int i = 0; i < individualWeights.length; i++) {
+			if(rand.nextBoolean()) {
+				individualWeights[i] = parent1.individualWeights[i];
+			}
+			else {
+				individualWeights[i] = parent2.individualWeights[i];
+			}
+		}
+		for(int i = 0; i < crossWeights.length; i++) {
+			for(int j = 0; j < crossWeights[i].length; j++) {
+				if(rand.nextBoolean()) {
+					for(int k = 0; k < crossWeights[i][j].length; k++) {
+						crossWeights[i][j][k] = parent1.crossWeights[i][j][k];
+					}	
+				}
+				else {
+					for(int k = 0; k < crossWeights[i][j].length; k++) {
+						crossWeights[i][j][k] = parent2.crossWeights[i][j][k];
+					}	
+				}
 			}
 		}
 

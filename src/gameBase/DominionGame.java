@@ -144,8 +144,7 @@ public class DominionGame extends BoardGame {
 		}
 
 		//Change Turn 
-		if(showGraphics && !getCurrentPlayer().isComputerPlayer() 
-				/*&& players.size() - numNPC > 1*/) {
+		if(showGraphics && !getCurrentPlayer().isComputerPlayer()) {
 			getGUI().turnNotify();
 		}
 

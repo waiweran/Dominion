@@ -17,6 +17,7 @@ public class Militia extends Card {
 	@Override
 	public void performAction() {
 		getPlayer().addTreasure(2);
+		
 		ArrayList<MultiCardSelector> selectors = new ArrayList<>();
 		for(Player p : getGame().getAttackedPlayers()) {
 			MultiCardSelector sd = new MultiCardSelector(getGame(), p, p.deck.hand, 
