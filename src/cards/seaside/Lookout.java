@@ -17,16 +17,21 @@ public class Lookout extends Card {
 	public void performAction() {
 		getPlayer().addAction(1);
 		List<Card> cards = getPlayer().deck.getDrawCards(3);
-		SingleCardSelector sc = new SingleCardSelector(getGame(), cards,
-				"Select a card to trash.  The other cards will be discarded and returned to your deck", 
-				this, true);
-		getGame().board.trashCard(cards.remove(sc.getSelectedIndex()));
-		SingleCardSelector sc2 = new SingleCardSelector(getGame(), cards,
-				"Select a card to trash.  The other cards will be discarded and returned to your deck", 
-				this, true);
-		getPlayer().deck.discardCard(cards.remove(sc2.getSelectedIndex()));
-		getPlayer().deck.topOfDeck(cards.get(0));
-		
+		if(!cards.isEmpty()) {
+			SingleCardSelector sc = new SingleCardSelector(getGame(), cards,
+					"Select a card to trash", 
+					this, true);
+			getGame().board.trashCard(cards.remove(sc.getSelectedIndex()));
+		}
+		if(!cards.isEmpty()) {
+			SingleCardSelector sc2 = new SingleCardSelector(getGame(), cards,
+					"Select a card to discard", 
+					this, true);
+			getPlayer().deck.discardCard(cards.remove(sc2.getSelectedIndex()));
+		}
+		if(!cards.isEmpty()) {
+			getPlayer().deck.topOfDeck(cards.get(0));
+		}
 	}
 	
 }

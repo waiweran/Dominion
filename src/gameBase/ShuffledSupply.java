@@ -47,6 +47,7 @@ public class ShuffledSupply extends Supply {
 	public void putOneBack(Card c) {
 		super.putOneBack(c);
 		pileCards.add(c);
+		c.passPlayer(null);
 		notifyObservers();
 	}
 

@@ -21,15 +21,20 @@ public class Ambassador extends Card {
 				"Return a Card to the Supply", this, true);
 		Card c = getPlayer().deck.hand.remove(sc.getSelectedIndex());
 		Supply s = getGame().board.findSupply(c);
-		if(s == null) return;
-		s.putOneBack(c);
+		if(s != null) {
+			s.putOneBack(c);
+		}
 		if(getPlayer().deck.hand.contains(c) &&
 				new Selector(getGame()).showQuestionDialog(this, "Return a second copy?", "Yes", "No") == 0) {
 			getPlayer().deck.hand.remove(c);
-			s.putOneBack(c);
+			if(s != null) {
+				s.putOneBack(c);
+			}
 		}
-		for(Player p : getGame().getAttackedPlayers()) {
-			p.deck.gain(s.takeCard());
+		if(s != null) {
+			for(Player p : getGame().getAttackedPlayers()) {
+				p.deck.gain(s.takeCard());
+			}
 		}
 	}
 

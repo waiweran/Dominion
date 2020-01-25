@@ -21,7 +21,8 @@ public class GrandMarket extends Card {
 	
 	@Override
 	public boolean canBeGained() {
-		if (getPlayer().deck.play.contains(new Copper()))	{
+		if(getGame().getCurrentPlayer().buying && 
+				getGame().getCurrentPlayer().deck.play.contains(new Copper()))	{
 			return false;
 		}
 		return true;
