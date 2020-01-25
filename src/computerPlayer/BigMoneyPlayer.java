@@ -1,7 +1,6 @@
 package computerPlayer;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import cards.Card;
@@ -18,11 +17,11 @@ import gameBase.Supply;
  */
 public class BigMoneyPlayer extends ComputerPlayer {
 	
-	private ExpertSystem exsys;
+	private RandomPlayer random;
 
 	public BigMoneyPlayer(Player pComputer, DominionGame game) {
 		super("Big Money", pComputer, game);
-		exsys = new ExpertSystem();
+		random = new RandomPlayer(pComputer, game);
 	}
 
 	@Override
@@ -92,42 +91,29 @@ public class BigMoneyPlayer extends ComputerPlayer {
 	@Override
 	public Supply chooseSupply(List<Supply> options, boolean required, String choiceName) {
 		if(!required) return null;
-		else return options.get(access.random.nextInt(options.size()));
+		else return random.chooseSupply(options, required, choiceName);
 	}
 
 	@Override
 	public ArrayList<Integer> chooseCards(List<Card> choices, int num, boolean required, String choiceName) {
-		if(choiceName.equals("Militia")) {
-			return exsys.chooseCardsMilitia(choices, num);
-		}
-		ArrayList<Integer> out = new ArrayList<>();
-		if(required) {
-			while(out.size() < num) {
-				int pick = access.random.nextInt(choices.size());
-				if(!out.contains(pick)) {
-					out.add(pick);
-				}
-			}
-		}
-		Collections.sort(out);
-		return out;
-
+		if(!required) return new ArrayList<>();
+		return random.chooseCards(choices, num, required, choiceName);
 	}
 
 	@Override
 	public int chooseCard(List<Card> choices, boolean required, String choiceName) {
 		if(!required) return -1;
-		else return access.random.nextInt(choices.size());
+		else return random.chooseCard(choices, required, choiceName);
 	}
 	
 	@Override
 	public int chooseForCards(List<Card> cards, List<String> options, String choiceName) {
-		return access.random.nextInt(options.size());
+		return random.chooseForCards(cards, options, choiceName);
 	}
 
 	@Override
 	public int choose(List<String> options, String choiceName) {
-		return access.random.nextInt(options.size());
+		return random.choose(options, choiceName);
 	}
 
 	@Override

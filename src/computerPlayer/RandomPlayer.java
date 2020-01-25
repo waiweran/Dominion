@@ -118,20 +118,7 @@ public class RandomPlayer extends ComputerPlayer {
 	
 	@Override
 	protected Card chooseAction(List<Card> options) {
-		try {
-			return exsys.chooseAction(options);
-		} catch(Exception e) {} // Do nothing, probably not base game
-		int choice = access.random.nextInt(options.size());
-		// Choose whether to play a card
-		Card selectedCard;
-		if(access.random.nextInt(options.size()*5) == 0) {
-			choice = -1;
-			selectedCard = null;
-		}
-		else {
-			selectedCard = options.get(choice);
-		}
-		return selectedCard;
+		return exsys.chooseAction(options);
 	}
 	
 	@Override

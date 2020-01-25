@@ -145,7 +145,7 @@ public class RatioPlayer extends ComputerPlayer {
 		else if(treasure > victory) {
 			// buy a treasure
 			for(Supply s : options) {
-				if(s.getTopCard().isAction()) {
+				if(s.getTopCard().isTreasure()) {
 					possibilities.add(s);
 				}
 			}
@@ -153,7 +153,7 @@ public class RatioPlayer extends ComputerPlayer {
 		else {
 			// buy a victory
 			for(Supply s : options) {
-				if(s.getTopCard().isAction()) {
+				if(s.getTopCard().isVictory()) {
 					possibilities.add(s);
 				}
 			}
