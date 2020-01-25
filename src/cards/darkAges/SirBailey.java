@@ -13,5 +13,8 @@ public class SirBailey extends Knight {
 		getPlayer().deck.deal();
 		getPlayer().addAction(1);
 	}
+	
+	@Override
+	public void gainAction() {}
 
 }

@@ -10,6 +10,10 @@ public class Ruins extends Card {
 		super("Ruins", "Action-Ruins", "Extras/Ruins", 0);
 	}
 
+	protected Ruins(String n, String t, String g, int c) {
+		super(n, t, g, c);
+	}
+
 	@Override
 	public void gainAction() {
 		throw new RuntimeException("Cannot gain generic ruins card");

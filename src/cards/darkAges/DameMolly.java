@@ -12,5 +12,8 @@ public class DameMolly extends Knight {
 	public void specificAction() {
 		getPlayer().addAction(2);
 	}
+	
+	@Override
+	public void gainAction() {}
 
 }

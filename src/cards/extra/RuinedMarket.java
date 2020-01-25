@@ -1,8 +1,6 @@
 package cards.extra;
-import cards.Card;
 
-
-public class RuinedMarket extends Card {
+public class RuinedMarket extends Ruins {
 
 	private static final long serialVersionUID = -17L;
 
@@ -14,5 +12,8 @@ public class RuinedMarket extends Card {
 	public void performAction() {
 		super.getPlayer().addBuy();
 	}
+	
+	@Override
+	public void gainAction() {}
 
 }

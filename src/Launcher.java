@@ -12,7 +12,6 @@ import gameBase.DominionClient;
 import gameBase.DominionGame;
 import gameBase.GameOptions;
 import gameBase.GameSetup;
-import genericGame.GameSecurity;
 import genericGame.network.LocalConnection;
 import genericGame.network.OnlineConnection;
 import javafx.application.Application;
@@ -58,8 +57,6 @@ public class Launcher extends Application {
 	public Launcher() {		
 		loadPlayerName();
 		setupErrorLog();
-		GameSecurity.confirmLocation();
-		GameSecurity.confirmReadMeAgree();
 	}
 	
 	@Override

@@ -15,7 +15,7 @@ import gameBase.Supply;
  */
 public class RatioPlayer extends ComputerPlayer {
 	
-	private static final int[] WEIGHTS = {48, 37, 15}; //Treasure, action, victory, must total 100
+	private static final double[] WEIGHTS = {0.37, 0.48, 0.15}; //action, treasure, victory
 	
 	private BigMoneyPlayer money;
 	private RandomPlayer random;
@@ -28,20 +28,52 @@ public class RatioPlayer extends ComputerPlayer {
 	
 	@Override
 	public Supply chooseGain(List<Supply> options, boolean required) {
-		// if the game is nearing an end, just buy like big money
-		if((!access.setup.useProsperity() && access.board.defaultCards.get(5).getQuantity() < 3)
-				|| (access.setup.useProsperity() && access.board.defaultCards.get(7).getQuantity() < 3)) {
-			return money.chooseGain(options, required);
+		
+		// Determine which category to buy from based on ratio	
+		ArrayList<Supply> possibilities = new ArrayList<>();
+		double actions = 0, treasure = 0, victory = 0;
+		for(Card c : player.deck.getDeck()) {
+			if(c.isAction()) actions++;
+			if(c.isTreasure()) treasure++;
+			if(c.isVictory()) victory++;
+		}
+		double size = (double)player.deck.size();
+		actions = WEIGHTS[0] - actions / size;
+		treasure = WEIGHTS[1] - treasure / size;
+		victory = WEIGHTS[2] - victory / size;
+		
+		// Select cards to buy from based on category
+		if(actions > treasure && actions > victory) {
+			// buy an action
+			for(Supply s : options) {
+				if(s.getTopCard().isAction()) {
+					possibilities.add(s);
+				}
+			}
+		}
+		else if(treasure > victory) {
+			// buy a treasure
+			for(Supply s : options) {
+				if(s.getTopCard().isAction()) {
+					possibilities.add(s);
+				}
+			}
+		}
+		else {
+			// buy a victory
+			for(Supply s : options) {
+				if(s.getTopCard().isAction()) {
+					possibilities.add(s);
+				}
+			}
 		}
 		
-		// List options based on ratio, buy randomly from correct category.
-		List<Supply> possibilities = getRatioOptions();
 		if(possibilities.size() > 0) {
 			return random.chooseGain(possibilities, required);
 		}
 		
-		// Buy randomly if no ratio options available.
-		return random.chooseGain(options, required);
+		// gain randomly if no ratio options available.
+		return random.chooseGain(options, required);	
 	}
 	
 	@Override
@@ -71,105 +103,70 @@ public class RatioPlayer extends ComputerPlayer {
 	
 	@Override
 	protected Card chooseAction(List<Card> options) {
-		int choice = access.random.nextInt(options.size());
-		// Choose whether to play a card
-		Card selectedCard;
-		if(access.random.nextInt(options.size()*5) == 0) {
-			choice = -1;
-			selectedCard = null;
-		}
-		else {
-			selectedCard = options.get(choice);
-		}
-		return selectedCard;
+		return random.chooseAction(options);
 	}
 	
 	@Override
 	protected Card chooseTreasure(List<Card> options) {
-		// Play all treasures in order
-		return options.get(0);
+		return random.chooseTreasure(options);
 	}
 
 	@Override
 	protected Supply chooseBuy(List<Supply> options) {
 		
-		// if the game is nearing an end, just buy like big money
+		// If near the end of the game, just buy like big money
 		if((!access.setup.useProsperity() && access.board.defaultCards.get(5).getQuantity() < 3)
 				|| (access.setup.useProsperity() && access.board.defaultCards.get(7).getQuantity() < 3)) {
 			return money.chooseBuy(options);
 		}
 		
-		// List options based on ratio, buy from correct category.
-		List<Supply> possibilities = getRatioOptions();
+		// Determine which category to buy from based on ratio	
+		ArrayList<Supply> possibilities = new ArrayList<>();
+		double actions = 0, treasure = 0, victory = 0;
+		for(Card c : player.deck.getDeck()) {
+			if(c.isAction()) actions++;
+			if(c.isTreasure()) treasure++;
+			if(c.isVictory()) victory++;
+		}
+		double size = (double)player.deck.size();
+		actions = WEIGHTS[0] - actions / size;
+		treasure = WEIGHTS[1] - treasure / size;
+		victory = WEIGHTS[2] - victory / size;
+		
+		// Select cards to buy from based on category
+		if(actions > treasure && actions > victory) {
+			// buy an action
+			for(Supply s : options) {
+				if(s.getTopCard().isAction()) {
+					possibilities.add(s);
+				}
+			}
+		}
+		else if(treasure > victory) {
+			// buy a treasure
+			for(Supply s : options) {
+				if(s.getTopCard().isAction()) {
+					possibilities.add(s);
+				}
+			}
+		}
+		else {
+			// buy a victory
+			for(Supply s : options) {
+				if(s.getTopCard().isAction()) {
+					possibilities.add(s);
+				}
+			}
+		}
+		
 		if(possibilities.size() > 0) {
 			return random.chooseBuy(possibilities);
 		}
 		
-		// Buy randomly if no ratio options available.
-		return random.chooseBuy(options);
+		// Buy with big money if no ratio options available.
+		return money.chooseBuy(options);
 	}	
 	
-	/**
-	 * Generates a list of cards in the category the player most needs.
-	 * @return List of cards to choose buy from.
-	 */
-	private List<Supply> getRatioOptions() {
-		// Count cards in deck
-		int[] cardTypes = new int[WEIGHTS.length];
-		int total = 0;
-		for(Card c : player.deck.getDeck()) {
-			if(c.isTreasure()) cardTypes[0] += c.getCost() + 1;
-			if(c.isAction()) cardTypes[1] += c.getCost() + 1;
-			if(c.isVictory()) cardTypes[2]+= c.getCost() + 1;
-			total += c.getCost() + 1;
-		}
-		
-		//Find the one most below the proper ratio
-		for(int i = 0; i < cardTypes.length; i++) {
-			cardTypes[i] = (cardTypes[i]*100)/total;
-		}
-		int maxIndex = 0;
-		int maxVal = WEIGHTS[0] - cardTypes[0];
-		for(int i = 1; i < cardTypes.length; i++) {
-			int newVal = WEIGHTS[i] - cardTypes[i];
-			if(newVal > maxVal) {
-				maxVal = newVal;
-				maxIndex = i;
-			}
-		}
-		
-		// Get card of correct type
-		ArrayList<Supply> possibilities = new ArrayList<Supply>();
-		if(maxIndex == 0) {
-			for(Supply s : access.board.getAllSupplies()) {
-				if(player.getTreasure() - s.getTopCard().getCost() == 0 && s.getTopCard().canBeGained()
-						&& (!s.getTopCard().costsPotion() || player.potion > 0)
-						&& s.getTopCard().isTreasure()) {
-					possibilities.add(s);
-				}
-			}
-		}
-		else if(maxIndex == 1) {
-			for(Supply s : access.board.getAllSupplies()) {
-				if(player.getTreasure() - s.getTopCard().getCost() == 0 && s.getTopCard().canBeGained()
-						&& (!s.getTopCard().costsPotion() || player.potion > 0)
-						&& s.getTopCard().isAction()) {
-					possibilities.add(s);
-				}
-			}
-					}
-		else if(maxIndex == 2) {
-			for(Supply s : access.board.getAllSupplies()) {
-				if(player.getTreasure() - s.getTopCard().getCost() == 0 && s.getTopCard().canBeGained()
-						&& (!s.getTopCard().costsPotion() || player.potion > 0)
-						&& s.getTopCard().isVictory()) {
-					possibilities.add(s);
-				}
-			}
-		}
-		return possibilities;
-	}
-
 
 
 }

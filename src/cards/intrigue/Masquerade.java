@@ -22,7 +22,7 @@ public class Masquerade extends Card {
 		ArrayList<Card> passes = new ArrayList<Card>();
 		for(Player p : getGame().players) {
 			SingleCardSelector sc = new SingleCardSelector(getGame(), p, p.deck.hand,
-					"Pass a card to the getPlayer() on your left", this, true);
+					"Pass a card to the player on your left", this, true);
 			passes.add(p.deck.hand.remove(sc.getSelectedIndex()));
 		}
 		for(Player p : getGame().players) {

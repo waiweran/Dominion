@@ -20,5 +20,8 @@ public class DameAnna extends Knight {
 			backIndex++;
 		}
 	}
+	
+	@Override
+	public void gainAction() {}
 
 }

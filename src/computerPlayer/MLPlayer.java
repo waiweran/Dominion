@@ -13,12 +13,12 @@ import machineLearning.SupplyData;
 
 public class MLPlayer extends ComputerPlayer {
 	
-	RandomPlayer2 rand;
+	RandomPlayer rand;
 	GainModel model;
 
 	public MLPlayer(Player pComputer, DominionGame game) {
 		super("ML Player", pComputer, game);
-		rand = new RandomPlayer2(pComputer, game);
+		rand = new RandomPlayer(pComputer, game);
 		model = game.models.getGainModel();
 	}
 

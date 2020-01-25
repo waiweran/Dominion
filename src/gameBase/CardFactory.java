@@ -88,12 +88,12 @@ import cards.darkAges.DeathCart;
 import cards.darkAges.Feodum;
 import cards.darkAges.Forager;
 import cards.darkAges.Fortress;
-import cards.darkAges.GenericKnight;
 import cards.darkAges.Graverobber;
 import cards.darkAges.Hermit;
 import cards.darkAges.HuntingGrounds;
 import cards.darkAges.Ironmonger;
 import cards.darkAges.JunkDealer;
+import cards.darkAges.Knight;
 import cards.darkAges.Marauder;
 import cards.darkAges.Mystic;
 import cards.darkAges.Pillage;
@@ -507,7 +507,7 @@ public class CardFactory implements Serializable {
 		allCards.add(new HuntingGrounds());
 		allCards.add(new Ironmonger());
 		allCards.add(new JunkDealer());
-		allCards.add(new GenericKnight());
+		allCards.add(new Knight());
 		allCards.add(new Marauder());
 		allCards.add(new Trash());		//allCards.add(new MarketSquare());		174*
 		allCards.add(new Mystic());

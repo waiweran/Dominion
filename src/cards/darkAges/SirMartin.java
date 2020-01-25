@@ -13,5 +13,8 @@ public class SirMartin extends Knight {
 		getPlayer().addBuy();
 		getPlayer().addBuy();
 	}
+	
+	@Override
+	public void gainAction() {}
 
 }

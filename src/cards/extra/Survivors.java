@@ -6,7 +6,7 @@ import selectors.Selector;
 import selectors.SingleCardSelector;
 
 
-public class Survivors extends Card {
+public class Survivors extends Ruins {
 
 	private static final long serialVersionUID = -19L;
 
@@ -32,5 +32,8 @@ public class Survivors extends Card {
 			}	
 		}
 	}
+	
+	@Override
+	public void gainAction() {}
 
 }

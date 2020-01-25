@@ -15,5 +15,8 @@ public class SirVander extends Knight {
 	public void trashAction() {
 		getPlayer().deck.gain(getGame().board.getGold().takeCard());
 	}
+	
+	@Override
+	public void gainAction() {}
 
 }

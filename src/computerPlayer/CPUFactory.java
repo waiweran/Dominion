@@ -36,20 +36,11 @@ public class CPUFactory {
 		if(cpuType.equals("Random")) {
 			return new RandomPlayer(player, access);
 		}
-		if(cpuType.equals("Random2")) {
-			return new RandomPlayer2(player, access);
-		}
-		if(cpuType.equals("ML")) {
+		if(cpuType.equals("AI") || cpuType.equals("ML")) {
 			return new MLPlayer(player, access);
 		}
 		if(cpuType.equals("Stdio")) {
 			return new StdioPlayer(player, access);
-		}
-		if(cpuType.equals("Socket")) {
-			return new SocketPlayer(player, access);
-		}
-		if(cpuType.equals("Web")) {
-			return new WebPlayer(player, access);
 		}
 		throw new RuntimeException("Unsupported Computer Player Type " + cpuType);
 	}

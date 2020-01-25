@@ -13,5 +13,8 @@ public class SirDestry extends Knight {
 		getPlayer().deck.deal();
 		getPlayer().deck.deal();
 	}
+	
+	@Override
+	public void gainAction() {}
 
 }

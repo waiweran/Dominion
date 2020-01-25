@@ -10,5 +10,8 @@ public class DameJosephine extends Knight {
 
 	@Override
 	public void specificAction() {}
+	
+	@Override
+	public void gainAction() {}
 
 }

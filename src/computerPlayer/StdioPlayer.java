@@ -18,7 +18,7 @@ import gameBase.Supply;
 public class StdioPlayer extends ComputerPlayer {
 	
 	private ExpertSystem exsys;	
-	private RandomPlayer2 rand2;
+	private RandomPlayer random;
 
 	private int lastGain;
 	private double gainReward;
@@ -26,8 +26,8 @@ public class StdioPlayer extends ComputerPlayer {
 	private Scanner in;
 	
 	public StdioPlayer(Player pComputer, DominionGame game) {
-		super("Gain Neural Net", pComputer, game);
-		rand2 = new RandomPlayer2(pComputer, game);
+		super("Stdio JSON", pComputer, game);
+		random = new RandomPlayer(pComputer, game);
 		exsys = new ExpertSystem();	
 		lastGain = 0;
 		gainReward = 0;
@@ -43,7 +43,7 @@ public class StdioPlayer extends ComputerPlayer {
 		System.out.flush();
 		String jsonArray = in.nextLine();
 		if(jsonArray.contains("random")) {
-			return rand2.chooseGain(options, required);
+			return random.chooseGain(options, required);
 		}
 		String[] vals = jsonArray.substring(jsonArray.indexOf("[") + 1, 
 				jsonArray.indexOf("]")).split(",");

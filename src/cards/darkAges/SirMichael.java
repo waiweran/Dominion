@@ -31,5 +31,8 @@ public class SirMichael extends Knight {
 			}
 		}
 	}
+	
+	@Override
+	public void gainAction() {}
 
 }

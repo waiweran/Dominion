@@ -5,40 +5,43 @@ import java.util.Collections;
 import java.util.List;
 
 import cards.Card;
-import cards.defaults.Curse;
 import gameBase.DominionGame;
 import gameBase.Player;
 import gameBase.Supply;
 
 /**
- * Player that randomly selects a card to play from the most expensive options.
+ * Random player that purchases cards at random, weighted by card cost.
  * @author Nathaniel
- * @version 05-04-2017
+ * @version 04-20-2019
  */
 public class RandomPlayer extends ComputerPlayer {
 	
 	private ExpertSystem exsys;
 
 	public RandomPlayer(Player pComputer, DominionGame game) {
-		super("Random Player", pComputer, game);
+		super("Random Player 2", pComputer, game);
 		exsys = new ExpertSystem();
 	}
 	
 	@Override
 	public Supply chooseGain(List<Supply> options, boolean required) {
-		int choice = 0;
-		Collections.sort(options, new CostComparator());
-		int maxCost = options.get(0).getCard().getCost();
-		for(int i = 1; i < options.size(); i++) {
-			if(i + 1 == options.size() || options.get(i).getCard().getCost() < maxCost) {
-				choice = access.random.nextInt(i);
-				while(options.size() > 1 && options.get(choice).getCard().equals(new Curse())) {
-					choice = access.random.nextInt(i);
-				}
-				break;
-			}
+		double[] probs = new double[options.size() + 1];
+		probs[0] = 2;
+		for(int i = 1; i < probs.length; i++) {
+			probs[i] = options.get(i - 1).getTopCard().getCost() + 1;
 		}
-		return options.get(choice);
+		for(int i = 0; i < probs.length; i++) {
+			probs[i] = Math.pow(probs[i], 2) * access.random.nextDouble();
+		}
+		int maxIndex = 0;
+		if(required) maxIndex = 1;
+		for(int i = 1; i < probs.length; i++) {
+			if(probs[maxIndex] < probs[i]) {
+				maxIndex = i;
+			}
+		}	
+		if(maxIndex == 0) return null;
+		return options.get(maxIndex - 1);
 	}
 	
 	@Override
@@ -97,7 +100,7 @@ public class RandomPlayer extends ComputerPlayer {
 			return access.random.nextInt(choices.size() + 1) - 1;
 		}
 	}
-
+	
 	@Override
 	public int chooseForCards(List<Card> cards, List<String> options, String choiceName) {
 		return access.random.nextInt(options.size());
@@ -139,28 +142,7 @@ public class RandomPlayer extends ComputerPlayer {
 
 	@Override
 	protected Supply chooseBuy(List<Supply> options) {
-		int choice = -1;
-		Collections.sort(options, new CostComparator());
-		int maxCost = options.get(0).getCard().getCost();
-		for(int i = 1; i < options.size(); i++) {
-			if(i + 1 == options.size() || options.get(i).getCard().getCost() < maxCost) {
-				choice = access.random.nextInt(i);
-				while(options.get(choice).getCard().equals(new Curse())) {
-					choice = access.random.nextInt(i);
-					if(options.size() == 1) {
-						choice = -1; 
-						break;
-					}
-				}
-				break;
-			}
-		}
-		// Decide whether or not to buy
-		if(choice < 0 || access.random.nextInt(options.get(choice).getCard().getCost()*5 + 1) == 0) {
-			return null;		
-		}
-		
-		return options.get(choice);
+		return chooseGain(options, false);
 	}
 
 }

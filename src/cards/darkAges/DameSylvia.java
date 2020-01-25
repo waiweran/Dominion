@@ -12,5 +12,8 @@ public class DameSylvia extends Knight {
 	public void specificAction() {
 		getPlayer().addTreasure(2);
 	}
+	
+	@Override
+	public void gainAction() {}
 
 }

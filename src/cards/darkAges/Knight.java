@@ -8,16 +8,19 @@ import gameBase.Player;
 import selectors.SingleCardSelector;
 
 
-public abstract class Knight extends Card {
+public class Knight extends Card {
 	
 	private static final long serialVersionUID = -8122332251224756408L;
 	
 	public static final Card[] KNIGHTS = {new DameAnna(), new DameJosephine(), new DameMolly(), new DameNatalie(), new DameSylvia(), 
 		new SirBailey(), new SirDestry(), new SirMartin(), new SirMichael(), new SirVander()};
 
+	public Knight() {
+		super("Knight", "Action-Attack-Knight", "Dark Ages", 5, 0, 0);
+	}
+	
 	public Knight(String name, String type, int cost, int victory) {
-		super(name, type, "Dark Ages", cost, victory, 0);
-		
+		super(name, type, "Dark Ages", cost, victory, 0);		
 	}
 
 	@Override
@@ -50,6 +53,9 @@ public abstract class Knight extends Card {
 	@Override
 	public File getImage() {
 		String filename = getName().toLowerCase();
+		if(filename == "knight") {
+			return new File("Images/Cards/Dark Ages/Knights/knightsrandomizer.jpg");
+		}
 		String temp;
 		int i = 0;
 		while(filename.contains(" ")) {
@@ -67,11 +73,17 @@ public abstract class Knight extends Card {
 		}
 		return new File("Images/Cards/Dark Ages/Knights/" + filename + ".jpg");
 	}
+	
+
+	@Override
+	public void gainAction() {
+		throw new RuntimeException("Cannot gain generic knight card");
+	}
 			
 	/**
 	 * The specific action that each knight performs.
 	 * In addition to the general knight action.
 	 */
-	protected abstract void specificAction();
+	protected void specificAction() {}
 
 }

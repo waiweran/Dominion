@@ -16,5 +16,8 @@ public class DameNatalie extends Knight {
 				"Select a card to gain, costing up to 3", 0, 3);
 		getPlayer().deck.gain(sd.getGainedCard());
 	}
+	
+	@Override
+	public void gainAction() {}
 
 }
