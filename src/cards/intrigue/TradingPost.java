@@ -13,15 +13,20 @@ public class TradingPost extends Card {
 
 	@Override
 	public void performAction() {
+		int numTrash = 2;
+		if(getPlayer().deck.hand.size() < 2) {
+			numTrash = getPlayer().deck.hand.size();
+		}
 		MultiCardSelector sd = new MultiCardSelector(getGame(), getPlayer().deck.hand, 
-				"Please select 2 cards to trash", this, 2, true);
+				"Please select 2 cards to trash", this, numTrash, true);
 		int backIndex = 0;
 		for(int i : sd.getSelectedIndex()) {
 			getGame().board.trashCard(getPlayer().deck.hand.remove(i - backIndex));
 			backIndex++;
 		}
-		getPlayer().deck.gain(getGame().board.getSilver().takeCard(), 1);
-		getPlayer().deck.deal();
+		if(numTrash == 2) {
+			getPlayer().deck.gain(getGame().board.getSilver().takeCard(), 2);
+		}
 	}
 	
 }
