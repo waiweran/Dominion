@@ -22,14 +22,16 @@ public class GainModel {
 	private static final float TRAINING_FACTOR = 100;
 
 	private int numSupplies;
-	private float[] individualWeights;
-	private float[][][] crossWeights;
+	private float[][][] weights;
+	
+	private Random rand;
 
 	/**
 	 * Initializes a new game model.
 	 * @param board The board the game model is based on.
 	 */
 	public GainModel(Board board) {
+		rand = new Random();
 		initializeWeights(board);
 	}
 
@@ -39,6 +41,7 @@ public class GainModel {
 	 * @param file Location to preload weights from.
 	 */
 	public GainModel(Board board, File file) {
+		rand = new Random();
 		try {
 			load(board, file);
 		} catch (IOException e) {
@@ -51,16 +54,13 @@ public class GainModel {
 	 * @param other
 	 */
 	public GainModel(GainModel other) {
+		rand = new Random();
 		numSupplies = other.numSupplies;
-		individualWeights = new float[other.individualWeights.length];
-		crossWeights = new float[other.crossWeights.length][other.crossWeights[0].length][other.crossWeights[0][0].length];
-		for(int i = 0; i < individualWeights.length; i++) {
-			individualWeights[i] = other.individualWeights[i];
-		}
-		for(int i = 0; i < crossWeights.length; i++) {
-			for(int j = 0; j < crossWeights[i].length; j++) {
-				for(int k = 0; k < crossWeights[i][j].length; k++) {
-					crossWeights[i][j][k] = other.crossWeights[i][j][k];
+		weights = new float[other.weights.length][other.weights[0].length][other.weights[0][0].length];
+		for(int i = 0; i < weights.length; i++) {
+			for(int j = 0; j < weights[i].length; j++) {
+				for(int k = 0; k < weights[i][j].length; k++) {
+					weights[i][j][k] = other.weights[i][j][k];
 				}	
 			}
 		}
@@ -70,36 +70,27 @@ public class GainModel {
 	/**
 	 * Initializes a new game model by intermixing two existing models.
 	 * Randomly chooses between parents when copying weights.
-	 * Keeps all parameters for cross weight normals together (center, spread, magnitude).
+	 * Keeps all parameters for weight normals together (center, spread, magnitude).
 	 * @param parent1
 	 * @param parent2
 	 */
 	public GainModel(GainModel parent1, GainModel parent2) {
-		Random rand = new Random();
+		rand = new Random();
 		numSupplies = parent1.numSupplies;
 		if(numSupplies != parent2.numSupplies) {
 			throw new RuntimeException("Incompatible parents - different number of supplies");
 		}
-		individualWeights = new float[parent1.individualWeights.length];
-		crossWeights = new float[parent1.crossWeights.length][parent1.crossWeights[0].length][parent1.crossWeights[0][0].length];
-		for(int i = 0; i < individualWeights.length; i++) {
-			if(rand.nextBoolean()) {
-				individualWeights[i] = parent1.individualWeights[i];
-			}
-			else {
-				individualWeights[i] = parent2.individualWeights[i];
-			}
-		}
-		for(int i = 0; i < crossWeights.length; i++) {
-			for(int j = 0; j < crossWeights[i].length; j++) {
+		weights = new float[parent1.weights.length][parent1.weights[0].length][parent1.weights[0][0].length];
+		for(int i = 0; i < weights.length; i++) {
+			for(int j = 0; j < weights[i].length; j++) {
 				if(rand.nextBoolean()) {
-					for(int k = 0; k < crossWeights[i][j].length; k++) {
-						crossWeights[i][j][k] = parent1.crossWeights[i][j][k];
+					for(int k = 0; k < weights[i][j].length; k++) {
+						weights[i][j][k] = parent1.weights[i][j][k];
 					}	
 				}
 				else {
-					for(int k = 0; k < crossWeights[i][j].length; k++) {
-						crossWeights[i][j][k] = parent2.crossWeights[i][j][k];
+					for(int k = 0; k < weights[i][j].length; k++) {
+						weights[i][j][k] = parent2.weights[i][j][k];
 					}	
 				}
 			}
@@ -137,54 +128,72 @@ public class GainModel {
 		float[] outputs = evaluateNet(data);
 
 		for(int i = 0; i < outputs.length; i++) {
-			individualWeights[i] += (((i == choice)? 1 : 0) - outputs[i])/TRAINING_FACTOR;
-		}
-
-		for(int i = 0; i < outputs.length; i++) {
 			SupplyData current = data[i];
 			for(int j = 0; j < data.length; j++) {
 				if(data[j].canGain()) {
-					float[] local = crossWeights[i][j];
+					float[] local = weights[i][j];
+					// Add to value +/-1 if wrong, 0 if correct * distance between center and current value / training factor
 					local[0] += (((j == choice)? 1 : 0) - outputs[j])*(current.getNumAvailable() - local[0])/TRAINING_FACTOR;
-					local[1] *= ((1 - 0.5/TRAINING_FACTOR) + (choice*2 - 1)*evaluateNormal(current.getNumAvailable(), local[0], local[1], 1)/TRAINING_FACTOR);
-					local[2] += (choice*2 - 1)*(evaluateNormal(current.getNumAvailable(), local[0], local[1], 1) - 0.5)/TRAINING_FACTOR;
+					// Multiply by 1 + (pos/neg based on choice * value of evaluated normal compared to 50% / training factor)
+					local[1] *= (1 + ((j == choice)? 1 : -1)*(evaluateNormal(current.getNumAvailable(), local[0], local[1], 1) - 0.5)/TRAINING_FACTOR);
+					// Add to value +/- 1 based on choice * value of evaluated normal compared to 50% / training factor
+					local[2] += ((j == choice)? 1 : -1)*(evaluateNormal(current.getNumAvailable(), local[0], local[1], 1) - 0.5)/TRAINING_FACTOR;
+
+					// Same math as above
 					local[3] += (((j == choice)? 1 : 0) - outputs[j])*(current.getNumInDeck() - local[3])/TRAINING_FACTOR;
-					local[4] *= ((1 - 0.5/TRAINING_FACTOR) + (choice*2 - 1)*evaluateNormal(current.getNumInDeck(), local[3], local[4], 1)/TRAINING_FACTOR);
-					local[5] += (choice*2 - 1)*(evaluateNormal(current.getNumInDeck(), local[3], local[4], 1) - 0.5)/TRAINING_FACTOR;
+					local[4] *= (1 + ((j == choice)? 1 : -1)*(evaluateNormal(current.getNumInDeck(), local[3], local[4], 1) - 0.5)/TRAINING_FACTOR);
+					local[5] += ((j == choice)? 1 : -1)*(evaluateNormal(current.getNumInDeck(), local[3], local[4], 1) - 0.5)/TRAINING_FACTOR;
 				}
 			}
 		}
 	}
 	
 	/**
-	 * Preturbs the weights in the model for training
+	 * Perturb main weights for purchasing each card
+	 * @param probability The probability that an individual value is adjusted
+	 * @param magnitude A scaling factor for the magnitude of each weight adjustment
 	 */
-	public void perturb(double probability, float magnitude) {
-		Random rand = new Random();
-		for(int i = 0; i < individualWeights.length; i++) {
+	public void perturbMain(double probability, float magnitude) {
+		for(int i = 0; i < weights.length; i++) {
 			if(rand.nextDouble() < probability)
-				individualWeights[i] += (float)rand.nextGaussian()*magnitude;
+				weights[i][i][0] += (float)rand.nextGaussian()*magnitude*0.1; // Center
+			if(rand.nextDouble() < probability)
+				weights[i][i][1] *= Math.pow(2, rand.nextGaussian()*magnitude*0.1); // Spread, uses exponent to equal probability of doubling and halving, etc.
+			if(rand.nextDouble() < probability)
+				weights[i][i][2] += (float)rand.nextGaussian()*magnitude; // Multiplier
+			
+			if(rand.nextDouble() < probability)
+				weights[i][i][3] += (float)rand.nextGaussian()*magnitude*0.1; // Center
+			if(rand.nextDouble() < probability) 
+				weights[i][i][4] *= Math.pow(2, rand.nextGaussian()*magnitude*0.1); // Spread, uses exponent to equal probability of doubling and halving, etc.
+			if(rand.nextDouble() < probability)
+				weights[i][i][5] += (float)rand.nextGaussian()*magnitude; // Multiplier
 		}
-		for(int i = 0; i < crossWeights.length; i++) {
-			for(int j = 0; j < crossWeights[i].length; j++) {
-				if(rand.nextDouble() < probability)
-					crossWeights[i][j][0] += (float)rand.nextGaussian()*magnitude;
-				if(rand.nextDouble() < probability)
-					crossWeights[i][j][1] += (float)rand.nextGaussian()*magnitude;
-				if(rand.nextDouble() < probability) {
-					float multiplier = (float)rand.nextGaussian()*magnitude;
-					if(multiplier != 0)
-						crossWeights[i][j][2] *= multiplier;
+	}
+
+	/**
+	 * Perturb cross weights that link purchase probability to other cards in the supply and deck
+	 * @param probability The probability that an individual value is adjusted
+	 * @param magnitude A scaling factor for the magnitude of each weight adjustment
+	 */
+	public void perturbCross(double probability, float magnitude) {
+		for(int i = 0; i < weights.length; i++) {
+			for(int j = 0; j < weights[i].length; j++) {
+				if(i != j) {
+					if(rand.nextDouble() < probability)
+						weights[i][j][0] += (float)rand.nextGaussian()*magnitude; // Center
+					if(rand.nextDouble() < probability)
+						weights[i][j][1] *= Math.pow(2, rand.nextGaussian()*magnitude*0.1); // Spread, uses exponent to equal probability of doubling and halving, etc.
+					if(rand.nextDouble() < probability)
+						weights[i][j][2] += (float)rand.nextGaussian()*magnitude; // Multiplier
+
+					if(rand.nextDouble() < probability)
+						weights[i][j][3] += (float)rand.nextGaussian()*magnitude; // Center
+					if(rand.nextDouble() < probability) 
+						weights[i][j][4] *= Math.pow(2, rand.nextGaussian()*magnitude*0.1); // Spread, uses exponent to equal probability of doubling and halving, etc.
+					if(rand.nextDouble() < probability)
+						weights[i][j][5] += (float)rand.nextGaussian()*magnitude; // Multiplier
 				}
-				if(rand.nextDouble() < probability)
-					crossWeights[i][j][3] += (float)rand.nextGaussian()*magnitude;
-				if(rand.nextDouble() < probability) {
-					float multiplier = (float)rand.nextGaussian()*magnitude;
-					if(multiplier != 0)
-						crossWeights[i][j][4] *= multiplier;
-				}
-				if(rand.nextDouble() < probability)
-					crossWeights[i][j][5] += (float)rand.nextGaussian()*magnitude;
 			}
 		}
 	}
@@ -200,13 +209,10 @@ public class GainModel {
 	 */
 	public float[] evaluateNet(SupplyData[] data) {
 		float[] outputs = new float[numSupplies + 1];
-		for(int i = 0; i < outputs.length; i++) {
-			outputs[i] += individualWeights[i];
-		}
 		for(int i = 0; i < numSupplies; i++) {
 			SupplyData current = data[i];
 			for(int j = 0; j < outputs.length; j++) {
-				float[] local = crossWeights[i][j];
+				float[] local = weights[i][j];
 				outputs[j] += evaluateNormal(current.getNumAvailable(), local[0], local[1], local[2]) +
 						evaluateNormal(current.getNumInDeck(), local[3], local[4], local[5]);
 			}
@@ -235,31 +241,45 @@ public class GainModel {
 	private void initializeWeights(Board board) {
 		List<Supply> supplies = board.getAllSupplies();
 		numSupplies = supplies.size();
-		individualWeights = new float[numSupplies + 1];
-		crossWeights = new float[numSupplies][numSupplies + 1][6];
-		individualWeights[0] = 1;
-		for(int i = 0; i < numSupplies; i++) {
-			if(supplies.get(i).getCard() instanceof Curse) {
-				individualWeights[i] = -10;
-			}
-			else {
-				individualWeights[i] = supplies.get(i).getCard().getCost();
-			}
-		}
-		individualWeights[numSupplies] = 1;
-		for(int i = 0; i < crossWeights.length; i++) {
-			for(int j = 0; j < crossWeights[i].length; j++) {
+		weights = new float[numSupplies][numSupplies + 1][6];
+		for(int i = 0; i < weights.length; i++) {
+			for(int j = 0; j < weights[i].length; j++) {
 				if(i == j) {
-					crossWeights[i][j][0] = 0;
-					crossWeights[i][j][1] = (float)0.1;
-					crossWeights[i][j][2] = supplies.get(i).getCard().getCost();
-					crossWeights[i][j][3] = 0;
-					crossWeights[i][j][4] = (float)0.1;
-					crossWeights[i][j][5] = supplies.get(i).getCard().getCost();
+					// Push actions to scale down quickly with purchase
+					if(supplies.get(i).getCard().isAction()) {
+						weights[i][j][0] = 0;
+						weights[i][j][1] = (float)1/(float)supplies.get(i).getQuantity();
+						weights[i][j][2] = supplies.get(i).getCard().getCost();
+						weights[i][j][3] = 0;
+						weights[i][j][4] = (float)1/(float)supplies.get(i).getQuantity();
+						weights[i][j][5] = supplies.get(i).getCard().getCost();						
+					}
+					// Push curse to negative value, minimize scale down
+					else if(supplies.get(i).getCard() instanceof Curse) {
+						weights[i][j][0] = 0;
+						weights[i][j][1] = (float)0.0001;
+						weights[i][j][2] = -10;
+						weights[i][j][3] = 0;
+						weights[i][j][4] = (float)0.0001;
+						weights[i][j][5] = -10;					
+					}
+					// Push other cards (treasure, victory) to scale down slowly with purchase
+					else {
+						weights[i][j][0] = 0;
+						weights[i][j][1] = (float)0.1/(float)supplies.get(i).getQuantity();
+						weights[i][j][2] = supplies.get(i).getCard().getCost();
+						weights[i][j][3] = 0;
+						weights[i][j][4] = (float)0.1/(float)supplies.get(i).getQuantity();
+						weights[i][j][5] = supplies.get(i).getCard().getCost();
+					}
 				}
 				else {
-					crossWeights[i][j][1] = (float)1;
-					crossWeights[i][j][4] = (float)1;
+					weights[i][j][0] = 0;
+					weights[i][j][1] = (float)1;
+					weights[i][j][2] = 0;
+					weights[i][j][3] = 0;
+					weights[i][j][4] = (float)1;
+					weights[i][j][5] = 0;
 				}
 			}
 		}
@@ -280,16 +300,11 @@ public class GainModel {
 			in.close();
 			throw new IOException("Opened file with incorrect number of supplies");
 		}
-		individualWeights = new float[numSupplies + 1];
-		crossWeights = new float[numSupplies][numSupplies + 1][6];
-		individualWeights[0] = 1;
-		for(int i = 0; i < individualWeights.length; i++) {
-			individualWeights[i] = in.nextFloat();
-		}
-		for(int i = 0; i < crossWeights.length; i++) {
-			for(int j = 0; j < crossWeights[i].length; j++) {
-				for(int k = 0; k < crossWeights[i][j].length; k++) {
-					crossWeights[i][j][k] = in.nextFloat();
+		weights = new float[numSupplies][numSupplies + 1][6];
+		for(int i = 0; i < weights.length; i++) {
+			for(int j = 0; j < weights[i].length; j++) {
+				for(int k = 0; k < weights[i][j].length; k++) {
+					weights[i][j][k] = in.nextFloat();
 				}	
 			}
 		}
@@ -305,13 +320,10 @@ public class GainModel {
 		FileWriter fw = new FileWriter(file);
 		PrintWriter pw = new PrintWriter(fw);
 		pw.println(numSupplies);
-		for(int i = 0; i < individualWeights.length; i++) {
-			pw.println(individualWeights[i]);
-		}
-		for(int i = 0; i < crossWeights.length; i++) {
-			for(int j = 0; j < crossWeights[i].length; j++) {
-				for(int k = 0; k < crossWeights[i][j].length; k++) {
-					pw.println(crossWeights[i][j][k]);
+		for(int i = 0; i < weights.length; i++) {
+			for(int j = 0; j < weights[i].length; j++) {
+				for(int k = 0; k < weights[i][j].length; k++) {
+					pw.println(weights[i][j][k]);
 				}	
 			}
 		}
@@ -319,6 +331,24 @@ public class GainModel {
 		fw.flush();
 		pw.close();
 		fw.close();
+	}
+	
+	/**
+	 * Updates this GainModel's weights to match another gain model.
+	 * Used for on-the-fly updating of a model that's already in use.
+	 * @param other
+	 */
+	public void updateTo(GainModel other) {
+		if(numSupplies != other.numSupplies) {
+			throw new RuntimeException("Cannot update to incompatible model");
+		}
+		for(int i = 0; i < weights.length; i++) {
+			for(int j = 0; j < weights[i].length; j++) {
+				for(int k = 0; k < weights[i][j].length; k++) {
+					weights[i][j][k] = other.weights[i][j][k];
+				}
+			}
+		}
 	}
 	
 

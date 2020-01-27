@@ -52,7 +52,7 @@ public class DominionGame extends BoardGame {
 		setGameName(setup.getGameName());
 		numNPC = options.getNumNPC();		
 		cpuTypes = options.getNPCTypes();
-		models = new ModelFactory(this);
+		models = new ModelFactory(this, options);
 	}
 
 	@Override
@@ -134,6 +134,7 @@ public class DominionGame extends BoardGame {
 		//Check if the game is over
 		if(board.isGameOver()) {
 			getClient().stopThreads();
+			models.close();
 			if(showGraphics) getGUI().showScores();
 			for(Player p : players) {
 				if(p.isComputerPlayer()) {

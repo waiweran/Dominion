@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.List;
 
 import gameBase.DominionGame;
+import gameBase.GameOptions;
 
 public class ModelFactory implements Serializable {
 	
@@ -15,11 +16,15 @@ public class ModelFactory implements Serializable {
 	private List<GainModel> gainModels;
 	private int index;
 	private DominionGame access;
+	private GameOptions opt;
+	FastTrainer trainer;
 
-	public ModelFactory(DominionGame game) {
+	public ModelFactory(DominionGame game, GameOptions options) {
 		gainModels = new ArrayList<>();
 		index = 0;
 		access = game;
+		opt = options;
+		trainer = null;
 	}
 	
 	public GainModel getGainModel() {
@@ -30,7 +35,10 @@ public class ModelFactory implements Serializable {
 			}
 			catch(Exception e) {
 				e.printStackTrace();
-				gainModels.add(new GainModel(access.board));
+				GainModel model = new GainModel(access.board);
+				trainer = new FastTrainer();
+				GainModel tModel = trainer.trainModel(access.setup, opt, model);
+				gainModels.add(tModel);
 			}
 		}
 		return gainModels.get(index++);
@@ -42,6 +50,10 @@ public class ModelFactory implements Serializable {
 	
 	public void setGainModels(List<GainModel> models) {
 		gainModels = models;
+	}
+	
+	public void close() {
+		if(trainer != null) trainer.close();
 	}
 
 }
