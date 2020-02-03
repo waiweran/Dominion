@@ -65,21 +65,23 @@ public class FastTrainer {
 		for(int epoch = 1; epoch <= epochs && !stop; epoch++) {
 			System.out.printf("Epoch %d, p = %5.3f, mag = %5.3f: ", epoch, perturbProbability, perturbMagnitude);
 
-			// Copy model to make starting pair
+			// Copy model to make starting set
 			ArrayList<GainModel> models = new ArrayList<>();
-			GainModel newModel = new GainModel(currentModel);
-			newModel.perturbMain(perturbProbability, perturbMagnitude);
-			newModel.perturbCross(perturbProbability*0.1, perturbMagnitude);
 			models.add(currentModel);
-			models.add(newModel);
+			while(models.size() < simOptions.getNumNPC()) {
+				GainModel newModel = new GainModel(currentModel);
+				newModel.perturbMain(perturbProbability, perturbMagnitude);
+				newModel.perturbCross(perturbProbability*0.1, perturbMagnitude);
+				models.add(newModel);
+			}
 
 			// Run the training
 			int winner = runner.runGameSet(setup, simOptions, models, quiet);
 
 			// Keep whoever won more
-			if(winner == 1) {
+			if(winner >= 1) {
 				System.out.println("**** MODEL REPLACEMENT ****");
-				currentModel.updateTo(models.get(1));
+				currentModel.updateTo(models.get(winner));
 			}
 
 			// Update perturbation parameters

@@ -52,34 +52,26 @@ public class GameRunner {
 		runners = 0;
 		Arrays.fill(games, 0);
 		
-		boolean significant = true;
+		// Run games
 		runGamesInternal(setup, options, models, 10, quiet);
-		if(games[0] > 1 && games[1] > 1) { // If both won more than 1 game (p > 0.05)
+		if(findSignificant(options.getNumPlayers()) < 0) {
 			runGamesInternal(setup, options, models, 100, quiet);
-			if(games[0] > 41 && games[1] > 41) { // If both won more than 41 games (p > 0.05)
+			if(findSignificant(options.getNumPlayers()) < 0) {
 				runGamesInternal(setup, options, models, 1000, quiet);
-				if(games[0] > 473 && games[1] > 473) { // If both won more than 473 games (p > 0.05)
-					runGamesInternal(setup, options, models, 10000, quiet);
-					if(games[0] > 4917 && games[1] > 4917) { // If both won more than 4917 games (p > 0.05)
-						significant = false;
-					}		
+				if(findSignificant(options.getNumPlayers()) < 0) {
+					runGamesInternal(setup, options, models, 10000, quiet);		
 				}		
 			}		
 		}
-		System.out.println("Result: " + games[0] + " to " + games[1]);
 
-		// Assess results
-		int output = -1;
-		if(significant) {
-			if(games[0] > games[1]) {
-				output = 0;
-			}
-			else {
-				output = 1;
-			}
+		// Print results
+		System.out.print("Result: " + games[0]);
+		for(int i = 1; i < games.length; i++) {
+			System.out.print(" to " + games[i]);
 		}
-				
-		return output;
+			
+		// Return winner, if significant
+		return findSignificant(options.getNumPlayers());
 	}
 	
 	/**
@@ -273,6 +265,46 @@ public class GameRunner {
 			}
 		}
 	}
-
+	
+	/**
+	 * Significant number of victories (p < .05 it was random chance)
+	 * for 10, 100, 1000, or 10000 games and 2, 3, 4, 5, 6 players
+	 * Formula: Sum from k=wins to games (Choose(games, k)*p^(k)*(1-p)^(games-k))
+	 */
+	private static final int[][] REQUIRED_WINS = {
+			{9, 7, 6, 5, 5},
+			{59, 42, 33, 28, 24},
+			{527, 359, 274, 222, 187},
+			{5083, 3412, 2572, 2067, 1729}
+	};
+	
+	/**
+	 * Determines whether any player has won enough games to determine that it is
+	 * better than other players (p < 0.05 it's due to random chance)
+	 * @return the index of the first significant win, or -1 if there isn't one
+	 */
+	private int findSignificant(int numPlayers) {
+		int numGames = 0;
+		for(int wins : games) {
+			numGames += wins;
+		}
+		int gameSet;
+		if(numGames <= 10) gameSet = 0;
+		else if(numGames <= 100) gameSet = 1;
+		else if(numGames <= 1000) gameSet = 2;
+		else gameSet = 3;
+		for(int i = 0; i < numPlayers; i++) {
+			if(games[i] >= REQUIRED_WINS[gameSet][numPlayers - 2]) {
+				return i;
+			}
+		}
+		return -1;
+	}
+	
+	// Probability: # wins for < 5% chance of random victory
+	// 10 games:	2 player = 9+, 3 player = 7+, 4 player = 6+, 5 player = 5+, 6 player = 5+
+	// 100 games:	2 player = 59+, 3 player = 42+, 4 player = 33+, 5 player = 28+, 6 player = 24+
+	// 1000 games:	2 player = 527+, 3 player = 359+, 4 player = 274+, 5 player = 222+, 6 player = 187+
+	// 10000 games:	2 player = 5083+, 3 player = 3412+, 4 player = 2572+, 5 player = 2067+, 6 player = 1729+
 
 }
