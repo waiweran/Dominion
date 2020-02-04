@@ -1,6 +1,7 @@
 package gameBase;
 
 import cards.Card;
+import cards.adventures.Duplicate;
 import genericGame.BoardGame;
 import genericGame.GameClient;
 
@@ -51,7 +52,7 @@ public class DominionClient extends GameClient {
 		else if (response.startsWith("SUPPLY")) {
 			String suppName = response.substring(7); 
 			if(game.getCurrentPlayer().buyCard(game.board.findSupply(game.allCards.findCard(suppName)))) {
-				if(game.gamePhase > 2) {
+				if(game.gamePhase > 2 && !game.getCurrentPlayer().deck.tavern.contains(new Duplicate())) {
 					game.endTurn();
 				}
 			}

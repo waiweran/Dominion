@@ -1,6 +1,9 @@
 package cards.adventures;
+import java.util.ArrayList;
+
 import cards.Card;
 import selectors.Selector;
+import selectors.SingleCardSelector;
 
 
 public class Duplicate extends Card {
@@ -22,17 +25,28 @@ public class Duplicate extends Card {
 			new Selector(getGame()).showTavernError("You have not gained a card");
 			return;
 		}
-		Card c = getPlayer().deck.gained.get(
-				getPlayer().deck.gained.size() - 1);
-		if (c.getCost() <= 6) {
-			if (1 == new Selector(getGame()).showQuestionDialog(this,
-					"Gain another " + c.getName() + "?", "Cancel", "Ok")) {
+		ArrayList<Card> duplicable = new ArrayList<>();
+		for(Card c : getPlayer().deck.gained) {
+			if (c.getCost() <= 6) {
+				duplicable.add(c);
+			}
+		}
+		if(!duplicable.isEmpty()) {
+			SingleCardSelector sc = new SingleCardSelector(getGame(), getPlayer().deck.gained,
+					"Select a card to gain a second copy of", this, false);
+			int index = sc.getSelectedIndex();
+			if(index >= 0) {
+				Card c = duplicable.get(index);
 				getPlayer().deck.gain(getGame().board.findSupply(c).takeCard());
 				getPlayer().deck.callFromTavern(this);
+				if(getGame().gamePhase > 2 && !getPlayer().deck.tavern.contains(new Duplicate())) {
+					getGame().endTurn();
+				}
+
 			}
 		}
 		else {
-			new Selector(getGame()).showTavernError(c.getName() + " is too expensive to duplicate");
+			new Selector(getGame()).showTavernError("Gained card(s) too expensive to duplicate");
 		}
 	}
 

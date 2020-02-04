@@ -1,6 +1,7 @@
 package cards.defaults;
 import cards.Card;
 import cards.hinterlands.Duchess;
+import gameBase.Supply;
 import selectors.Selector;
 
 public class Duchy extends Card {
@@ -14,14 +15,14 @@ public class Duchy extends Card {
 	@Override
 	public void gainAction() {
 		if(getGame().board.findSupply(new Duchess()) != null) {
-			String[] options2 = {"No", "Yes"};
 			Selector sel = new Selector(getGame());
 			sel.setPlayer(getPlayer());
-			if(1 == sel.showQuestionDialog(this, 
-					"Would you like to Gain a Duchess?", options2)) {
+			Supply supply = getGame().board.findSupply(new Duchess());
+			if(1 == sel.showCardDialog(this, "Would you like to Gain a Duchess?", 
+					supply.getTopCard(), "No", "Yes")) {
 				boolean temp = getPlayer().buying;
 				getPlayer().buying = false;
-				getPlayer().deck.gain(getGame().board.findSupply(new Duchess()).takeCard());
+				getPlayer().deck.gain(supply.takeCard());
 				getPlayer().buying = temp;
 			}
 		}

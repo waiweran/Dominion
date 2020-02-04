@@ -12,11 +12,14 @@ public class FoolsGold extends Card {
 
 	@Override
 	public void performAction() {
-		if(getPlayer().deck.play.contains(this)) {
-			getPlayer().addTreasure(3);
+		for(Card c : getPlayer().deck.play) {
+			if(c != this && c.equals(this)) {
+				getPlayer().addTreasure(3);
+				break;
+			}
 		}
 	}
 	
-	//TODO if someone gains a province get a real gold
+	// Reaction implemented in Province
 
 }

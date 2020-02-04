@@ -469,7 +469,7 @@ public class CardFactory implements Serializable {
 		allCards.add(new Duchess());
 		allCards.add(new Embassy());
 		allCards.add(new Farmland());
-		allCards.add(new FoolsGold());	//Not Fully Working						136*
+		allCards.add(new FoolsGold());
 		allCards.add(new Haggler());
 		allCards.add(new Highway());
 		allCards.add(new IllGottenGains());	
@@ -478,7 +478,7 @@ public class CardFactory implements Serializable {
 		allCards.add(new Mandarin());
 		allCards.add(new Margrave());
 		allCards.add(new NobleBrigand());
-		allCards.add(new NomadCamp());	//Not Fully Working						145*
+		allCards.add(new NomadCamp());
 		allCards.add(new Oasis());
 		allCards.add(new Oracle());
 		allCards.add(new Scheme());

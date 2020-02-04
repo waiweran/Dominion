@@ -14,10 +14,10 @@ public class Explorer extends Card {
 	@Override
 	public void performAction() {
 		if(getPlayer().deck.hand.contains(new Province())) {
-			getPlayer().deck.gain(getGame().board.getGold().takeCard());
+			getPlayer().deck.gain(getGame().board.getGold().takeCard(), 2);
 		}
 		else {
-			getPlayer().deck.gain(getGame().board.getSilver().takeCard());			
+			getPlayer().deck.gain(getGame().board.getSilver().takeCard(), 2);			
 		}
 	}
 	

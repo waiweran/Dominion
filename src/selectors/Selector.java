@@ -163,8 +163,7 @@ public class Selector {
 	 */
 	public boolean checkReact(Player player, Card card) {
 		setPlayer(player);
-		return 1 == showOptionDialog(card, new HBox(), 
-				card.getName(), "Do not React", "React");
+		return 1 == showOptionDialog(card, new HBox(), "Do not React", "React");
 	}
 
 	/**
