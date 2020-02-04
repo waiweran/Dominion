@@ -144,7 +144,7 @@ public class ScoreDisplay {
 				VBox cardView = new VBox();
 				cardView.setAlignment(Pos.CENTER);
 				int numCards = scores.get(p.getPlayerNum() - 1).getNum(c);
-				int cardScore = numCards*c.getVictory();
+				int cardScore = scores.get(p.getPlayerNum() - 1).getPoints(c);
 				Text num = new Text(numCards + " " + c.getName());
 				num.setStroke(Color.WHITE);
 				num.setFill(Color.WHITE);
@@ -175,24 +175,32 @@ public class ScoreDisplay {
 	private class Scorer implements Iterable<Card> {
 
 		private TreeMap<Card, Integer> scoreCards;
+		private TreeMap<Card, Integer> scoreCardNums;
 		private int totalScore;
 
 
 		public Scorer(int total) {
 			scoreCards = new TreeMap<>();
+			scoreCardNums = new TreeMap<>();
 			totalScore = total;
 		}
 		
 		public void addCard(Card c) {
 			if(!scoreCards.containsKey(c)) {
-				scoreCards.put(c, 1);
+				scoreCards.put(c, c.getVictory() + c.gameEndAction());
+				scoreCardNums.put(c, 1);
 			}
 			else {
-				scoreCards.put(c, scoreCards.get(c) + 1);
+				scoreCards.put(c, scoreCards.get(c) + c.getVictory() + c.gameEndAction());
+				scoreCardNums.put(c, scoreCardNums.get(c) + 1);
 			}
 		}
 		
 		public int getNum(Card c) {
+			return scoreCardNums.get(c);
+		}
+		
+		public int getPoints(Card c) {
 			return scoreCards.get(c);
 		}
 		
@@ -203,7 +211,7 @@ public class ScoreDisplay {
 		public int getTokenScore() {
 			int total = 0;
 			for(Card c : scoreCards.keySet()) {
-				total += c.getVictory()*scoreCards.get(c);
+				total += scoreCards.get(c);
 			}
 			return totalScore - total;
 		}

@@ -167,6 +167,7 @@ public class DominionGUI extends GameGUI {
 			for(Player p : getGame().players) {
 				p.deck.hand.addObserver((o, arg) -> Platform.runLater(() -> updateHand()));
 				p.deck.discard.addObserver((o, arg) -> Platform.runLater(() -> updateDiscard()));
+				p.contraband.addObserver((o, arg) -> Platform.runLater(() -> updateSupplies()));
 			}
 		}
 		for(Player p : getGame().players) {
@@ -332,7 +333,8 @@ public class DominionGUI extends GameGUI {
 		
 		// Default Supply Piles
 		for(Supply s : game.board.defaultCards) {
-			defArea.getChildren().add(makeSupply(s, true, e -> supplyClicked(s))); 
+			boolean enabled = !getMyPlayer().contraband.contains(s.getTopCard());
+			defArea.getChildren().add(makeSupply(s, enabled, e -> supplyClicked(s))); 
 		}
 		if(game.setup.useProsperity()) {
 			defArea.setMaxWidth(cardWidth*6);
@@ -366,7 +368,8 @@ public class DominionGUI extends GameGUI {
 			// Put gain-able piles in middle, non-gain-able piles in more menu
 			if(game.board.extraCards.size() + matNum > 3) {
 				for(Supply s : game.board.extraCards) {
-					Pane supply = makeSupply(s, true, e -> supplyClicked(s));
+					boolean enabled = !getMyPlayer().contraband.contains(s.getTopCard());
+					Pane supply = makeSupply(s, enabled, e -> supplyClicked(s));
 					if(s.getCard().canBeGained()) {
 						exArea.getChildren().add(supply);
 					}
@@ -379,14 +382,16 @@ public class DominionGUI extends GameGUI {
 			// Put all piles in the middle
 			else {
 				for(Supply s : game.board.extraCards) {
-					exArea.getChildren().add(makeSupply(s, true, e -> supplyClicked(s)));
+					boolean enabled = !getMyPlayer().contraband.contains(s.getTopCard());
+					exArea.getChildren().add(makeSupply(s, enabled, e -> supplyClicked(s)));
 				}
 			}
 		}
 
 		// Kingdom Supply Piles
 		for(Supply s : game.board.kingdomCards) {
-			kingArea.getChildren().add(makeSupply(s, true, e -> supplyClicked(s))); 
+			boolean enabled = !getMyPlayer().contraband.contains(s.getTopCard());
+			kingArea.getChildren().add(makeSupply(s, enabled, e -> supplyClicked(s))); 
 		}
 		kingArea.setMaxWidth(cardWidth*6);
 	}

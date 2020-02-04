@@ -151,6 +151,7 @@ public class SupplySelector {
 			Platform.runLater(() -> setupUI());
 		}
 		String input = game.getClient().getSelection();
+		Platform.runLater(() -> game.getGUI().resetSupplies());
 		if(input.equals("SELECT CANCEL")) return null;
 		return game.board.findSupply(game.allCards.findCard(input.substring(7)));
 	}

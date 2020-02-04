@@ -1,6 +1,7 @@
 package cards.prosperity;
 
 import cards.Card;
+import gameBase.Supply;
 import selectors.SupplySelector;
 
 public class Contraband extends Card {
@@ -14,11 +15,16 @@ public class Contraband extends Card {
 
 	@Override
 	public void performAction() {
+		getPlayer().addBuy();
 		SupplySelector supp = new SupplySelector(getGame(), getName(), 
 				"Choose a Card that the Current Player Cannot Buy", -1, 20);
 		supp.setPotion(true);
+		supp.setCardSelector(c -> !getPlayer().contraband.contains(c));
 		supp.setPlayer(getGame().getLeftPlayer());
-		getPlayer().contraband.add(supp.getSelectedSupply().getTopCard());
+		Supply selected = supp.getSelectedSupply();
+		if(selected != null) {
+			getPlayer().contraband.add(selected.getTopCard());
+		}
 	}
 	
 }

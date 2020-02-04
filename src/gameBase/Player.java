@@ -15,6 +15,7 @@ import cards.extra.Necropolis;
 import cards.extra.OvergrownEstate;
 import computerPlayer.ComputerPlayer;
 import genericGame.AbstractPlayer;
+import genericGame.ObservableList;
 
 /**
  * Represents a single player in the Dominion game.
@@ -39,7 +40,7 @@ public class Player extends AbstractPlayer {
 	public int coppersmith = 0;			//Coppersmiths played this turn
 	public int bridge = 0;				//Bridges played this turn
 	public int quarry = 0;				//Quarries played this turn
-	public List<Card> contraband;		//Cards that cannot be bought due to Contraband
+	public ObservableList<Card> contraband;//Cards that cannot be bought due to Contraband
 	public Deck deck;					//The player's deck
 
 	public List<Card> bought;			//Cards the player bought this turn
@@ -56,7 +57,7 @@ public class Player extends AbstractPlayer {
 		super(num, game.isOnline());
 		observers = new HashSet<>();
 		bought = new ArrayList<>();
-		contraband = new ArrayList<>();
+		contraband = new ObservableList<>();
 		access = game;
 		startingSetup(shelter);
 	}
