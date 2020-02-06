@@ -1,7 +1,6 @@
 package machineLearning;
 
 import java.io.File;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -9,10 +8,8 @@ import java.util.List;
 import gameBase.DominionGame;
 import gameBase.GameOptions;
 
-public class ModelFactory implements Serializable {
-	
-	private static final long serialVersionUID = 4629690058531622695L;
-	
+public class ModelFactory {
+		
 	private List<GainModel> gainModels;
 	private int index;
 	private DominionGame access;
@@ -42,6 +39,10 @@ public class ModelFactory implements Serializable {
 			}
 		}
 		return gainModels.get(index++);
+	}
+	
+	public GainModel getBasicGainModel() {
+		return new GainModel(access.board);
 	}
 	
 	public List<GainModel> getGainModels() {

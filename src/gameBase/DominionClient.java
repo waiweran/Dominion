@@ -87,6 +87,7 @@ public class DominionClient extends GameClient {
 			game.setGUI(gui);
 			gui.setGame(game, game.players.get(playerIndex));
 			gui.setupUpdating();
+			game.setupComputerPlayers();
 		} catch(Exception e) {
 			throw new RuntimeException(e);
 		}		

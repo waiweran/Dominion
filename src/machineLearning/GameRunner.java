@@ -66,9 +66,10 @@ public class GameRunner {
 
 		// Print results
 		System.out.print("Result: " + games[0]);
-		for(int i = 1; i < games.length; i++) {
+		for(int i = 1; i < options.getNumPlayers(); i++) {
 			System.out.print(" to " + games[i]);
 		}
+		System.out.println();
 			
 		// Return winner, if significant
 		return findSignificant(options.getNumPlayers());
@@ -173,8 +174,7 @@ public class GameRunner {
 				game.models.setGainModels(models);
 				DominionClient dc = new DominionClient();
 				new LocalConnection(dc, game);
-
-
+				
 				//Run game simulation
 				game.getCurrentPlayer().startTurn();
 

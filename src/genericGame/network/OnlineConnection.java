@@ -59,7 +59,11 @@ public class OnlineConnection extends Connection {
 		output.writeObject(game);
 		output.flush();
 		wait = new GameWaiter(this, true);
-		wait.playerJoined("JOIN\t" + name + "\t" + game.getNumPlayers());
+		String names = name + "\t";
+		for(int i = 0; i < game.getNumNPC(); i++) {
+			names += "NPC " + (i + 1) + "\t";
+		}
+		wait.playerJoined("JOIN\t" + names + game.getNumPlayers());
 		startListener();
 	}
 

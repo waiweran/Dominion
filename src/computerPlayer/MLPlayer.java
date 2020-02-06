@@ -13,8 +13,8 @@ import machineLearning.SupplyData;
 
 public class MLPlayer extends ComputerPlayer {
 	
-	RandomPlayer rand;
-	GainModel model;
+	private RandomPlayer rand;
+	private GainModel model;
 
 	public MLPlayer(Player pComputer, DominionGame game) {
 		super("ML Player", pComputer, game);

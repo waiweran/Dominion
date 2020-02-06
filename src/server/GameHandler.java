@@ -51,6 +51,9 @@ public class GameHandler {
 			for(Client messageMe : players) {
 				names += messageMe.getName() + "\t";
 			}
+			for(int i = 0; i < game.getNumNPC(); i++) {
+				names += "NPC " + (i + 1) + "\t";
+			}
 			for(Client messageMe : players) {
 				messageMe.println("JOIN\t" + names + game.getNumPlayers());
 			}
@@ -73,6 +76,9 @@ public class GameHandler {
 			String names = "";
 			for(Client messageMe : players) {
 				names += messageMe.getName() + "\t";
+			}
+			for(int i = 0; i < game.getNumNPC(); i++) {
+				names += "NPC " + (i + 1) + "\t";
 			}
 			for(Client messageMe : players) {
 				messageMe.println("JOIN " + names + game.getNumPlayers());
@@ -104,7 +110,7 @@ public class GameHandler {
 	 */
 	public void startGame() {
 		try {
-			game.setNumPlayers(players.size());
+			game.setNumPlayers(players.size() + game.getNumNPC());
 			int i = 1;
 			for(Client gp : players) {
 				gp.setIndex(i - 1);
@@ -192,7 +198,7 @@ public class GameHandler {
 	 * @return number of free slots.
 	 */
 	public int getNumSlots() {
-		return game.getNumPlayers() - players.size();
+		return game.getNumPlayers() - players.size() - game.getNumNPC();
 	}
 	
 	/**

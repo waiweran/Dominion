@@ -27,20 +27,21 @@ public class DominionGame extends BoardGame {
 	public int gamePhase;					//records the phase (start, action, buy, end)
 	public Board board;						//this is the game's board
 	public CardFactory allCards;			//stores the list of all cards in the game
-	public int numNPC;						//records the number of NPC in the game
 	private transient DominionGUI gameGUI;	//this is the game's main GUI, used in pass and play
 	public GameSetup setup;			        //holds game setup information
+	private GameOptions options;			    //holds options for gameplay
 	private boolean extraTurn;				//records whether player gets a repeat turn
 	private List<String> cpuTypes;			//holds the types of CPU in the game
-	public ModelFactory models;				//holds machine learning models for CPUs
+	public transient ModelFactory models;	//holds machine learning models for CPUs
 	
 	/**
 	 * Initializes the game.
 	 * @param setupInfo Card setup information for the game.
 	 * @param options Setup options for the game.
 	 */
-	public DominionGame(GameSetup setupInfo, GameOptions options) {
-		super(options.isOnline());
+	public DominionGame(GameSetup setupInfo, GameOptions gameOptions) {
+		super(gameOptions.isOnline());
+		options = gameOptions;
 		setup = setupInfo;
 		showGraphics = options.showGraphics();
 		players = new ArrayList<Player>();
@@ -49,8 +50,8 @@ public class DominionGame extends BoardGame {
 			throw new RuntimeException("Incorrect number of supplies selected");
 		}
 		setNumPlayers(options.getNumPlayers());
+		setNumNPC(options.getNumNPC());		
 		setGameName(setup.getGameName());
-		numNPC = options.getNumNPC();		
 		cpuTypes = options.getNPCTypes();
 		models = new ModelFactory(this, options);
 	}
@@ -69,16 +70,10 @@ public class DominionGame extends BoardGame {
 		}
 		
 		// Setup Players
-		CPUFactory factory = new CPUFactory(this);
-		int cpuIndex = 0;
 		for(int i = 1; i <= getNumPlayers(); i++) {
 			players.add(new Player(this, i, setup.useShelters()));
-			boolean isCPU = i > getNumPlayers() - numNPC;
-			if(isCPU) {
-				Player current = players.get(players.size() - 1);
-				current.setComputerPlayer(factory.getComputerPlayer(current, cpuTypes.get(cpuIndex++)));
-			}
 		} 
+		setupComputerPlayers();
 		
 		// Setup GUI
 		if(showGraphics) {
@@ -181,6 +176,22 @@ public class DominionGame extends BoardGame {
 	 */
 	public void setGUI(DominionGUI gui) {
 		gameGUI = gui;
+	}
+	
+	/**
+	 * Sets up computer players for the game.
+	 */
+	public void setupComputerPlayers() {
+		if(models == null) models = new ModelFactory(this, options);
+		CPUFactory factory = new CPUFactory(this);
+		int cpuIndex = 0;
+		for(int i = 0; i < getNumPlayers(); i++) {
+			boolean isCPU = i >= getNumPlayers() - getNumNPC();
+			if(isCPU) {
+				Player current = players.get(i);
+				current.setComputerPlayer(factory.getComputerPlayer(current, cpuTypes.get(cpuIndex++)));
+			}
+		} 
 	}
 
 	@Override

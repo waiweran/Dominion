@@ -14,7 +14,7 @@ import gameBase.Supply;
  * @version 05-04-2017
  */
 public class RatioPlayer extends ComputerPlayer {
-	
+
 	private static final double[] WEIGHTS = {0.37, 0.48, 0.15}; //action, treasure, victory
 	
 	private BigMoneyPlayer money;

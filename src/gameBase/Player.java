@@ -46,7 +46,7 @@ public class Player extends AbstractPlayer {
 	public List<Card> bought;			//Cards the player bought this turn
 	public boolean buying = false; 		//Whether the player is currently buying a card
 	
-	private ComputerPlayer ai;			//For computer controlled play
+	private transient ComputerPlayer ai;//For computer controlled play
 
 	/**
 	 * Constructor for the Player class.  

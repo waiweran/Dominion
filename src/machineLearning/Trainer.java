@@ -30,16 +30,14 @@ public class Trainer {
 	public void train(GameSetup setup, int epochs, boolean quiet) throws IOException {
 
 		// Create game to get initial model
-		ArrayList<String> cpuTypes = new ArrayList<>();
-		cpuTypes.add("ML");
 		GameOptions options = new GameOptions(false);
 		options.hideGraphics();
-		options.setNumPlayers(cpuTypes.size());
-		options.setNPC(cpuTypes);
+		options.setNumPlayers(1);
 		DominionGame game = new DominionGame(setup, options);
+		
 		DominionClient dc = new DominionClient();
 		new LocalConnection(dc, game);
-		GainModel startingModel = game.models.getGainModels().get(0);
+		GainModel startingModel = game.models.getBasicGainModel();
 		
 		// Setup model saving directory
 		String filepath = "Training/Game_" + setup.hashCode();
@@ -58,7 +56,7 @@ public class Trainer {
 		
 		// Test the models against each other
 		int[] scores = new int[allModels.size()];
-		cpuTypes.clear();
+		ArrayList<String> cpuTypes = new ArrayList<>();
 		cpuTypes.add("ML");
 		cpuTypes.add("ML");
 		options.setNumPlayers(cpuTypes.size());
