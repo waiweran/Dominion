@@ -2,19 +2,19 @@ package machineLearning;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
-import gameBase.DominionClient;
 import gameBase.DominionGame;
 import gameBase.GameOptions;
 import gameBase.GameSetup;
-import genericGame.network.LocalConnection;
 
 public class Trainer {
 
 	private static final String FILENAME = "Saves/Base/First Game.dog";
 	private static final boolean QUIET = true;
 
-	private static final int EPOCHS = 10;
+	private static final int GENERATIONS = 50;
+	private static final int EPOCHS = 50;
 	private static final double ANNEAL_RATE = 0.98;
 	private static final double START_PERTURB_PROB = 0.5;
 	private static final double START_PERTURB_MAG = 1;
@@ -34,9 +34,7 @@ public class Trainer {
 		options.hideGraphics();
 		options.setNumPlayers(1);
 		DominionGame game = new DominionGame(setup, options);
-		
-		DominionClient dc = new DominionClient();
-		new LocalConnection(dc, game);
+		game.startGame();
 		GainModel startingModel = game.models.getBasicGainModel();
 		
 		// Setup model saving directory
@@ -45,67 +43,14 @@ public class Trainer {
 		if(!folder.exists()) folder.mkdir();
 
 		// Setup Council of Ten Round Robin
-		ArrayList<GainModel> allModels = new ArrayList<>();
 		GainModel[] councilOfTen = new GainModel[10];
-		
-		// Train 100 models based on the starting model
-		for(int modelNum = 0; modelNum < 100; modelNum++) {
-			System.out.println("Training Model " + (modelNum + 1));
-			allModels.add(trainModel(setup, startingModel, epochs, quiet));
-		}
-		
-		// Test the models against each other
-		int[] scores = new int[allModels.size()];
+		Arrays.fill(councilOfTen, startingModel);
+		ArrayList<GainModel> allModels = new ArrayList<>();
 		ArrayList<String> cpuTypes = new ArrayList<>();
 		cpuTypes.add("ML");
 		cpuTypes.add("ML");
-		options.setNumPlayers(cpuTypes.size());
-		options.setNPC(cpuTypes);
-		for(int i = 0; i < allModels.size(); i++) {
-			for(int j = i + 1; j < allModels.size(); j++) {
-				ArrayList<GainModel> models = new ArrayList<>();
-				models.add(allModels.get(i));
-				models.add(allModels.get(j));
-				System.out.print("Model " + (i+1) + " vs. Model " + (j+1) + ": ");
-				int winner = runner.runGameSet(setup, options, models, quiet);
-				if(winner == 0) {
-					scores[i] += 1;
-					scores[j] -= 1;
-				}
-				else if(winner == 1) {
-					scores[i] -= 1;
-					scores[j] += 1;					
-				}
-			}
-		}
-		
-		// Extract the 10 best models and put them on the council
-		int[] topModels = new int[councilOfTen.length];
-		int minTopModel = 0;
-		for(int i = 0; i < topModels.length; i++) {
-			topModels[i] = i;
-			if(scores[topModels[i]] < scores[topModels[minTopModel]]) {
-				minTopModel = i;
-			}
-		}
-		for(int i = topModels.length; i < scores.length; i++) {
-			if(scores[i] > scores[topModels[minTopModel]]) {
-				topModels[minTopModel] = i;
-				for(int j = 0; j < topModels.length; j++) {
-					if(scores[topModels[j]] < scores[topModels[minTopModel]]) {
-						minTopModel = j;
-					}
-				}
-			}	
-		}
-		System.out.println("Top ten:");
-		for(int i = 0; i < topModels.length; i++) {
-			System.out.println("  Model " + (topModels[i] + 1) + " (" + scores[topModels[i]] + ")");
-			councilOfTen[i] = allModels.get(topModels[i]);
-			councilOfTen[i].save(new File(filepath + "/GainModel_C" + (i+1) + ".txt"));
-		}
-		
-		for(int generation = 0; generation < 10; generation++) { // TODO increase number of generations
+		int[] scores = new int[councilOfTen.length*councilOfTen.length];
+		for(int generation = 0; generation < GENERATIONS; generation++) {
 			System.out.println("******** GENERATION " + (generation + 1) + " ********");
 
 			// Intermix the Council of Ten to create new set of models and train them
@@ -113,17 +58,14 @@ public class Trainer {
 			for(int i = 0; i < councilOfTen.length; i++) {
 				for(int j = 0; j < councilOfTen.length; j++) {
 					GainModel offspring = new GainModel(councilOfTen[i], councilOfTen[j]);
-					System.out.println("Training Model " + allModels.size());
+					System.out.println("Training Model " + (allModels.size() + 1));
 					offspring = trainModel(setup, offspring, epochs, quiet);
 					allModels.add(offspring);
 				}
 			}
 
 			// Test new models against the Council of Ten
-			scores = new int[allModels.size()];
-			cpuTypes.clear();
-			cpuTypes.add("ML");
-			cpuTypes.add("ML");
+			Arrays.fill(scores, 0);
 			options.setNumPlayers(cpuTypes.size());
 			options.setNPC(cpuTypes);
 			int[] councilScores = new int[councilOfTen.length];
@@ -158,8 +100,11 @@ public class Trainer {
 						|| scores[max] <= replacements.size() || scores[max] < 4) {
 					break;
 				}
-				System.out.println("Model " + (max + 1) + " joining the council (" + scores[max] + ")");
-				replacements.add(allModels.get(max));
+				boolean beatBM = bigMoneyTest(setup, allModels.get(max), quiet);
+				if(beatBM) {
+					System.out.println("Model " + (max + 1) + " joining the council (" + scores[max] + ")");
+					replacements.add(allModels.get(max));
+				}
 				scores[max] = -1;
 			}
 			
@@ -234,14 +179,24 @@ public class Trainer {
 				perturbMagnitude = (float)MIN_PERTURB_MAG;
 			}
 		}
-		
+				
+		return model;
+	}
 
-		// Benchmark against Big Money
+	/**
+	 * Benchmarks the given model against a Big Money player.
+	 * @param setup The GameSetup to train on.
+	 * @param model The GainModel to train.
+	 * @param quiet Whether or not to print details of each game.
+	 * @return true if the machine learning model is better, false otherwise.
+	 */
+	private boolean bigMoneyTest(GameSetup setup, GainModel model, boolean quiet) {
 		ArrayList<GainModel> models = new ArrayList<>();
 		models.add(model);
-		cpuTypes = new ArrayList<>();
+		ArrayList<String> cpuTypes = new ArrayList<>();
 		cpuTypes.add("BigMoney");
 		cpuTypes.add("ML");
+		GameOptions options = new GameOptions(false);
 		options.setNumPlayers(cpuTypes.size());
 		options.setNPC(cpuTypes);
 		System.out.print("Big Money vs. Machine Learning: ");
@@ -252,8 +207,7 @@ public class Trainer {
 		else {
 			System.out.println("Big Money retains its throne");
 		}
-		
-		return model;
+		return winner == 1;
 	}
 
 
