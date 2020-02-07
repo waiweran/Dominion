@@ -69,7 +69,6 @@ public class GameRunner {
 		for(int i = 1; i < options.getNumPlayers(); i++) {
 			System.out.print(" to " + games[i]);
 		}
-		System.out.println();
 			
 		// Return winner, if significant
 		return findSignificant(options.getNumPlayers());

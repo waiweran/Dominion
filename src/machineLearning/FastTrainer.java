@@ -80,8 +80,11 @@ public class FastTrainer {
 
 			// Keep whoever won more
 			if(winner >= 1) {
-				System.out.println("**** MODEL REPLACEMENT ****");
+				System.out.println(" **** MODEL REPLACEMENT ****");
 				currentModel.updateTo(models.get(winner));
+			}
+			else {
+				System.out.println();
 			}
 
 			// Update perturbation parameters

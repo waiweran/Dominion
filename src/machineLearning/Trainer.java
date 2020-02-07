@@ -76,6 +76,7 @@ public class Trainer {
 					models.add(councilOfTen[j]);
 					System.out.print("Model " + (i+1) + " vs. Council Member " + (j+1) + ": ");
 					int winner = runner.runGameSet(setup, options, models, quiet);
+					System.out.println();
 					if(winner == 0) {
 						scores[i] += 1;
 						councilScores[j] -= 1;
@@ -165,8 +166,11 @@ public class Trainer {
 
 			// Keep whoever won more
 			if(winner == 1) {
-				System.out.println("**** MODEL REPLACEMENT ****");
+				System.out.println(" **** MODEL REPLACEMENT ****");
 				model = models.get(1);
+			}
+			else {
+				System.out.println();
 			}
 
 			// Update perturbation parameters
@@ -197,15 +201,16 @@ public class Trainer {
 		cpuTypes.add("BigMoney");
 		cpuTypes.add("ML");
 		GameOptions options = new GameOptions(false);
+		options.hideGraphics();
 		options.setNumPlayers(cpuTypes.size());
 		options.setNPC(cpuTypes);
 		System.out.print("Big Money vs. Machine Learning: ");
 		int winner = runner.runGameSet(setup, options, models, quiet);
 		if(winner == 1) {
-			System.out.println("Machine Learning is better!");
+			System.out.println(" Machine Learning is better!");
 		}
 		else {
-			System.out.println("Big Money retains its throne");
+			System.out.println(" Big Money retains its throne");
 		}
 		return winner == 1;
 	}
