@@ -42,85 +42,112 @@ public class Trainer {
 		File folder = new File(filepath);
 		if(!folder.exists()) folder.mkdir();
 
-		// Setup Council of Ten Round Robin
-		GainModel[] councilOfTen = new GainModel[10];
-		Arrays.fill(councilOfTen, startingModel);
+		// Setup Elite Ten Round Robin
+		GainModel[] eliteTen = new GainModel[10];
+		Arrays.fill(eliteTen, startingModel);
 		ArrayList<GainModel> allModels = new ArrayList<>();
 		ArrayList<String> cpuTypes = new ArrayList<>();
 		cpuTypes.add("ML");
 		cpuTypes.add("ML");
-		int[] scores = new int[councilOfTen.length*councilOfTen.length];
+		int[] scores = new int[eliteTen.length*eliteTen.length];
 		for(int generation = 0; generation < GENERATIONS; generation++) {
 			System.out.println("******** GENERATION " + (generation + 1) + " ********");
 
-			// Intermix the Council of Ten to create new set of models and train them
+			// Intermix the Elite Ten to create new set of models and train them
 			allModels.clear();
-			for(int i = 0; i < councilOfTen.length; i++) {
-				for(int j = 0; j < councilOfTen.length; j++) {
-					GainModel offspring = new GainModel(councilOfTen[i], councilOfTen[j]);
+			for(int i = 0; i < eliteTen.length; i++) {
+				for(int j = 0; j < eliteTen.length; j++) {
+					GainModel offspring = new GainModel(eliteTen[i], eliteTen[j]);
 					System.out.println("Training Model " + (allModels.size() + 1));
 					offspring = trainModel(setup, offspring, epochs, quiet);
 					allModels.add(offspring);
 				}
 			}
 
-			// Test new models against the Council of Ten
+			// Test new models against the Elite Ten
 			Arrays.fill(scores, 0);
 			options.setNumPlayers(cpuTypes.size());
 			options.setNPC(cpuTypes);
-			int[] councilScores = new int[councilOfTen.length];
+			int[] eliteScores = new int[eliteTen.length];
 			for(int i = 0; i < allModels.size(); i++) {
-				for(int j = 0; j < councilOfTen.length; j++) {
+				for(int j = 0; j < eliteTen.length; j++) {
 					ArrayList<GainModel> models = new ArrayList<>();
 					models.add(allModels.get(i));
-					models.add(councilOfTen[j]);
-					System.out.print("Model " + (i+1) + " vs. Council Member " + (j+1) + ": ");
+					models.add(eliteTen[j]);
+					System.out.print("Model " + (i+1) + " vs. Elite Ten Seat " + (j+1) + ": ");
 					int winner = runner.runGameSet(setup, options, models, quiet);
 					System.out.println();
 					if(winner == 0) {
 						scores[i] += 1;
-						councilScores[j] -= 1;
+						eliteScores[j] -= 1;
 					}
 					else if(winner == 1) {
 						scores[i] -= 1;
-						councilScores[j] += 1;					
+						eliteScores[j] += 1;					
 					}				
 				}
 			}
 
 			// Find n highest scoring models where n < min score of selected models > 4
-			ArrayList<GainModel> replacements = new ArrayList<>();
-			while(true) {
-				int max = 0;
-				for(int i = 1; i < allModels.size(); i++) {
-					if(scores[i] > scores[max]) {
-						max = i;
+			ArrayList<Integer> replacements = new ArrayList<>();
+			ArrayList<Integer> potentialReplacements = new ArrayList<>();
+			for(int wins = eliteTen.length; wins >= eliteTen.length / 2; wins--) {
+				for(int i = 0; i < allModels.size(); i++) {
+					if(scores[i] == wins) {
+						System.out.print("Big Money vs. Model " + (i+1) + " (" + wins + "): ");
+						if(bigMoneyTest(setup, allModels.get(i), quiet)) {
+							potentialReplacements.add(i);
+						}
 					}
 				}
-				if(replacements.size() >= councilOfTen.length
-						|| scores[max] <= replacements.size() || scores[max] < 4) {
+				if(potentialReplacements.size() + replacements.size() <= wins) {
+					replacements.addAll(potentialReplacements);
+				}
+				else if(potentialReplacements.size() + replacements.size() > wins) {
+					for(int i = 0; true; i++) {
+						if(i + 1 >= potentialReplacements.size()) {
+							i = 0;
+						}
+						ArrayList<GainModel> models = new ArrayList<>();
+						models.add(allModels.get(potentialReplacements.get(i)));
+						models.add(allModels.get(potentialReplacements.get(i + 1)));
+						System.out.print("Model " + (potentialReplacements.get(i) + 1) 
+								+ " vs. Model " + (potentialReplacements.get(i+1) + 1) + ": ");
+						int winner = runner.runGameSet(setup, options, models, quiet);
+						System.out.println();
+						if(winner == 0) {
+							potentialReplacements.remove(i + 1);
+						}
+						else if(winner == 1) {
+							potentialReplacements.remove(i);
+						}
+						if(potentialReplacements.size() + replacements.size() <= wins) {
+							replacements.addAll(potentialReplacements);
+							break;
+						}
+					}
+				}
+				potentialReplacements.clear();
+				if(replacements.size() >= wins - 1) {
+					for(int val : replacements) {
+						System.out.println("Model " + (val+1) + " joining the Elite Ten");
+					}
 					break;
 				}
-				boolean beatBM = bigMoneyTest(setup, allModels.get(max), quiet);
-				if(beatBM) {
-					System.out.println("Model " + (max + 1) + " joining the council (" + scores[max] + ")");
-					replacements.add(allModels.get(max));
-				}
-				scores[max] = -1;
 			}
 			
-			// Replace lowest scoring members of the Council of Ten with selected models
+			// Replace lowest scoring members of the Elite Ten with selected models
 			for(int i = 0; i < replacements.size(); i++) {
 				int min = 0;
-				for(int j = 1; j < councilOfTen.length; j++) {
-					if(councilScores[j] < councilScores[min]) {
+				for(int j = 1; j < eliteTen.length; j++) {
+					if(eliteScores[j] < eliteScores[min]) {
 						min = j;
 					}
 				}
-				System.out.println("Council member " + (min + 1) + " leaving the council (" + councilScores[min] + ")");
-				councilOfTen[min] = replacements.get(i);
-				councilOfTen[min].save(new File(filepath + "/GainModel_C" + (min+1) + ".txt"));
-				councilScores[min] = allModels.size();
+				System.out.println("Elite Ten member " + (min + 1) + " leaving (" + eliteScores[min] + ")");
+				eliteTen[min] = allModels.get(replacements.get(i));
+				eliteTen[min].save(new File(filepath + "/GainModel_C" + (min+1) + ".txt"));
+				eliteScores[min] = allModels.size();
 			}
 
 		}
@@ -204,13 +231,12 @@ public class Trainer {
 		options.hideGraphics();
 		options.setNumPlayers(cpuTypes.size());
 		options.setNPC(cpuTypes);
-		System.out.print("Big Money vs. Machine Learning: ");
 		int winner = runner.runGameSet(setup, options, models, quiet);
 		if(winner == 1) {
-			System.out.println(" Machine Learning is better!");
+			System.out.println(" **** Machine Learning is better! ****");
 		}
 		else {
-			System.out.println(" Big Money retains its throne");
+			System.out.println(" **** Big Money retains its throne ****");
 		}
 		return winner == 1;
 	}

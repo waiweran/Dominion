@@ -97,6 +97,7 @@ public class FastTrainer {
 				perturbMagnitude = (float)MIN_PERTURB_MAG;
 			}
 		}
+		System.out.println("Training Complete");
 	}
 
 
