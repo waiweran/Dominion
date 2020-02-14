@@ -26,23 +26,25 @@ public class Taxman extends Card {
 			SingleCardSelector sc = new SingleCardSelector(getGame(), money,
 					"Trash a Treasure", this, true);
 			int index = sc.getSelectedIndex();			
-			Card c = getPlayer().deck.hand.get(index);
+			Card c = money.get(index);
 			
 			for(Player p : getGame().getAttackedPlayers()) {
 				if(p.deck.hand.size() > 4) {
-					if(p.deck.hand.remove(c)) {
-						p.deck.discardCard(c);
+					for(int i = 0; i < p.deck.hand.size(); i++) {
+						if(c.equals(p.deck.hand.get(i))) {
+							p.deck.discardCard(i);
+						}
 					}
 				}
 			}
-			
-			getGame().board.trashCard(getPlayer().deck.hand.remove(index));
+			getPlayer().deck.hand.remove(c);
+			getGame().board.trashCard(c);
 			SupplySelector getm = new SupplySelector(getGame(), getName(), 
 					"Select a treasure to gain, costing up to 3 more than the one that you trashed", 
 					0, c.getCost() + 3);
 			getm.setPotion(c.costsPotion());
 			getm.setCardSelector(card -> card.isTreasure());
-			getPlayer().deck.gain(getm.getGainedCard(), 2);
+			getPlayer().deck.gain(getm.getGainedCard(), 1);
 		}
 
 	}
