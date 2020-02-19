@@ -13,8 +13,8 @@ public class Trainer {
 	private static final String FILENAME = "Saves/Base/First Game.dog";
 	private static final boolean QUIET = true;
 
-	private static final int GENERATIONS = 50;
-	private static final int EPOCHS = 50;
+	private static final int GENERATIONS = 100;
+	private static final int EPOCHS = 300;
 	private static final double ANNEAL_RATE = 0.98;
 	private static final double START_PERTURB_PROB = 0.5;
 	private static final double START_PERTURB_MAG = 1;
@@ -45,6 +45,13 @@ public class Trainer {
 		// Setup Elite Ten Round Robin
 		GainModel[] eliteTen = new GainModel[10];
 		Arrays.fill(eliteTen, startingModel);
+		for(int i = 0; i < eliteTen.length; i++) {
+			File eliteFile = new File("Training/Game_" + setup.hashCode()
+					+ "/GainModel_C" + (i + 1) + ".txt");
+			if(eliteFile.isFile()) {
+				eliteTen[i] = new GainModel(game.board, eliteFile);
+			}
+		}
 		ArrayList<GainModel> allModels = new ArrayList<>();
 		ArrayList<String> cpuTypes = new ArrayList<>();
 		cpuTypes.add("ML");
