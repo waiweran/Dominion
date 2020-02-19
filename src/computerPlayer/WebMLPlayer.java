@@ -7,37 +7,21 @@ import cards.Card;
 import gameBase.DominionGame;
 import gameBase.Player;
 import gameBase.Supply;
-import machineLearning.GainModel;
-import machineLearning.SupplyData;
 
-public class MLPlayer extends ComputerPlayer {
+public class WebMLPlayer extends ComputerPlayer {
 	
 	private RandomPlayer rand;
-	private GainModel model;
 
-	public MLPlayer(Player pComputer, DominionGame game) {
+	public WebMLPlayer(Player pComputer, DominionGame game) {
 		super("ML Player", pComputer, game);
 		rand = new RandomPlayer(pComputer, game);
-		model = game.models.getGainModel();
 	}
 
 	@Override
 	public Supply chooseGain(List<Supply> options, boolean required) {
 		List<Supply> supplies = access.board.getAllSupplies();
-		SupplyData[] data = new SupplyData[supplies.size()];
-		for(int i = 0; i < supplies.size(); i++) {
-			int numInDeck = 0;
-			for(Card c : player.deck.getDeck()) {
-				if(c.equals(supplies.get(i).getCard())) numInDeck++;
-			}
-			data[i] = new SupplyData(supplies.get(i), options.contains(supplies.get(i)), numInDeck);
-		}
-		int choice = model.choose(data, !required);
-		if(access.isOnline()) {
-			access.getClient().sendString("SELECT " + choice);
-			String input = access.getClient().getSelection();
-			choice = Integer.parseInt(input.substring(7));
-		}
+		String input = access.getClient().getSelection();
+		int choice = Integer.parseInt(input.substring(7));
 		if(choice >= supplies.size()) {
 			return null;
 		}

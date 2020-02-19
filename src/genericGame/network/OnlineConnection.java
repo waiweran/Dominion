@@ -136,7 +136,6 @@ public class OnlineConnection extends Connection {
 				Object fromServer = input.readObject();
 				if(fromServer instanceof String) {
 					String response = (String) fromServer;				
-					System.out.println(response);
 					if(getClient().stop()) {
 						return;
 					}

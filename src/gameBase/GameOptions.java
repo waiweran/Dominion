@@ -1,10 +1,13 @@
 package gameBase;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class GameOptions {
+public class GameOptions implements Serializable {
+	
+	private static final long serialVersionUID = -29666248705425276L;
 	
 	private int players;
 	private List<String> npc;

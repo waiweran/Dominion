@@ -37,6 +37,9 @@ public class CPUFactory {
 			return new RandomPlayer(player, access);
 		}
 		if(cpuType.equals("AI") || cpuType.equals("ML")) {
+			if(access.getClient().getPlayerNumber() > 1) {
+				return new WebMLPlayer(player, access);
+			}
 			return new MLPlayer(player, access);
 		}
 		if(cpuType.equals("Stdio")) {
