@@ -19,7 +19,7 @@ import javafx.scene.control.Alert.AlertType;
  */
 public class OnlineConnection extends Connection {
 
-	public static final String SERVER = "localhost";//"152.3.64.49";
+	public static final String SERVER = "152.3.64.49";
 	private static final int PORT = 8901;
 
 	private int myPlayerNumber;

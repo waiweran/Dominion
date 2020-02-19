@@ -19,7 +19,6 @@ public abstract class BoardGame implements Serializable {
 	protected boolean gameStarted;			//records whether the game has been started
 	protected boolean showGraphics;			//determines whether graphics should be shown
 	private transient GameClient client;	//this is the online client
-	private int numPlayers;					//records the number of players
 	private int numNPC;						//records the number of NPC players in the game
 	private String name;					//records the name of the game
 	private StringBuilder log;				//records a log of all that happened in the game.
@@ -59,7 +58,7 @@ public abstract class BoardGame implements Serializable {
 	 * Changes whose turn it is to the next player.
 	 */
 	public void nextTurn() {
-		if(whoseTurn < numPlayers) whoseTurn++;
+		if(whoseTurn < getNumPlayers()) whoseTurn++;
 		else whoseTurn = 1;		
 	}
 	
@@ -74,11 +73,7 @@ public abstract class BoardGame implements Serializable {
 	 * Sets the number of players in the game.
 	 * @param num the new number of players.
 	 */
-	public void setNumPlayers(int num) {
-		if(!gameStarted) {
-			numPlayers = num;
-		}
-	}
+	public abstract void setNumPlayers(int num);
 	
 	/**
 	 * Sets the number of NPC players in the game.
@@ -133,9 +128,7 @@ public abstract class BoardGame implements Serializable {
 	 * Gets the number of players in a game.
 	 * @return the number of players.
 	 */
-	public int getNumPlayers() {
-		return numPlayers;
-	}	
+	public abstract int getNumPlayers();
 	
 	/**
 	 * Gets the number of NPC players in a game.

@@ -268,6 +268,18 @@ public class DominionGame extends BoardGame {
 		return output;
 	}
 	
+	@Override
+	public void setNumPlayers(int num) {
+		if(!gameStarted) {
+			options.setNumPlayers(num);
+		}
+	}
+	
+	@Override
+	public int getNumPlayers() {
+		return options.getNumPlayers();
+	}
+	
 	/**
 	 * Can be called during cleanup to give the current player another turn.
 	 */
