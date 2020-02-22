@@ -79,16 +79,16 @@ public class Trainer {
 			for(int i = 0; i < allModels.size(); i++) {
 				for(int j = 0; j < eliteTen.length; j++) {
 					ArrayList<GainModel> models = new ArrayList<>();
-					models.add(allModels.get(i));
 					models.add(eliteTen[j]);
-					System.out.print("Model " + (i+1) + " vs. Elite Ten Seat " + (j+1) + ": ");
+					models.add(allModels.get(i));
+					System.out.print("Elite Ten Seat " + (j+1) + " vs. Model " + (i+1) + ": ");
 					int winner = runner.runGameSet(setup, options, models, quiet);
 					System.out.println();
-					if(winner == 0) {
+					if(winner == 1) {
 						scores[i] += 1;
 						eliteScores[j] -= 1;
 					}
-					else if(winner == 1) {
+					else if(winner == 0) {
 						scores[i] -= 1;
 						eliteScores[j] += 1;					
 					}				
