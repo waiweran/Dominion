@@ -5,6 +5,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.ConcurrentModificationException;
 
 import genericGame.BoardGame;
 import genericGame.GameClient;
@@ -116,6 +117,8 @@ public class OnlineConnection extends Connection {
 		try {
 			output.writeObject(game);
 			output.flush();
+		} catch (ConcurrentModificationException e) {
+			System.err.println("Could not back up - concurrent modification");
 		} catch (IOException e) {
 			throw new RuntimeException("Could not back up", e);
 		}

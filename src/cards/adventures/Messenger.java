@@ -26,8 +26,6 @@ public class Messenger extends Card {
 	
 	@Override
 	public void gainAction() {
-		System.out.print(getPlayer().bought);
-		System.out.println(getPlayer().buying);
 		if(getPlayer().buying && getPlayer().bought.size() == 1 && getPlayer().bought.get(0).equals(this)) {
 			getPlayer().buying = false;
 			SupplySelector sd = new SupplySelector(getGame(), getName(), 
