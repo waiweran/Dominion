@@ -2,7 +2,6 @@ package machineLearning;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import gameBase.DominionGame;
@@ -43,10 +42,6 @@ public class ModelFactory {
 	
 	public GainModel getBasicGainModel() {
 		return new GainModel(access.board);
-	}
-	
-	public List<GainModel> getGainModels() {
-		return Collections.unmodifiableList(gainModels);
 	}
 	
 	public void setGainModels(List<GainModel> models) {

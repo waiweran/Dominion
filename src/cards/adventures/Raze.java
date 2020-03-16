@@ -32,12 +32,14 @@ public class Raze extends Card {
 		}
 		getGame().board.trashCard(choice);
 		
-		List<Card> revealed = getPlayer().deck.getDrawCards(choice.getCost());
-		SingleCardSelector sc2 = new SingleCardSelector(getGame(), revealed,
-				"Add a card to your hand", this, true);
-		getPlayer().deck.hand.add(revealed.remove(sc2.getSelectedIndex()));
-		for(Card c : revealed) {
-			getPlayer().deck.discardCard(c);
+		if(choice.getCost() > 0) {
+			List<Card> revealed = getPlayer().deck.getDrawCards(choice.getCost());
+			SingleCardSelector sc2 = new SingleCardSelector(getGame(), revealed,
+					"Add a card to your hand", this, true);
+			getPlayer().deck.hand.add(revealed.remove(sc2.getSelectedIndex()));
+			for(Card c : revealed) {
+				getPlayer().deck.discardCard(c);
+			}
 		}
 
 

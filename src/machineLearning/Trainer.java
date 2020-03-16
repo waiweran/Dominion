@@ -14,8 +14,8 @@ public class Trainer {
 	private static final boolean QUIET = true;
 
 	private static final int GENERATIONS = 100;
-	private static final int EPOCHS = 300;
-	private static final double ANNEAL_RATE = 0.98;
+	private static final int EPOCHS = 100;
+	private static final double ANNEAL_RATE = 0.96;
 	private static final double START_PERTURB_PROB = 0.5;
 	private static final double START_PERTURB_MAG = 1;
 	private static final double MIN_PERTURB_PROB = 0.01;
@@ -83,22 +83,23 @@ public class Trainer {
 					models.add(allModels.get(i));
 					System.out.print("Elite Ten Seat " + (j+1) + " vs. Model " + (i+1) + ": ");
 					int winner = runner.runGameSet(setup, options, models, quiet);
-					System.out.println();
 					if(winner == 1) {
+						System.out.print(" **V**");
 						scores[i] += 1;
 						eliteScores[j] -= 1;
 					}
 					else if(winner == 0) {
 						scores[i] -= 1;
 						eliteScores[j] += 1;					
-					}				
+					}	
+					System.out.println();
 				}
 			}
 
-			// Find n highest scoring models where n < min score of selected models > 4
+			// Find n highest scoring models where n < min score of selected models > 0
 			ArrayList<Integer> replacements = new ArrayList<>();
 			ArrayList<Integer> potentialReplacements = new ArrayList<>();
-			for(int wins = eliteTen.length; wins >= eliteTen.length / 2; wins--) {
+			for(int wins = eliteTen.length; wins > 0; wins--) {
 				for(int i = 0; i < allModels.size(); i++) {
 					if(scores[i] == wins) {
 						System.out.print("Big Money vs. Model " + (i+1) + " (" + wins + "): ");
@@ -247,11 +248,41 @@ public class Trainer {
 		}
 		return winner == 1;
 	}
+	
+	
+	public void firstPlayerTest(GameSetup setup, int numSimulations, boolean quiet) {
+		
+		// Get Models
+		GameOptions options = new GameOptions(false);
+		options.hideGraphics();
+		options.setNumPlayers(1);
+		DominionGame game = new DominionGame(setup, options);
+		game.startGame();
+		GainModel startingModel = game.models.getGainModel();
+		ArrayList<GainModel> models = new ArrayList<>();
+		models.add(startingModel);
+		models.add(startingModel);
+
+		// Run games
+		ArrayList<String> cpuTypes = new ArrayList<>();
+		cpuTypes.add("Random");
+		cpuTypes.add("Random");
+		options.setNumPlayers(cpuTypes.size());
+		options.setNPC(cpuTypes);
+		System.out.print("Random Model P1 vs Random Model P2: ");
+		int[] games = runner.runGames(setup, options, models, numSimulations, quiet);
+		System.out.print("Result: " + games[0]);
+		for(int i = 1; i < options.getNumPlayers(); i++) {
+			System.out.print(" to " + games[i]);
+		}	
+		System.out.println();
+	}
 
 
 	public static void main(String[] args) {
 		try {
 			new Trainer().train(new GameSetup(new File(FILENAME)), EPOCHS, QUIET);
+			//new Trainer().firstPlayerTest(new GameSetup(new File(FILENAME)), 100000, QUIET);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
