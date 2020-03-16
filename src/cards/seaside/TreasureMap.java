@@ -17,10 +17,10 @@ public class TreasureMap extends Card {
 			getGame().board.trashCard(getPlayer().deck.hand.remove(secondIndex));
 			getGame().board.trashCard(this);
 			getPlayer().deck.play.remove(this);
-			getPlayer().deck.gain(getGame().board.getSilver().takeCard(), 1);
-			getPlayer().deck.gain(getGame().board.getSilver().takeCard(), 1);
-			getPlayer().deck.gain(getGame().board.getSilver().takeCard(), 1);
-			getPlayer().deck.gain(getGame().board.getSilver().takeCard(), 1);
+			getPlayer().deck.gain(getGame().board.getGold().takeCard(), 1);
+			getPlayer().deck.gain(getGame().board.getGold().takeCard(), 1);
+			getPlayer().deck.gain(getGame().board.getGold().takeCard(), 1);
+			getPlayer().deck.gain(getGame().board.getGold().takeCard(), 1);
 		}
 	}
 	

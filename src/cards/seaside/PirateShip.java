@@ -19,6 +19,7 @@ public class PirateShip extends Card {
 	public void performAction() {
 		if(0 == new Selector(getGame()).showQuestionDialog(this, getPlayer().pirateShip + " Coin Tokens",
 				"Attack Other Players for More Coin Tokens", "+" + getPlayer().pirateShip + " Money")) {
+			boolean gotCoins = false;
 			for(Player p : getGame().getAttackedPlayers()) {
 				ArrayList<Card> treasures = new ArrayList<Card>();
 				Card c = p.deck.getDrawCard();
@@ -39,8 +40,11 @@ public class PirateShip extends Card {
 							this, true);
 					getGame().board.trashCard(treasures.remove(sc.getSelectedIndex()));
 					p.deck.discardCards(treasures);
-					getPlayer().pirateShip++;
+					gotCoins = true;
 				}
+			}
+			if(gotCoins) {
+				getPlayer().pirateShip++;
 			}
 		}
 		else {
