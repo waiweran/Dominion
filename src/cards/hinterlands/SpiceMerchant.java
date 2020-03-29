@@ -28,7 +28,11 @@ public class SpiceMerchant extends Card {
 
 		try {
 			Card choice = available.get(sc.getSelectedIndex());
-			getPlayer().deck.hand.remove(choice);
+			for(int i = 0; i < getPlayer().deck.hand.size(); i++) {
+				if(getPlayer().deck.hand.get(i) == choice) {
+					getPlayer().deck.hand.remove(i);
+				}
+			}
 			getGame().board.trashCard(choice);
 			if(0 == new Selector(getGame()).showQuestionDialog(this, "What do you want?", 
 					"+2 Cards and +1 Action", "+2 Money and +1 Buy")) {

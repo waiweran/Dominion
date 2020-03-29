@@ -20,8 +20,10 @@ public class Militia extends Card {
 		
 		ArrayList<MultiCardSelector> selectors = new ArrayList<>();
 		for(Player p : getGame().getAttackedPlayers()) {
+			int discardNum = p.deck.hand.size() - 3;
+			if(discardNum < 0) discardNum = 0;
 			MultiCardSelector sd = new MultiCardSelector(getGame(), p, p.deck.hand, 
-					"Discard down to 3", this, p.deck.hand.size() - 3, true);
+					"Discard down to 3", this, discardNum, true);
 			sd.show();
 			selectors.add(sd);
 		}

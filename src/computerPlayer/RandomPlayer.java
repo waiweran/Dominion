@@ -19,7 +19,7 @@ public class RandomPlayer extends ComputerPlayer {
 	private ExpertSystem exsys;
 
 	public RandomPlayer(Player pComputer, DominionGame game) {
-		super("Random Player 2", pComputer, game);
+		super("Random Player", pComputer, game);
 		exsys = new ExpertSystem();
 	}
 	

@@ -21,8 +21,11 @@ public class CaravanGuard extends Card {
 	@Override
 	public void reactAttack() {
 		if(new Selector(getGame()).checkReact(getPlayer(), this)) {
-			getPlayer().deck.hand.remove(this);
-			getPlayer().deck.play.add(this);
+			for(int i = 0; i < getPlayer().deck.hand.size(); i++) {
+				if(getPlayer().deck.hand.get(i) == this) {
+					getPlayer().deck.play.add(getPlayer().deck.hand.remove(i));
+				}
+			}
 			getPlayer().deck.deal();
 		}
 	}

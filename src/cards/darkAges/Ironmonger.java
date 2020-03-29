@@ -17,6 +17,7 @@ public class Ironmonger extends Card {
 		getPlayer().addAction(1);
 		
 		Card revealed = getPlayer().deck.getDrawCard();
+		if(revealed == null) return;
 		if(0 == new Selector(getGame()).showCardDialog(this, "", revealed, 
 				"Discard", "Return to Top of Deck")) {
 			getPlayer().deck.discardCard(revealed);

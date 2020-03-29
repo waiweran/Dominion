@@ -14,7 +14,7 @@ public class CountingHouse extends Card {
 	@Override
 	public void performAction() {
 		for(int i = getPlayer().deck.discard.size() - 1; i >= 0; i--) {
-			if(getPlayer().deck.discard.get(i).equals(new Copper())) {
+			if(getPlayer().deck.discard.get(i) instanceof Copper) {
 				getPlayer().deck.hand.add(
 						getPlayer().deck.discard.remove(i));
 			}

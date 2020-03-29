@@ -26,7 +26,7 @@ public class Messenger extends Card {
 	
 	@Override
 	public void gainAction() {
-		if(getPlayer().buying && getPlayer().bought.size() == 1 && getPlayer().bought.get(0).equals(this)) {
+		if(getPlayer().buying && getPlayer().bought.size() == 1 && getPlayer().bought.get(0) == this) {
 			getPlayer().buying = false;
 			SupplySelector sd = new SupplySelector(getGame(), getName(), 
 					"Gain a card costing up to 4, and each other player gains a copy of it", 0, 4);

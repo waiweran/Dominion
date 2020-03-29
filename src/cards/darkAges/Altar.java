@@ -14,6 +14,7 @@ public class Altar extends Card {
 
 	@Override
 	public void performAction() {
+		if(getPlayer().deck.hand.isEmpty()) return;
 		SingleCardSelector sc = new SingleCardSelector(getGame(), getPlayer().deck.hand,
 				"Trash a card", this, true);
 		getGame().board.trashCard(getPlayer().deck.hand.remove(sc.getSelectedIndex()));

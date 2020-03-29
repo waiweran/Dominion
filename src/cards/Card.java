@@ -248,7 +248,10 @@ public abstract class Card implements Comparable<Card>, Cloneable, Serializable 
 
 	@Override 
 	public boolean equals(Object other) {
-		return this.getName().equals(((Card)other).getName());
+		if(other instanceof Card) {
+			return this.getName().equals(((Card)other).getName());
+		}
+		return false;
 	}
 	
 	@Override

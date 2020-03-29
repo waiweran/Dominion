@@ -21,7 +21,7 @@ public class Peddler extends Card {
 	public int getCost() {
 		int cost = super.getCost();
 		try {
-			if(getPlayer().buying) {
+			if(getGame().getCurrentPlayer().buying) {
 				for(Card c : getPlayer().deck.play) {
 					if(c.isAction()) {
 						cost -= 2;

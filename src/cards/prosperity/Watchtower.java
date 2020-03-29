@@ -26,7 +26,7 @@ public class Watchtower extends Card {
 	public void reactGain(Card c) {
 		if(getPlayer().deck.discard.size() > 0
 				&& getPlayer().deck.discard.get(
-				getPlayer().deck.discard.size() - 1).equals(c)) {
+				getPlayer().deck.discard.size() - 1) == c) {
 			Selector sel = new Selector(getGame());
 			sel.setPlayer(getPlayer());
 			int selection = sel.showCardDialog(this, "Choose one", 

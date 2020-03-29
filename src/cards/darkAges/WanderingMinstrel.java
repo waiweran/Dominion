@@ -21,10 +21,10 @@ public class WanderingMinstrel extends Card {
 		ArrayList<Card> actions = new ArrayList<>();
 		for(int i = 0; i < 3; i++) {
 			Card c = getPlayer().deck.getDrawCard();
-			if(c.isAction()) {
+			if(c != null && c.isAction()) {
 				actions.add(c);
 			}
-			else {
+			else if (c != null) {
 				getPlayer().deck.discardCard(c);
 			}
 		}

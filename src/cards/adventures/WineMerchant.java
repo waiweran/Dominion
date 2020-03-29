@@ -22,10 +22,13 @@ public class WineMerchant extends Card {
 	@Override
 	public void tavernAction() {
 		if (getPlayer().getTreasure() >= 2) {
-			getPlayer().addTreasure(2);
+			getPlayer().addTreasure(-2);
 			getPlayer().deck.callFromTavern(this);
-			getPlayer().deck.play.remove(this);
-			getPlayer().deck.discardCard(this);
+			for(int i = 0; i < getPlayer().deck.play.size(); i++) {
+				if(getPlayer().deck.play.get(i) == this) {
+					getPlayer().deck.discardCard(getPlayer().deck.play.remove(i));
+				}
+			}
 		}
 		else {
 			new Selector(getGame()).showTavernError("You do not have enough money to call "

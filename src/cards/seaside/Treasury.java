@@ -25,8 +25,11 @@ public class Treasury extends Card {
 		}
 		if(0 == new Selector(getGame()).showQuestionDialog(this, "Would you like to put the Treasury on top of your deck?", 
 				"Put Treasury on top of Deck", "Discard Treasury")) {
-			getPlayer().deck.play.remove(this);
-			getPlayer().deck.topOfDeck(this);
+			for(int i = 0; i < getPlayer().deck.play.size(); i++) {
+				if(getPlayer().deck.play.get(i) == this) {
+					getPlayer().deck.topOfDeck(getPlayer().deck.play.remove(i));
+				}
+			}
 		}
 	}
 

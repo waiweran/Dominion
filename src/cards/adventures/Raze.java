@@ -20,7 +20,7 @@ public class Raze extends Card {
 		ArrayList<Card> options = new ArrayList<>();
 		options.addAll(getPlayer().deck.hand);
 		options.add(this);
-		SingleCardSelector sc = new SingleCardSelector(getGame(), getPlayer().deck.hand,
+		SingleCardSelector sc = new SingleCardSelector(getGame(), options,
 				"Trash a card", this, true);
 		int index = sc.getSelectedIndex();
 		Card choice = this;
@@ -34,6 +34,7 @@ public class Raze extends Card {
 		
 		if(choice.getCost() > 0) {
 			List<Card> revealed = getPlayer().deck.getDrawCards(choice.getCost());
+			if(revealed.isEmpty()) return;
 			SingleCardSelector sc2 = new SingleCardSelector(getGame(), revealed,
 					"Add a card to your hand", this, true);
 			getPlayer().deck.hand.add(revealed.remove(sc2.getSelectedIndex()));

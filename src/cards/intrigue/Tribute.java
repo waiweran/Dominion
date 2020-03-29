@@ -27,11 +27,9 @@ public class Tribute extends Card {
 
 		new Selector(getGame()).showCardListDialog(this, getGame().getLeftPlayer().getPlayerName() + "Revealed", 
 				cards, "Ok");
-		try {
-			if(cards.get(0).equals(cards.get(1))) {
-				cards.remove(0);
-			}
-		} catch(NullPointerException e) {}
+		if(cards.size() == 2 && cards.get(0).equals(cards.get(1))) {
+			cards.remove(1);
+		}
 		for(Card c : cards) {
 			if(c.isAction()) {
 				getPlayer().addAction(2);

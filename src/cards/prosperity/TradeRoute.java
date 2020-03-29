@@ -15,9 +15,11 @@ public class TradeRoute extends Card {
 	public void performAction() {
 		getPlayer().addBuy();
 		getPlayer().addTreasure(getGame().board.getTradeRouteMat());
-		SingleCardSelector sc = new SingleCardSelector(getGame(), getPlayer().deck.hand,
-				"Trash a Card", this, true);
-		getGame().board.trashCard(getPlayer().deck.hand.remove(sc.getSelectedIndex()));
+		if(!getPlayer().deck.hand.isEmpty()) {
+			SingleCardSelector sc = new SingleCardSelector(getGame(), getPlayer().deck.hand,
+					"Trash a Card", this, true);
+			getGame().board.trashCard(getPlayer().deck.hand.remove(sc.getSelectedIndex()));
+		}
 	}
 
 }

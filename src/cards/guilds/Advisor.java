@@ -17,6 +17,7 @@ public class Advisor extends Card {
 	public void performAction() {
 		getPlayer().addAction(1);
 		List<Card> drawn = getPlayer().deck.getDrawCards(3);
+		if(drawn.isEmpty()) return;
 		SingleCardSelector sc = new SingleCardSelector(getGame(), getGame().getLeftPlayer(),
 				drawn, "Choose a card for your neighbor to discard", this, true);
 		getPlayer().deck.discardCard(drawn.remove(sc.getSelectedIndex()));

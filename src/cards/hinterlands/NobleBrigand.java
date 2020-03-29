@@ -52,9 +52,8 @@ public class NobleBrigand extends Card {
 			if(revealed.size() > 0) {
 				SingleCardSelector sc = new SingleCardSelector(getGame(), revealed,
 						"Steal a treasure", this, true);
-				Card c = revealed.get(sc.getSelectedIndex());
+				Card c = revealed.remove(sc.getSelectedIndex());
 				getPlayer().deck.gain(c);
-				revealed.remove(c);
 			}
 			else {
 				new Selector(getGame()).showQuestionDialog(this, p.getPlayerName()

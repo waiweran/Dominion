@@ -14,7 +14,7 @@ public class Salvager extends Card {
 	@Override
 	public void performAction() {
 		getPlayer().addBuy();
-		
+		if(getPlayer().deck.hand.isEmpty()) return;
 		SingleCardSelector sc = new SingleCardSelector(getGame(), getPlayer().deck.hand,
 				"Trash a Card", this, true);
 		int index = sc.getSelectedIndex();

@@ -20,7 +20,7 @@ public class Crossroads extends Card {
 			}
 		}
 		for(Card c : getPlayer().deck.play) {
-			if(c.equals(this)) {
+			if(c instanceof Crossroads) {
 				numCrossroads++;
 			}
 		}

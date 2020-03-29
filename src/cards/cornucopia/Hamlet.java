@@ -16,17 +16,19 @@ public class Hamlet extends Card {
 		getPlayer().deck.deal();
 		getPlayer().addAction(1);
 		if(getPlayer().deck.hand.isEmpty()) return;
-		try {
 		SingleCardSelector sc = new SingleCardSelector(getGame(), getPlayer().deck.hand,
 				"Discard a card to get +1 action", this, false);
-		getPlayer().deck.discardCard(sc.getSelectedIndex());
+		int index = sc.getSelectedIndex();
+		if(index < 0) return;
+		getPlayer().deck.discardCard(index);
 		getPlayer().addAction(1);
+		if(getPlayer().deck.hand.isEmpty()) return;
 		SingleCardSelector sc2 = new SingleCardSelector(getGame(), getPlayer().deck.hand,
 				"Discard a card to get +1 buy", this, false);
-		getPlayer().deck.discardCard(sc2.getSelectedIndex());
+		int index2 = sc2.getSelectedIndex();
+		if(index2 < 0) return;
+		getPlayer().deck.discardCard(index2);
 		getPlayer().addBuy();
-		}
-		catch(IndexOutOfBoundsException e) {}
 	}
 
 }

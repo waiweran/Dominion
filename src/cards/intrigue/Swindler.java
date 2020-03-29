@@ -18,6 +18,7 @@ public class Swindler extends Card {
 		
 		for(Player p : getGame().getAttackedPlayers()) {
 			Card c = p.deck.getDrawCard();
+			if(c == null) continue;
 			int money = c.getCost();
 			getGame().board.trashCard(c);
 			SupplySelector sd = new SupplySelector(getGame(), getName(), "Select a card for "

@@ -33,7 +33,7 @@ public class Amulet extends Card {
 
 		int choice = new Selector(getGame()).showQuestionDialog(this, "", options);
 		
-		if (choice == 2)	{
+		if (choice == 2 && !getPlayer().deck.hand.isEmpty())	{
 			SingleCardSelector sc = new SingleCardSelector(getGame(), 
 					getPlayer().deck.hand, "Trash a Card", this, true);			
 			Card c = getPlayer().deck.hand.remove(sc.getSelectedIndex());

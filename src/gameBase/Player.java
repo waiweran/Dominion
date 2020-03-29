@@ -40,6 +40,7 @@ public class Player extends AbstractPlayer {
 	public int coppersmith = 0;			//Coppersmiths played this turn
 	public int bridge = 0;				//Bridges played this turn
 	public int quarry = 0;				//Quarries played this turn
+	public boolean minusOneCoin;		//Minus 1 coin token
 	public ObservableList<Card> contraband;//Cards that cannot be bought due to Contraband
 	public Deck deck;					//The player's deck
 
@@ -131,7 +132,7 @@ public class Player extends AbstractPlayer {
 		}
 		else if(c.isTreasure() && access.gamePhase < 3) {
 			access.gamePhase = 1;
-			treasure += c.getTreasure();
+			addTreasure(c.getTreasure());
 			deck.playCard(index);
 			c.performAction();
 			notifyObservers();
@@ -272,6 +273,10 @@ public class Player extends AbstractPlayer {
 	 * @param amt the amount to add.
 	 */
 	public void addTreasure(int amt) {
+		if(minusOneCoin && amt > 0) {
+			amt -= 1;
+			minusOneCoin = false;
+		}
 		treasure += amt;
 		notifyObservers();
 	}

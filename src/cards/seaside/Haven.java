@@ -17,6 +17,7 @@ public class Haven extends Card {
 	public void performAction() {
 		getPlayer().deck.deal();
 		getPlayer().addAction(1);
+		if(getPlayer().deck.hand.isEmpty()) return;
 		SingleCardSelector sc = new SingleCardSelector(getGame(), getPlayer().deck.hand,
 				"Set a card aside", this, true);
 		if(!getPlayer().deck.reserve.containsKey(this)) {

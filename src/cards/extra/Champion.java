@@ -42,8 +42,11 @@ public class Champion extends Card {
 	@Override
 	public void durationAction() {
 		if(played) {
-			getPlayer().deck.duration.remove(this);
-			getPlayer().deck.play.add(this);
+			for(int i = 0; i < getPlayer().deck.duration.size(); i++) {
+				if(getPlayer().deck.duration.get(i) == this) {
+					getPlayer().deck.play.add(getPlayer().deck.duration.remove(i));
+				}
+			}
 		}
 	}
 

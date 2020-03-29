@@ -15,11 +15,11 @@ public class Sage extends Card {
 		getPlayer().addAction(1);
 		for(int i = 0; i < 1000; i++) {
 			Card c = getPlayer().deck.getDrawCard();
-			if(c.getCost() >= 3) {
+			if(c != null && c.getCost() >= 3) {
 				getPlayer().deck.hand.add(c);
 				return;
 			}
-			else {
+			else if(c != null) {
 				getPlayer().deck.discardCard(c);
 			}
 		}

@@ -26,7 +26,7 @@ public class NativeVillage extends Card {
 			getPlayer().deck.hand.addAll(getPlayer().deck.reserve.get(this));
 			getPlayer().deck.reserve.get(this).clear();
 		}
-		else {
+		else if(getPlayer().deck.hand.size() > 0) {
 			SingleCardSelector sc = new SingleCardSelector(getGame(), getPlayer().deck.hand,
 					"Place a card on the Native Village Mat", this, true);
 			getPlayer().deck.reserve.get(this).add(

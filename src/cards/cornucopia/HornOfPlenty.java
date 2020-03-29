@@ -26,8 +26,11 @@ public class HornOfPlenty extends Card {
 		Card c = sd.getGainedCard();
 		getPlayer().deck.gain(c);
 		if(c.isVictory()) {
-			getGame().board.trashCard(this);
-			getPlayer().deck.play.remove(this);
+			for(int i = 0; i < getPlayer().deck.play.size(); i++) {
+				if(getPlayer().deck.play.get(i) == this) {
+					getGame().board.trashCard(getPlayer().deck.play.remove(i));
+				}
+			}
 		}
 	}
 

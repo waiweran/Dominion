@@ -29,7 +29,7 @@ public class DominionGame extends BoardGame {
 	public CardFactory allCards;			//stores the list of all cards in the game
 	private transient DominionGUI gameGUI;	//this is the game's main GUI, used in pass and play
 	public GameSetup setup;			        //holds game setup information
-	private GameOptions options;			    //holds options for gameplay
+	private GameOptions options;			//holds options for gameplay
 	private boolean extraTurn;				//records whether player gets a repeat turn
 	private List<String> cpuTypes;			//holds the types of CPU in the game
 	public transient ModelFactory models;	//holds machine learning models for CPUs
@@ -113,6 +113,19 @@ public class DominionGame extends BoardGame {
 				if(!c.getPlayer().equals(p)) {
 					throw new RuntimeException(c.getName() + " owned by "
 							+ c.getPlayer().getPlayerName() + ", in deck of " + p.getPlayerName());
+				}
+			}
+		}
+		
+		// Check for duplicated cards
+		for(Player p : players) {
+			List<Card> deck = p.deck.getDeck();
+			for(int i = 0; i < deck.size(); i++) {
+				for(int j = i + 1; j < deck.size(); j++) {
+					if(deck.get(i) == deck.get(j)) {
+						throw new RuntimeException(deck.get(i) + 
+								" in 2 places in deck of " + p.getPlayerName());
+					}
 				}
 			}
 		}

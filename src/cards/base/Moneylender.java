@@ -1,5 +1,6 @@
 package cards.base;
 import cards.Card;
+import cards.defaults.Copper;
 
 
 public class Moneylender extends Card {
@@ -13,7 +14,7 @@ public class Moneylender extends Card {
 	@Override
 	public void performAction() {
 		for (int i = 0; i < getPlayer().deck.hand.size(); i++)	{
-			if (getPlayer().deck.hand.get(i).getName().equals("Copper"))	{
+			if (getPlayer().deck.hand.get(i) instanceof Copper)	{
 				getGame().board.trashCard(getPlayer().deck.hand.remove(i));
 				getPlayer().addTreasure(3);
 				return;

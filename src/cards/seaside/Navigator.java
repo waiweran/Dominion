@@ -23,11 +23,9 @@ public class Navigator extends Card {
 		}
 		else {
 			while(revealed.size() > 0) {
-				try {
-					SingleCardSelector sc = new SingleCardSelector(getGame(), revealed, 
-							"Click a card to put it back", this, true);
-					getPlayer().deck.topOfDeck(revealed.remove(sc.getSelectedIndex()));
-				} catch(Exception e) {}
+				SingleCardSelector sc = new SingleCardSelector(getGame(), revealed, 
+						"Click a card to put it back", this, true);
+				getPlayer().deck.topOfDeck(revealed.remove(sc.getSelectedIndex()));
 			}	
 		}
 	}

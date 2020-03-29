@@ -16,6 +16,7 @@ public class Upgrade extends Card {
 	public void performAction() {
 		getPlayer().deck.deal();
 		getPlayer().addAction(1);
+		if(getPlayer().deck.hand.isEmpty()) return;
 		SingleCardSelector sc = new SingleCardSelector(getGame(), getPlayer().deck.hand,
 				"Trash a card", this, true);
 		Card c = getPlayer().deck.hand.remove(sc.getSelectedIndex());

@@ -23,8 +23,11 @@ public class WalledVillage extends Card {
 			if(c.isAction()) actions++;
 		}
 		if(actions < 3) {
-			getPlayer().deck.play.remove(this);
-			getPlayer().deck.topOfDeck(this);
+			for(int i = 0; i < getPlayer().deck.play.size(); i++) {
+				if(getPlayer().deck.play.get(i) == this) {
+					getPlayer().deck.topOfDeck(getPlayer().deck.play.remove(i));
+				}
+			}
 		}
 	}
 

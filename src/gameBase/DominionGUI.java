@@ -774,7 +774,7 @@ public class DominionGUI extends GameGUI {
 		for(Card c : temp.keySet()) {
 			StackPane tavernPile = makeSupply(new Supply(c, temp.get(c)), true, e -> tavernClicked(c));
 			if(tavernPile.getChildren().size() == 3) {
-				tavernPile.getChildren().remove(3); //remove coin overlay
+				tavernPile.getChildren().remove(2); //remove coin overlay
 			}
 			tavernArea.getChildren().add(tavernPile);
 		}

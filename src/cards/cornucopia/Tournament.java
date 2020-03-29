@@ -33,16 +33,17 @@ public class Tournament extends Card {
 		}
 		if(iHaveOne) {
 			for(int i = 0; i < getPlayer().deck.hand.size(); i++) {
-				if(getPlayer().deck.hand.get(i).equals(new Province())) {
+				if(getPlayer().deck.hand.get(i) instanceof Province) {
 					getPlayer().deck.discardCard(i);
 					break;
 				}
 			}
 			if(getGame().board.findSupply(new Duchy()).isEmpty() == 1) {
-				SingleCardSelector sc = new SingleCardSelector(getGame(), getGame().board.prizes,
-						"Select a Prize to put on top of your Deck", this, true);
-				getPlayer().deck.gain(getGame().board.prizes.remove(sc.getSelectedIndex()), 1);
-
+				if(!getGame().board.prizes.isEmpty()) {
+					SingleCardSelector sc = new SingleCardSelector(getGame(), getGame().board.prizes,
+							"Select a Prize to put on top of your Deck", this, true);
+					getPlayer().deck.gain(getGame().board.prizes.remove(sc.getSelectedIndex()), 1);
+				}
 			}
 			else {
 				ArrayList<Card> selection = new ArrayList<>();

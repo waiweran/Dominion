@@ -29,15 +29,21 @@ public class HorseTraders extends Card {
 	@Override
 	public void reactAttack() {
 		if(new Selector(getGame()).checkReact(getPlayer(), this)) {
-			getPlayer().deck.hand.remove(this);
-			getPlayer().deck.duration.add(this);
+			for(int i = 0; i < getPlayer().deck.hand.size(); i++) {
+				if(getPlayer().deck.hand.get(i) == this) {
+					getPlayer().deck.duration.add(getPlayer().deck.hand.remove(i));
+				}
+			}
 		}
 	}
 
 	@Override
 	public void durationAction() {
-		getPlayer().deck.duration.remove(this);
-		getPlayer().deck.hand.add(this);
+		for(int i = 0; i < getPlayer().deck.duration.size(); i++) {
+			if(getPlayer().deck.duration.get(i) == this) {
+				getPlayer().deck.hand.add(getPlayer().deck.duration.remove(i));
+			}
+		}
 		getPlayer().deck.deal();
 	}
 

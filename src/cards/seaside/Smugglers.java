@@ -21,7 +21,7 @@ public class Smugglers extends Card {
 				cards.add(c);
 			}
 		}
-		if(cards.size() < 1) return;
+		if(cards.isEmpty()) return;
 		SingleCardSelector sc = new SingleCardSelector(getGame(), cards,
 				"Select a card to gain", this, true);
 		getPlayer().deck.gain(getGame().board.findSupply(

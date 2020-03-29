@@ -7,13 +7,17 @@ import selectors.SingleCardSelector;
 public class Trader extends Card {
 
 	private static final long serialVersionUID = 152L;
+	
+	private boolean reacting;
 
 	public Trader() {
 		super("Trader", "Action-Reaction", "Hinterlands", 4);
+		reacting = false;
 	}
 
 	@Override
 	public void performAction() {
+		if(getPlayer().deck.hand.isEmpty()) return;
 		SingleCardSelector sc = new SingleCardSelector(getGame(), getPlayer().deck.hand,
 				"Trash a card", this, true);
 		Card c = getPlayer().deck.hand.remove(sc.getSelectedIndex());
@@ -26,9 +30,13 @@ public class Trader extends Card {
 
 	@Override
 	public void reactGain(Card c) {
-		if(getPlayer().deck.discard.size() > 0
+		if(!reacting && getPlayer().deck.discard.size() > 0
 				&& getPlayer().deck.discard.get(
-				getPlayer().deck.discard.size() - 1).equals(c)) {
+				getPlayer().deck.discard.size() - 1) == c
+				&& getPlayer().deck.gained.size() > 0
+				&& getPlayer().deck.gained.get(
+				getPlayer().deck.gained.size() - 1) == c) {
+			reacting = true;
 			if(new Selector(getGame()).checkReact(getPlayer(), this)) {
 				getPlayer().deck.discard.remove(getPlayer().deck.discard.size() - 1);
 				getPlayer().deck.gained.remove(getPlayer().deck.gained.size() - 1);
@@ -39,6 +47,7 @@ public class Trader extends Card {
 				getGame().board.findSupply(c).putOneBack(c);
 			}
 		}
+		reacting = false;
 
 	}
 

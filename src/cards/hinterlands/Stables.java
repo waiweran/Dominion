@@ -26,8 +26,11 @@ public class Stables extends Card {
 				"Discard a Treasure", this, false);
 		try {
 			Card choice = available.get(sc.getSelectedIndex());
-			getPlayer().deck.hand.remove(choice);
-			getPlayer().deck.discardCard(choice);
+			for(int i = 0; i < getPlayer().deck.hand.size(); i++) {
+				if(getPlayer().deck.hand.get(i) == choice) {
+					getPlayer().deck.discardCard(i);
+				}
+			}
 			getPlayer().deck.deal();
 			getPlayer().deck.deal();
 			getPlayer().deck.deal();

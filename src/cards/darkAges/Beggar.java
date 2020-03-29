@@ -24,8 +24,11 @@ public class Beggar extends Card {
 	@Override
 	public void reactAttack() {
 		if(new Selector(getGame()).checkReact(getPlayer(), this)) {
-			getPlayer().deck.discardCard(this);
-			getPlayer().deck.hand.remove(this);
+			for(int i = 0; i < getPlayer().deck.hand.size(); i++) {
+				if(getPlayer().deck.hand.get(i) == this) {
+					getPlayer().deck.discardCard(i);
+				}
+			}
 			getPlayer().deck.gain(getGame().board.getSilver().takeCard());
 			getPlayer().deck.gain(getGame().board.getSilver().takeCard(), 1);
 		}

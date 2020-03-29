@@ -37,7 +37,7 @@ public class Masquerade extends Card {
 				p.deck.hand.add(c);
 			}
 		}
-		if(1 == new Selector(getGame()).showQuestionDialog(this, "Would you like to Trash a Card from your Hand", 
+		if(!getPlayer().deck.hand.isEmpty() && 1 == new Selector(getGame()).showQuestionDialog(this, "Would you like to Trash a Card from your Hand", 
 				"Don't Trash a Card", "Trash a Card")) {
 			SingleCardSelector sc = new SingleCardSelector(getGame(), getPlayer().deck.hand,
 					"Trash a card", this, true);

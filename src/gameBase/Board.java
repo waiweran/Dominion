@@ -121,7 +121,7 @@ public class Board implements Serializable {
 	 */
 	public void trashCard(Card c) {
 		trash.add(c);
-		c.trashAction();
+		if(c != null) c.trashAction();
 	}
 
 	/**
@@ -164,8 +164,8 @@ public class Board implements Serializable {
 		}
 		for(Supply s : defaultCards) {
 			numEmpty += s.isEmpty();
-			if(prosperity && s.getCard().equals(new Colony()) 
-					|| !prosperity && s.getCard().equals(new Province())) {
+			if(prosperity && s.getCard() instanceof Colony
+					|| !prosperity && s.getCard() instanceof Province) {
 				numEmpty += s.isEmpty() * 3;
 			}
 		}

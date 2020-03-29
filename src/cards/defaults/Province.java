@@ -25,7 +25,7 @@ public class Province extends Card {
 				if(c instanceof FoolsGold) {
 					Selector sel = new Selector(getGame());
 					sel.setPlayer(p);
-					Supply supply = getGame().board.defaultCards.get(2);
+					Supply supply = getGame().board.getGold();
 					if(0 == sel.showCardDialog(c, "Trash Fool's Gold and gain a gold to "
 							+ "the top of your deck?", supply.getTopCard(), "Yes", "No")) {
 						p.deck.hand.remove(i--);

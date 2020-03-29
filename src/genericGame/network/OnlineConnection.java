@@ -59,12 +59,14 @@ public class OnlineConnection extends Connection {
 		sendString("START " + client.getClass().getName());
 		output.writeObject(game);
 		output.flush();
-		wait = new GameWaiter(this, true);
-		String names = name + "\t";
-		for(int i = 0; i < game.getNumNPC(); i++) {
-			names += "NPC " + (i + 1) + "\t";
+		if(game.showGraphics()) {
+			wait = new GameWaiter(this, true);
+			String names = name + "\t";
+			for(int i = 0; i < game.getNumNPC(); i++) {
+				names += "NPC " + (i + 1) + "\t";
+			}
+			wait.playerJoined("JOIN\t" + names + game.getNumPlayers());
 		}
-		wait.playerJoined("JOIN\t" + names + game.getNumPlayers());
 		startListener();
 	}
 
@@ -190,7 +192,7 @@ public class OnlineConnection extends Connection {
 		else if (response.startsWith("WELCOME")) {
 			try {
 				BoardGame newGame = (BoardGame) input.readObject();
-				wait.close();
+				if(wait != null) wait.close();
 				myPlayerNumber = Integer.parseInt(response.substring(response.length() - 1));	
 				getClient().loadGame(newGame);
 				sendString("NAME " + myPlayerNumber + " " + 
@@ -203,7 +205,7 @@ public class OnlineConnection extends Connection {
 			chooser.updateListings(response.substring(7));
 		}
 		else if (response.startsWith("JOIN")) {
-			wait.playerJoined(response);
+			if(wait != null) wait.playerJoined(response);
 		}
 		else if (response.startsWith("GAME END")) {
 			Platform.runLater(() -> {
@@ -221,7 +223,7 @@ public class OnlineConnection extends Connection {
 				alert.setHeaderText("Game Error");
 				alert.show();
 			});
-			wait.close();
+			if(wait != null) wait.close();
 		}
 		else if (response.startsWith("NAME")) {
 			getClient().getGame().getPlayers().get(Integer.parseInt(

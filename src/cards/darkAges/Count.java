@@ -28,9 +28,11 @@ public class Count extends Card {
 			}
 		}
 		else if(choice == 1) {
-			SingleCardSelector sc = new SingleCardSelector(getGame(), getPlayer().deck.hand,
-					"Put a card on top of your deck", this, true);
-			getPlayer().deck.putBack(sc.getSelectedIndex());
+			if(!getPlayer().deck.hand.isEmpty()) {
+				SingleCardSelector sc = new SingleCardSelector(getGame(), getPlayer().deck.hand,
+						"Put a card on top of your deck", this, true);
+				getPlayer().deck.putBack(sc.getSelectedIndex());
+			}
 		}
 		else {
 			getPlayer().deck.gain(getGame().board.getCopper().takeCard());

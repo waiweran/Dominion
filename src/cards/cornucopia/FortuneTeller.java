@@ -18,7 +18,7 @@ public class FortuneTeller extends Card {
 		for(Player p : getGame().getAttackedPlayers()) {
 			for(int i = 0; i < p.deck.size()*2; i++) {
 				Card c = p.deck.getDrawCard();
-				if(c.isVictory() || c.equals(new Curse())) {
+				if(c.isVictory() || c instanceof Curse) {
 					p.deck.topOfDeck(c);
 					break;
 				}

@@ -21,13 +21,13 @@ public class GhostShip extends Card {
 		
 		ArrayList<MultiCardSelector> selectors = new ArrayList<>();
 		for(Player p : getGame().getAttackedPlayers()) {
-			if(p.deck.hand.size() >= 4) {
-				MultiCardSelector sd = new MultiCardSelector(getGame(), p, p.deck.hand, 
-						"Put " + (p.deck.hand.size() - 3) + " cards back on your deck", this,
-						p.deck.hand.size() - 3, true);
-				sd.show();
-				selectors.add(sd);
-			}
+			int numCards = p.deck.hand.size() - 3;
+			if(p.deck.hand.size() < 4) numCards = 0;
+			MultiCardSelector sd = new MultiCardSelector(getGame(), p, p.deck.hand, 
+					"Put " + numCards + " cards back on your deck", this,
+					numCards, true);
+			sd.show();
+			selectors.add(sd);
 		}
 		for(int selnum = 0; selnum < selectors.size(); selnum++) {
 			Player p = getGame().getAttackedPlayers().get(selnum);

@@ -23,14 +23,17 @@ public class PirateShip extends Card {
 			for(Player p : getGame().getAttackedPlayers()) {
 				ArrayList<Card> treasures = new ArrayList<Card>();
 				Card c = p.deck.getDrawCard();
-				if(c.isTreasure())
-					treasures.add(c);
-				else p.deck.discardCard(c);
-				c = p.deck.getDrawCard();
-				if(c.isTreasure())
-					treasures.add(c);
-				else p.deck.discardCard(c);
-
+				if(c != null) {
+					if(c.isTreasure())
+						treasures.add(c);
+					else p.deck.discardCard(c);
+					c = p.deck.getDrawCard();
+					if(c != null) {
+						if(c.isTreasure())
+							treasures.add(c);
+						else p.deck.discardCard(c);
+					}
+				}
 				if(treasures.size() < 1) {
 					new Selector(getGame()).showQuestionDialog(this, p.getPlayerName() + " had no treasure", "Ok");
 				}

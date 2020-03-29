@@ -15,7 +15,7 @@ public class BridgeTroll extends Card {
 	@Override
 	public void performAction() {
 		for(Player p : getGame().getAttackedPlayers()) {
-			p.addTreasure(-1 - p.getTreasure());
+			p.minusOneCoin = true;
 		}
 		getPlayer().addBuy();
 		getPlayer().bridge++;

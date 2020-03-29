@@ -1,6 +1,7 @@
 package cards.hinterlands;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import cards.Card;
 import selectors.SingleCardSelector;
@@ -40,17 +41,22 @@ public class Scheme extends Card {
 		if(available.size() == 0) return;
 		SingleCardSelector sc = new SingleCardSelector(getGame(), available,
 				"Choose a card to put back on top of your deck", this, false);
-		try {
-			Card choice = available.get(sc.getSelectedIndex());
-			if(choice.isDuration()) {
-				getPlayer().deck.duration.remove(choice);
-			}
-			else {
-				getPlayer().deck.play.remove(choice);
-			}
-			getPlayer().deck.topOfDeck(choice);
+		int index = sc.getSelectedIndex();
+		if(index < 0) return;
+		Card choice = available.get(index);
+		List<Card> remList;
+		if(choice.isDuration()) {
+			remList = getPlayer().deck.duration;
 		}
-		catch(Exception e) {};
+		else {
+			remList = getPlayer().deck.play;
+		}
+		for(int i = 0; i < remList.size(); i++) {
+			if(remList.get(i) == choice) {
+				remList.remove(i);
+			}
+		}
+		getPlayer().deck.topOfDeck(choice);
 	}
 
 }

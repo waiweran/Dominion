@@ -15,6 +15,7 @@ public class Expand extends Card {
 
 	@Override
 	public void performAction() {
+		if(getPlayer().deck.hand.isEmpty()) return;
 		SingleCardSelector sc = new SingleCardSelector(getGame(), getPlayer().deck.hand,
 				"Trash a Card", this, true);
 		Card c = getPlayer().deck.hand.remove(sc.getSelectedIndex());

@@ -51,7 +51,7 @@ public class Urchin extends Card {
 		boolean afterUrchin = false;
 		for(Card c : getPlayer().deck.play) {
 			if(!afterUrchin) {
-				afterUrchin = c.equals(this);
+				afterUrchin = c instanceof Urchin;
 			}
 			else if(c.isAttack()) {
 				if(new Selector(getGame()).checkExchange(this, new Mercenary(), 

@@ -61,7 +61,7 @@ public class ScoreDisplay {
 		for(Player p : game.players) {	
 			Scorer scorer = new Scorer(p.getScore());
 			for(Card c : p.deck.getDeck()) {
-				if(c.isVictory() || c.equals(new Curse())) {
+				if(c.isVictory() || c instanceof Curse) {
 					scorer.addCard(c);
 				}
 			}

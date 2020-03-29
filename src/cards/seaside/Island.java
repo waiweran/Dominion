@@ -15,11 +15,16 @@ public class Island extends Card {
 
 	@Override
 	public void performAction() {
-		getPlayer().deck.play.remove(this);		
+		for(int i = 0; i < getPlayer().deck.play.size(); i++) {
+			if(getPlayer().deck.play.get(i) == this) {
+				getPlayer().deck.play.remove(i);
+			}
+		}
 		if(!getPlayer().deck.reserve.containsKey(this)) {
 			getPlayer().deck.reserve.put(this, new ArrayList<Card>());
 		}
 		getPlayer().deck.reserve.get(this).add(this);	
+		if(getPlayer().deck.hand.isEmpty()) return;
 		SingleCardSelector sc = new SingleCardSelector(getGame(), getPlayer().deck.hand,
 				"Place a card aside with the island", this, true);
 

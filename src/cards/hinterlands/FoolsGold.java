@@ -13,7 +13,7 @@ public class FoolsGold extends Card {
 	@Override
 	public void performAction() {
 		for(Card c : getPlayer().deck.play) {
-			if(c != this && c.equals(this)) {
+			if(c != this && c instanceof FoolsGold) {
 				getPlayer().addTreasure(3);
 				break;
 			}

@@ -16,10 +16,7 @@ public class Moat extends Card {
 		getPlayer().deck.deal();
 	}
 
-	@Override
-	public void reactAttack() {
-		//Prevents attacks while in hand.  
-		//Implemented in the getAttackedPlayers() method of DominionGame.
-	}
+	//Prevents attacks while in hand.  
+	//Implemented in the getAttackedPlayers() method of DominionGame.
 
 }

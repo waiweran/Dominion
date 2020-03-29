@@ -37,7 +37,7 @@ public class Graverobber extends Card {
 			SingleCardSelector sc = new SingleCardSelector(getGame(), handActions, 
 					"Trash an action card", this, true);
 			int locIndex = sc.getSelectedIndex();
-			getGame().board.trashCard(getPlayer().deck.hand.remove(((int)handIndecies.get(locIndex))));
+			getGame().board.trashCard(getPlayer().deck.hand.remove(handIndecies.get(locIndex).intValue()));
 			int cost = handActions.get(locIndex).getCost() + 3;
 			SupplySelector sd = new SupplySelector(getGame(), getName(),
 					"Gain a card costing up to " + cost, 0, cost);

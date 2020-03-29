@@ -16,6 +16,7 @@ public class Mandarin extends Card {
 	@Override
 	public void performAction() {
 		getPlayer().addTreasure(3);
+		if(getPlayer().deck.hand.isEmpty()) return;
 		SingleCardSelector sc = new SingleCardSelector(getGame(), getPlayer().deck.hand,
 				"Put a card on top of your deck", this, true);
 		getPlayer().deck.putBack(sc.getSelectedIndex());

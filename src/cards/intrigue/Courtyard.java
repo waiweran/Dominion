@@ -16,7 +16,7 @@ public class Courtyard extends Card {
 		getPlayer().deck.deal();
 		getPlayer().deck.deal();
 		getPlayer().deck.deal();
-
+		if(getPlayer().deck.hand.isEmpty()) return;
 		SingleCardSelector sc = new SingleCardSelector(getGame(), getPlayer().deck.hand,
 				"Put a  card on top of your deck", this, true);
 		getPlayer().deck.putBack(sc.getSelectedIndex());

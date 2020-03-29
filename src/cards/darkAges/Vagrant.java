@@ -20,6 +20,7 @@ public class Vagrant extends Card {
 		getPlayer().deck.deal();
 		getPlayer().addAction(1);
 		Card c = getPlayer().deck.getDrawCard();
+		if(c == null) return;
 		if(c instanceof Curse || c.isVictory() || c instanceof Ruins || c instanceof Hovel 
 				|| c instanceof OvergrownEstate || c instanceof Necropolis) {
 			getPlayer().deck.hand.add(c);

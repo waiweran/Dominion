@@ -16,6 +16,7 @@ public class Envoy extends Card {
 	@Override
 	public void performAction() {
 		List<Card> drawn = getPlayer().deck.getDrawCards(5);
+		if(drawn.isEmpty()) return;
 		SingleCardSelector sc = new SingleCardSelector(getGame(), getGame().getLeftPlayer(),
 				drawn, "Choose a card for your neighbor to discard", this, true);
 		getPlayer().deck.discardCard(drawn.remove(sc.getSelectedIndex()));

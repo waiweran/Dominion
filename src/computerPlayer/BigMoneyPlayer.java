@@ -82,7 +82,7 @@ public class BigMoneyPlayer extends ComputerPlayer {
 			
 		// No treasure or victory available, choose random supply
 		Supply randChoice = options.get(access.random.nextInt(options.size()));
-		while(randChoice.getTopCard().equals(new Curse())) {
+		while(randChoice.getTopCard() instanceof Curse) {
 			randChoice = options.get(access.random.nextInt(options.size()));
 		}
 		return randChoice;
@@ -188,6 +188,9 @@ public class BigMoneyPlayer extends ComputerPlayer {
 		}
 		
 		// Final check
+		if(s.isEmpty() == 1) {
+			return null;
+		}
 		if(!options.contains(s)) throw new RuntimeException("Supply " + s + " not on purchase list " + options);
 		
 		// Buy it

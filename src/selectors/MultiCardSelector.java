@@ -83,8 +83,7 @@ public class MultiCardSelector {
 		output = null;
 
 		if(isMust && selectFrom.size() - numNeeded < 0) {
-			throw new RuntimeException(selectFrom.size()
-					+ " options provided, " + numNeeded + " required");
+			numNeeded = selectFrom.size();
 		}
 	}
 
